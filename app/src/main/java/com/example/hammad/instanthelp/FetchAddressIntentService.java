@@ -22,8 +22,7 @@ import java.util.Locale;
 public class FetchAddressIntentService extends IntentService {
 
     private  static  final String TAG = "FetchAddressIS";
-    protected ResultReceiver mResultReciever;
-    private String errorMessage = "";
+    ResultReceiver mResultReciever;
 
     public FetchAddressIntentService() {
         super(TAG);
@@ -31,12 +30,14 @@ public class FetchAddressIntentService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        String errorMessage;
 
         mResultReciever = intent.getParcelableExtra(Constants.RECEIVER);
 
         if(mResultReciever == null){
             errorMessage = "ResultReciever is null";
             Log.e(TAG, errorMessage);
+            return;
         }
 
         Location mLocation = intent.getParcelableExtra(Constants.LOCATION_DATA_EXTRA);
@@ -56,7 +57,7 @@ public class FetchAddressIntentService extends IntentService {
             errorMessage = "No Service Available ";
             Log.e(TAG, errorMessage + e.getLocalizedMessage());
         }
-        // Handle case where no address found
+        // Handle case when no address found
 
         if(addresses == null || addresses.size() == 0){
             errorMessage = "No adresses found";

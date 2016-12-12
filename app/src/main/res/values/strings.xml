@@ -3,4 +3,23 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="map">Map</string>
+    <string name="userName">Username</string>
+    <string name="password">Password</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="register_as_volunteer">Register as Volunteer</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="blood_donor">Blood donor</string>
+    <string name="first_aider">First aider</string>
+    <string name="register">Register</string>
+    <string name="have_account">Already have Account !</string>
+
+    <string-array name="bloodgroups">
+        <item>A+ve</item>
+        <item>B+ve</item>
+        <item>AB+ve</item>
+        <item>O+ve</item>
+        <item>O-ve</item>
+    </string-array>
 </resources>

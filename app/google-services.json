@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "560914397159",
+    "firebase_url": "https://instant-help.firebaseio.com",
+    "project_id": "instant-help",
+    "storage_bucket": "instant-help.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:560914397159:android:d5a12455f93b8282",
+        "android_client_info": {
+          "package_name": "com.example.hammad.instanthelp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "560914397159-vbti11fhfamkactl08d4okpc8mtqi1v7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBehoPaY1mQFLsj58oFtwznkQzZQb6hp2o"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

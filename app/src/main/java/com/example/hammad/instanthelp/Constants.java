@@ -4,7 +4,7 @@ package com.example.hammad.instanthelp;
  * Created by shekh chilli on 11/26/2016.
  */
 
-public class Constants {
+public final class Constants {
 
     public static final int RESULT_SUCCESS = 1;
     public static final int RESULT_FAILURE = 0;
