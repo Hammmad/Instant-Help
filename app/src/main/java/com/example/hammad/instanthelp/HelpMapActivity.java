@@ -53,14 +53,14 @@ public class HelpMapActivity extends AppCompatActivity implements LocationListen
         setContentView(R.layout.activity_help_map);
 
         addressResultReceiver = new AddressResultReceiver(new Handler());
-        buildeGoogleApiClient();
+        buildGoogleApiClient();
 
 
         Log.e(TAG, String.valueOf(myLocation));
 
     }
 
-    private void buildeGoogleApiClient() {
+    private void buildGoogleApiClient() {
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)

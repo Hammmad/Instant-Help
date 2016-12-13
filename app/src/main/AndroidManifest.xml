@@ -35,7 +35,8 @@
             android:name=".FetchAddressIntentService"
             android:exported="false" />
 
-        <activity android:name=".HelpMapActivity"></activity>
+        <activity android:name=".HelpMapActivity" />
+        <activity android:name=".HelpActivity"></activity>
     </application>
 
 </manifest>

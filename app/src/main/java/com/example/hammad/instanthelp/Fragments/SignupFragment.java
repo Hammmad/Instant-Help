@@ -2,6 +2,7 @@ package com.example.hammad.instanthelp.Fragments;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -17,6 +18,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.hammad.instanthelp.HelpActivity;
 import com.example.hammad.instanthelp.R;
 import com.example.hammad.instanthelp.User;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -131,6 +133,7 @@ public class SignupFragment extends Fragment implements View.OnClickListener{
         int id = view.getId();
         if(id==R.id.signup_button){
             createAccount();
+
         }else if(id == R.id.yes_radiobtn){
 
             bloodDonorCheckBox.setVisibility(View.VISIBLE);
@@ -151,7 +154,7 @@ public class SignupFragment extends Fragment implements View.OnClickListener{
                 bloodgroupSpinner.setVisibility(View.GONE);
             }
         }else if(id == R.id.signIn){
-
+            callbackSignupFragment.showSigninFragment();
         }
 
     }
@@ -169,12 +172,10 @@ public class SignupFragment extends Fragment implements View.OnClickListener{
                     Uid = mAuth.getCurrentUser().getUid();
                     User user = getUserInfo();
                     databaseReference.child("userinfo").child(Uid).setValue(user);
-                }
 
-
-
-
-                if(!task.isSuccessful()){
+                    Intent intent = new Intent(getActivity(), HelpActivity.class);
+                    startActivity(intent);
+                }else {
                     Toast.makeText(getActivity(), "Auth Failed", Toast.LENGTH_SHORT).show();
                 }
             }
