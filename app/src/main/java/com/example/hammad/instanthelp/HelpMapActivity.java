@@ -46,7 +46,6 @@ public class HelpMapActivity extends AppCompatActivity implements LocationListen
     String addressOutput;
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

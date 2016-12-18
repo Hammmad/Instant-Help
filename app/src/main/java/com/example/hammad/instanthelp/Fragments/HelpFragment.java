@@ -2,6 +2,9 @@ package com.example.hammad.instanthelp.Fragments;
 
 
 import android.Manifest;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -12,13 +15,18 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.hammad.instanthelp.CurrentLocation;
+import com.example.hammad.instanthelp.FirebaseBackgroundService;
 import com.example.hammad.instanthelp.HelpMapActivity;
 import com.example.hammad.instanthelp.R;
 import com.google.android.gms.common.ConnectionResult;
@@ -26,8 +34,11 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -43,24 +54,28 @@ public class HelpFragment extends Fragment implements View.OnClickListener, Goog
     private static final String TAG = "DEBUGGING";
     Location lastLocation;
     GoogleApiClient mGoogleApiClient;
+    private String requiredBloodGroup;
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         Log.e(TAG, "onConnected working");
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED
+                != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
+                != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
-            lastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+            Log.e(TAG, "Permission not Grant");
             //    ActivityCompat#requestPermissions
             // here to request the missing permissions, and then overriding
             //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
             //                                          int[] grantResults)
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
+            return;
         }
 
+
+        lastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
 
         String longitude = null;
         String latitude = null;
@@ -77,12 +92,12 @@ public class HelpFragment extends Fragment implements View.OnClickListener, Goog
 
     @Override
     public void onConnectionSuspended(int i) {
-
+            Log.e(TAG, "Connection Suspended");
     }
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
+        Log.e(TAG, "Connection Failed" + connectionResult.getErrorMessage());
     }
 
 
@@ -110,18 +125,38 @@ public class HelpFragment extends Fragment implements View.OnClickListener, Goog
                 if (user != null) {
                     Log.e(TAG, "user is signedIn" + user.getUid());
                 } else {
-                    Log.e(TAG, "user is signedOut ");
+                    Log.e(TAG, "user is signedOut");
                 }
             }
         };
 
+        TextView userNameTextView = (TextView) rootView.findViewById(R.id.userName_textView);
+        userNameTextView.setText(mAuth.getCurrentUser().getEmail().replace("@instanthelp.com", ""));
         rootView.findViewById(R.id.map_help_button).setOnClickListener(this);
         rootView.findViewById(R.id.blood_require_button).setOnClickListener(this);
         rootView.findViewById(R.id.first_aid_button).setOnClickListener(this);
         rootView.findViewById(R.id.signout_textView).setOnClickListener(this);
         rootView.findViewById(R.id.register_volunteer_textview).setOnClickListener(this);
 
+//        ValueEventListener valueEventListener = new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                for (DataSnapshot curentLocationSnapshot: dataSnapshot.child("userCurrentLocation").getChildren()){
+//                    CurrentLocation currentLocation = curentLocationSnapshot.getValue(CurrentLocation.class);
+//                    if(!currentLocation.uId.equals(mAuth.getCurrentUser().getUid())) {
+//                        Log.e(TAG, currentLocation.userName);
+//                    }
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//
+//            }
+//        };
+//        databaseReference.addValueEventListener(valueEventListener);
         buildGoogleApiClient();
+        getActivity().startService(new Intent(getActivity(), FirebaseBackgroundService.class));
         return rootView;
     }
 
@@ -142,7 +177,6 @@ public class HelpFragment extends Fragment implements View.OnClickListener, Goog
         }
     }
 
-
     @Override
     public void onClick(View view) {
         int id = view.getId();
@@ -156,22 +190,32 @@ public class HelpFragment extends Fragment implements View.OnClickListener, Goog
             case R.id.signout_textView: {
 
                 mAuth.signOut();
-                getActivity().onBackPressed();
+                Log.e(TAG, "Signout clicked");
 
                 break;
             }
             case R.id.blood_require_button: {
                 showBloodGrouplist();
-                sendMylocationUp();
+                break;
+            }default:{
+                break;
             }
         }
-
     }
+
+
 
     private void sendMylocationUp() {
         if (lastLocation != null){
-            String Uid =mAuth.getCurrentUser().getUid();
-            databaseReference.child("userCurrentLocation").child(Uid).setValue()
+            if(mAuth.getCurrentUser() != null) {
+                String Uid = mAuth.getCurrentUser().getUid();
+                String userName = mAuth.getCurrentUser().getEmail();
+                userName = userName.replace("@instanthelp.com", "");
+
+                CurrentLocation currentLocation = new CurrentLocation(userName, requiredBloodGroup, lastLocation.getLatitude()
+                        ,lastLocation.getLongitude(), mAuth.getCurrentUser().getUid());
+                databaseReference.child("userCurrentLocation").child(Uid).setValue(currentLocation);
+            }
         }
     }
 
@@ -186,12 +230,16 @@ public class HelpFragment extends Fragment implements View.OnClickListener, Goog
 
     private void showBloodGrouplist() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        final String[] bloodGroups = {"A+ve,", "A-ve","B+ve","AB+ve","O+ve","O-ve"};
 
-        builder.setTitle("Pick Blood Group").setItems(R.array.bloodgroups, new DialogInterface.OnClickListener() {
+        builder.setTitle("Pick Blood Group").setItems(bloodGroups, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
 
-                Log.e(TAG, "index:  " + i);
+                requiredBloodGroup = bloodGroups[i];
+                Log.e(TAG, requiredBloodGroup);
+                sendMylocationUp();
+
             }
         });
         builder.create().show();
