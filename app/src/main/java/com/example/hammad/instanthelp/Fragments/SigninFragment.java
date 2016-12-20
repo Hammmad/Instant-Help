@@ -44,6 +44,8 @@ public class SigninFragment extends Fragment {
 
     public interface CallbackSigninFragment{
         public void showSignupFragment();
+
+        public void startHelpActivity();
     }
 
     public SigninFragment() {
@@ -104,8 +106,7 @@ public class SigninFragment extends Fragment {
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 // start help activity
                                 if(task.isSuccessful()){
-                                    Intent intent = new Intent(getActivity(), HelpActivity.class);
-                                    startActivity(intent);
+                                    callbackSigninFragment.startHelpActivity();
                                 }else{
                                     Toast.makeText(getActivity(), "Auth Failed", Toast.LENGTH_SHORT).show();
                                 }

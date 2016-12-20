@@ -42,7 +42,7 @@ public class HelpMapActivity extends AppCompatActivity implements LocationListen
     LatLng myLocation;
     LocationRequest mLocationRequest;
     Location mCurrentLocation;
-    AddressResultReceiver addressResultReceiver;
+    FirebaseBackgroundService.AddressResultReceiver addressResultReceiver;
     String addressOutput;
 
 
@@ -51,7 +51,6 @@ public class HelpMapActivity extends AppCompatActivity implements LocationListen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_help_map);
 
-        addressResultReceiver = new AddressResultReceiver(new Handler());
         buildGoogleApiClient();
 
 
@@ -197,24 +196,5 @@ public class HelpMapActivity extends AppCompatActivity implements LocationListen
 
     }
 
-    class AddressResultReceiver extends ResultReceiver {
 
-        public AddressResultReceiver(Handler handler) {
-            super(handler);
-        }
-
-        @Override
-        protected void onReceiveResult(int resultCode, Bundle resultData) {
-            addressOutput = resultData.getString(Constants.RESULT_DATA_KEY);
-            Log.e(TAG, addressOutput);
-
-            if(resultCode == Constants.RESULT_SUCCESS){
-                Toast.makeText(HelpMapActivity.this, "Address Found", Toast.LENGTH_SHORT).show();
-            }else{
-                Toast.makeText(HelpMapActivity.this, "Address not found", Toast.LENGTH_SHORT).show();
-            }
-        }
-
-
-    }
 }

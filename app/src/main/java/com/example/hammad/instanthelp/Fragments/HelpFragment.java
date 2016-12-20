@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -25,9 +26,12 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.hammad.instanthelp.Constants;
 import com.example.hammad.instanthelp.CurrentLocation;
+import com.example.hammad.instanthelp.FetchAddressIntentService;
 import com.example.hammad.instanthelp.FirebaseBackgroundService;
 import com.example.hammad.instanthelp.HelpMapActivity;
+import com.example.hammad.instanthelp.MainActivity;
 import com.example.hammad.instanthelp.R;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -53,6 +57,8 @@ public class HelpFragment extends Fragment implements View.OnClickListener, Goog
     private DatabaseReference databaseReference;
     private static final String TAG = "DEBUGGING";
     Location lastLocation;
+
+
     GoogleApiClient mGoogleApiClient;
     private String requiredBloodGroup;
 
@@ -77,16 +83,19 @@ public class HelpFragment extends Fragment implements View.OnClickListener, Goog
 
         lastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
 
-        String longitude = null;
-        String latitude = null;
-
+        double longitude = 0;
+        double latitude = 0;
 
         if(lastLocation != null){
-            latitude = String.valueOf(lastLocation.getLatitude());
-            longitude = String.valueOf(lastLocation.getLongitude());
+            latitude = lastLocation.getLatitude();
+            longitude = lastLocation.getLongitude();
         }
 
         Toast.makeText(getActivity(), "latitude,longitude:   "+ latitude + longitude, Toast.LENGTH_SHORT).show();
+        Intent serviceIntent = new Intent(getActivity(), FirebaseBackgroundService.class);
+//        serviceIntent.putExtra("LATITUDE", latitude);
+//        serviceIntent.putExtra("LONGITUDE", longitude);
+        getActivity().startService(serviceIntent);
 
     }
 
@@ -156,7 +165,8 @@ public class HelpFragment extends Fragment implements View.OnClickListener, Goog
 //        };
 //        databaseReference.addValueEventListener(valueEventListener);
         buildGoogleApiClient();
-        getActivity().startService(new Intent(getActivity(), FirebaseBackgroundService.class));
+
+
         return rootView;
     }
 
@@ -192,6 +202,7 @@ public class HelpFragment extends Fragment implements View.OnClickListener, Goog
                 mAuth.signOut();
                 Log.e(TAG, "Signout clicked");
 
+
                 break;
             }
             case R.id.blood_require_button: {
@@ -212,8 +223,9 @@ public class HelpFragment extends Fragment implements View.OnClickListener, Goog
                 String userName = mAuth.getCurrentUser().getEmail();
                 userName = userName.replace("@instanthelp.com", "");
 
-                CurrentLocation currentLocation = new CurrentLocation(userName, requiredBloodGroup, lastLocation.getLatitude()
-                        ,lastLocation.getLongitude(), mAuth.getCurrentUser().getUid());
+
+                CurrentLocation currentLocation = new CurrentLocation
+                        (userName, requiredBloodGroup,lastLocation.getLatitude(),lastLocation.getLongitude(), mAuth.getCurrentUser().getUid());
                 databaseReference.child("userCurrentLocation").child(Uid).setValue(currentLocation);
             }
         }

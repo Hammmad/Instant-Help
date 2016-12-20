@@ -1,5 +1,7 @@
 package com.example.hammad.instanthelp;
 
+import android.location.Location;
+
 /**
  * Created by shekh chilli on 12/13/2016.
  */
@@ -15,7 +17,7 @@ public class CurrentLocation {
     public CurrentLocation() {
     }
 
-    public CurrentLocation(String userName, String bloodGroup, double latitude, double longitude, String uId) {
+    public CurrentLocation(String userName, String bloodGroup, double latitude,double longitude, String uId) {
         this.userName = userName;
         this.bloodGroup = bloodGroup;
         this.latitude = latitude;

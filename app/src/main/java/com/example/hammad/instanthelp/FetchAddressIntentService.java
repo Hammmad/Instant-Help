@@ -21,7 +21,9 @@ import java.util.Locale;
 
 public class FetchAddressIntentService extends IntentService {
 
-    private  static  final String TAG = "FetchAddressIS";
+    String userName;
+    String bloodGruoup;
+    private  static  final String TAG = "DEBUGGING/FetchAdressIS";
     ResultReceiver mResultReciever;
 
     public FetchAddressIntentService() {
@@ -41,6 +43,9 @@ public class FetchAddressIntentService extends IntentService {
         }
 
         Location mLocation = intent.getParcelableExtra(Constants.LOCATION_DATA_EXTRA);
+
+        userName = intent.getStringExtra(Constants.USERNAME);
+        bloodGruoup = intent.getStringExtra(Constants.BLOODGROUP);
 
         if(mLocation == null){
             errorMessage = "No Location Data provided";
@@ -81,6 +86,8 @@ public class FetchAddressIntentService extends IntentService {
     public void deliverResultToReceiver(int resultCode, String message){
         Bundle bundle = new Bundle();
         bundle.putString(Constants.RESULT_DATA_KEY, message);
+        bundle.putString(Constants.USERNAME, userName );
+        bundle.putString(Constants.BLOODGROUP, bloodGruoup );
         mResultReciever.send(resultCode, bundle);
     }
 }

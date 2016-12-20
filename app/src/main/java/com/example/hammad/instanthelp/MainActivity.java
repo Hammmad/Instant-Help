@@ -56,6 +56,13 @@ public class MainActivity extends AppCompatActivity implements SignupFragment.Ca
                 replace(R.id.activity_main, new SignupFragment()).commit();
 
     }
+
+    @Override
+    public void startHelpActivity() {
+        Intent intent = new Intent(this, HelpActivity.class);
+        startActivity(intent);
+    }
+
     @Override
     public void onStart() {
         super.onStart();
