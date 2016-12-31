@@ -43,7 +43,6 @@ public class FetchAddressIntentService extends IntentService {
         }
 
         Location mLocation = intent.getParcelableExtra(Constants.LOCATION_DATA_EXTRA);
-
         userName = intent.getStringExtra(Constants.USERNAME);
         bloodGruoup = intent.getStringExtra(Constants.BLOODGROUP);
 

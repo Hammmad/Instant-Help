@@ -2,22 +2,16 @@ package com.example.hammad.instanthelp.Fragments;
 
 
 import android.Manifest;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -26,23 +20,19 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.hammad.instanthelp.Constants;
-import com.example.hammad.instanthelp.CurrentLocation;
-import com.example.hammad.instanthelp.FetchAddressIntentService;
+import com.example.hammad.instanthelp.LocationTracker;
+import com.example.hammad.instanthelp.Needer;
 import com.example.hammad.instanthelp.FirebaseBackgroundService;
 import com.example.hammad.instanthelp.HelpMapActivity;
-import com.example.hammad.instanthelp.MainActivity;
 import com.example.hammad.instanthelp.R;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -55,12 +45,14 @@ public class HelpFragment extends Fragment implements View.OnClickListener, Goog
     private FirebaseAuth.AuthStateListener authStateListener;
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference databaseReference;
-    private static final String TAG = "DEBUGGING";
+    private static final String TAG = "HelpFragment/DEBUGGING";
     Location lastLocation;
+    double longitude;
+    double latitude;
 
 
     GoogleApiClient mGoogleApiClient;
-    private String requiredBloodGroup;
+    private String requiredBloodGroup = null;
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
@@ -70,7 +62,7 @@ public class HelpFragment extends Fragment implements View.OnClickListener, Goog
                 && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
-            Log.e(TAG, "Permission not Grant");
+            Log.e(TAG, "Permission not Granted");
             //    ActivityCompat#requestPermissions
             // here to request the missing permissions, and then overriding
             //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
@@ -83,19 +75,18 @@ public class HelpFragment extends Fragment implements View.OnClickListener, Goog
 
         lastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
 
-        double longitude = 0;
-        double latitude = 0;
+
 
         if(lastLocation != null){
             latitude = lastLocation.getLatitude();
             longitude = lastLocation.getLongitude();
+            Toast.makeText(getActivity(), "latitude,longitude:   "+ latitude + longitude, Toast.LENGTH_SHORT).show();
+            Intent serviceIntent = new Intent(getActivity(), FirebaseBackgroundService.class);
+            getActivity().startService(serviceIntent);
+        }else{
+            onConnected(bundle);
+            Log.e(TAG, "Finding Last location");
         }
-
-        Toast.makeText(getActivity(), "latitude,longitude:   "+ latitude + longitude, Toast.LENGTH_SHORT).show();
-        Intent serviceIntent = new Intent(getActivity(), FirebaseBackgroundService.class);
-//        serviceIntent.putExtra("LATITUDE", latitude);
-//        serviceIntent.putExtra("LONGITUDE", longitude);
-        getActivity().startService(serviceIntent);
 
     }
 
@@ -147,12 +138,25 @@ public class HelpFragment extends Fragment implements View.OnClickListener, Goog
         rootView.findViewById(R.id.signout_textView).setOnClickListener(this);
         rootView.findViewById(R.id.register_volunteer_textview).setOnClickListener(this);
 
+
+        LocationTracker locationTracker = new LocationTracker(getActivity());
+        if(locationTracker.canGetLocation()){
+            locationTracker.getLocation();
+            latitude = locationTracker.getLatitude();
+            longitude = locationTracker.getLongitude();
+            Toast.makeText(getActivity(), "latitude,longitude:   "+ latitude + longitude, Toast.LENGTH_SHORT).show();
+            Intent serviceIntent = new Intent(getActivity(), FirebaseBackgroundService.class);
+            getActivity().startService(serviceIntent);
+        }else{
+            Log.e(TAG, "No provider");
+        }
+
 //        ValueEventListener valueEventListener = new ValueEventListener() {
 //            @Override
 //            public void onDataChange(DataSnapshot dataSnapshot) {
 //                for (DataSnapshot curentLocationSnapshot: dataSnapshot.child("userCurrentLocation").getChildren()){
-//                    CurrentLocation currentLocation = curentLocationSnapshot.getValue(CurrentLocation.class);
-//                    if(!currentLocation.uId.equals(mAuth.getCurrentUser().getUid())) {
+//                    Needer currentLocation = curentLocationSnapshot.getValue(Needer.class);
+//                    if(!currentLocation.volunteerUId.equals(mAuth.getCurrentUser().getUid())) {
 //                        Log.e(TAG, currentLocation.userName);
 //                    }
 //                }
@@ -164,7 +168,7 @@ public class HelpFragment extends Fragment implements View.OnClickListener, Goog
 //            }
 //        };
 //        databaseReference.addValueEventListener(valueEventListener);
-        buildGoogleApiClient();
+//        buildGoogleApiClient();
 
 
         return rootView;
@@ -174,7 +178,7 @@ public class HelpFragment extends Fragment implements View.OnClickListener, Goog
     public void onStart() {
         super.onStart();
         mAuth.addAuthStateListener(authStateListener);
-        mGoogleApiClient.connect();
+//        mGoogleApiClient.connect();
     }
 
     @Override
@@ -182,7 +186,7 @@ public class HelpFragment extends Fragment implements View.OnClickListener, Goog
         super.onStop();
         if (mAuth != null) {
             mAuth.removeAuthStateListener(authStateListener);
-            mGoogleApiClient.disconnect();
+//            mGoogleApiClient.disconnect();
 
         }
     }
@@ -208,7 +212,14 @@ public class HelpFragment extends Fragment implements View.OnClickListener, Goog
             case R.id.blood_require_button: {
                 showBloodGrouplist();
                 break;
-            }default:{
+            }
+            case R.id.first_aid_button:{
+
+                requiredBloodGroup = null;
+                sendMylocationUp();
+                break;
+            }
+            default:{
                 break;
             }
         }
@@ -224,9 +235,14 @@ public class HelpFragment extends Fragment implements View.OnClickListener, Goog
                 userName = userName.replace("@instanthelp.com", "");
 
 
-                CurrentLocation currentLocation = new CurrentLocation
+                final Needer needer = new Needer
                         (userName, requiredBloodGroup,lastLocation.getLatitude(),lastLocation.getLongitude(), mAuth.getCurrentUser().getUid());
-                databaseReference.child("userCurrentLocation").child(Uid).setValue(currentLocation);
+                databaseReference.child("userCurrentLocation").child(Uid).removeValue(new DatabaseReference.CompletionListener() {
+                    @Override
+                    public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                        databaseReference.setValue(needer);
+                    }
+                });
             }
         }
     }
@@ -242,7 +258,7 @@ public class HelpFragment extends Fragment implements View.OnClickListener, Goog
 
     private void showBloodGrouplist() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        final String[] bloodGroups = {"A+ve,", "A-ve","B+ve","AB+ve","O+ve","O-ve"};
+        final String[] bloodGroups = {"A +ve", "A -ve","B +ve","AB +ve","O +ve","O -ve"};
 
         builder.setTitle("Pick Blood Group").setItems(bloodGroups, new DialogInterface.OnClickListener() {
             @Override
@@ -257,72 +273,4 @@ public class HelpFragment extends Fragment implements View.OnClickListener, Goog
         builder.create().show();
     }
 
-    public class MyLocation extends AsyncTask<Void, Void, Location> implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
-
-        GoogleApiClient googleApiClient;
-        Location lastLocation;
-
-
-
-        @Override
-        protected Location doInBackground(Void... voids) {
-
-            googleApiClient = new GoogleApiClient.Builder(getActivity())
-                    .addConnectionCallbacks(this)
-                    .addOnConnectionFailedListener(this)
-                    .addApi(LocationServices.API).build();
-
-
-            return lastLocation;
-        }
-
-        @Override
-        protected void onPostExecute(Location location) {
-            String longitude = null;
-            String latitude = null;
-
-
-            if(lastLocation != null){
-                latitude = String.valueOf(lastLocation.getLatitude());
-                longitude = String.valueOf(lastLocation.getLongitude());
-            }
-
-            Toast.makeText(getActivity(), "latitude,longitude:   "+ latitude + longitude, Toast.LENGTH_SHORT).show();
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        public void onConnected(@Nullable Bundle bundle) {
-            Log.e(TAG, "onConnected working");
-            if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
-                    != PackageManager.PERMISSION_GRANTED
-                    && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)
-                    != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
-                return;
-            }
-            lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
-//
-        }
-
-        @Override
-        public void onConnectionSuspended(int i) {
-            Log.e(TAG, "onConnectionSuspended working");
-        }
-
-        @Override
-        public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-            Log.e(TAG, "onConnectionFailed working");
-        }
-    }
 }

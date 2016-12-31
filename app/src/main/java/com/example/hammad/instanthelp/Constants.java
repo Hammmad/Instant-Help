@@ -14,15 +14,10 @@ public final class Constants {
     public static final String LOCATION_DATA_EXTRA = PACKAGE_NAME+".LOCATION_DATA_EXTRA";
     public static final String USERNAME = "USERNAME";
     public static final String BLOODGROUP = "BLOODGROUP";
-
-
-
-
-
-
-
-
-
-
+    public static final String LATITUDE = "LATITUDE";
+    public static final String LONGITUDE = "LONGITUDE";
+    public static final String ISFIRSTAID = "ISFIRSTAID";
+    public static final String NEEDERID = "NEEDERID";
+    public static final String NEEDER = "NEEDER";
 
 }
