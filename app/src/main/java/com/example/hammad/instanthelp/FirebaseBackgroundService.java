@@ -306,7 +306,7 @@ public class FirebaseBackgroundService extends Service {
                 String message;
                 if(bloodGroup != null)          {message = " Required "+ bloodGroup+ " blood at "+addressOutput; }
                 else                            {message = " Required First Aid at " + addressOutput; }
-                if(!isActivityStarted ) {
+                if(!isActivityStarted) {
                     createNotification(userName , message);
                 }
 
