@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -37,73 +36,21 @@ import com.google.firebase.database.FirebaseDatabase;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class HelpFragment extends Fragment implements View.OnClickListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+public class HelpFragment extends Fragment implements View.OnClickListener {
 
 
     private View rootView;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener authStateListener;
-    private FirebaseDatabase firebaseDatabase;
     private DatabaseReference databaseReference;
     private static final String TAG = "HelpFragment/DEBUGGING";
-    Location lastLocation;
-    double longitude;
-    double latitude;
+    double currentLongitude;
+    double currentLatitude;
 
 
     GoogleApiClient mGoogleApiClient;
     private String requiredBloodGroup = null;
 
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
-        Log.e(TAG, "onConnected working");
-        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            Log.e(TAG, "Permission not Granted");
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-
-
-        lastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-
-
-
-        if(lastLocation != null){
-            latitude = lastLocation.getLatitude();
-            longitude = lastLocation.getLongitude();
-            Toast.makeText(getActivity(), "latitude,longitude:   "+ latitude + longitude, Toast.LENGTH_SHORT).show();
-            Intent serviceIntent = new Intent(getActivity(), FirebaseBackgroundService.class);
-            getActivity().startService(serviceIntent);
-        }else{
-            onConnected(bundle);
-            Log.e(TAG, "Finding Last location");
-        }
-
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-            Log.e(TAG, "Connection Suspended");
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Log.e(TAG, "Connection Failed" + connectionResult.getErrorMessage());
-    }
-
-
-    public interface CallbackHelpFragment {
-
-    }
 
     public HelpFragment() {
         // Required empty public constructor
@@ -142,9 +89,9 @@ public class HelpFragment extends Fragment implements View.OnClickListener, Goog
         LocationTracker locationTracker = new LocationTracker(getActivity());
         if(locationTracker.canGetLocation()){
             locationTracker.getLocation();
-            latitude = locationTracker.getLatitude();
-            longitude = locationTracker.getLongitude();
-            Toast.makeText(getActivity(), "latitude,longitude:   "+ latitude + longitude, Toast.LENGTH_SHORT).show();
+            currentLatitude = locationTracker.getLatitude();
+            currentLongitude = locationTracker.getLongitude();
+            Toast.makeText(getActivity(), "currentLatitude,currentLongitude:   "+ currentLatitude + currentLongitude, Toast.LENGTH_SHORT).show();
             Intent serviceIntent = new Intent(getActivity(), FirebaseBackgroundService.class);
             getActivity().startService(serviceIntent);
         }else{
@@ -205,8 +152,6 @@ public class HelpFragment extends Fragment implements View.OnClickListener, Goog
 
                 mAuth.signOut();
                 Log.e(TAG, "Signout clicked");
-
-
                 break;
             }
             case R.id.blood_require_button: {
@@ -228,7 +173,7 @@ public class HelpFragment extends Fragment implements View.OnClickListener, Goog
 
 
     private void sendMylocationUp() {
-        if (lastLocation != null){
+        if (currentLatitude != 0){
             if(mAuth.getCurrentUser() != null) {
                 String Uid = mAuth.getCurrentUser().getUid();
                 String userName = mAuth.getCurrentUser().getEmail();
@@ -236,7 +181,7 @@ public class HelpFragment extends Fragment implements View.OnClickListener, Goog
 
 
                 final Needer needer = new Needer
-                        (userName, requiredBloodGroup,lastLocation.getLatitude(),lastLocation.getLongitude(), mAuth.getCurrentUser().getUid());
+                        (userName, requiredBloodGroup,currentLatitude,currentLongitude, mAuth.getCurrentUser().getUid());
                 databaseReference.child("userCurrentLocation").child(Uid).removeValue(new DatabaseReference.CompletionListener() {
                     @Override
                     public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
@@ -246,15 +191,6 @@ public class HelpFragment extends Fragment implements View.OnClickListener, Goog
             }
         }
     }
-
-    private void buildGoogleApiClient() {
-        mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .build();
-    }
-
 
     private void showBloodGrouplist() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());

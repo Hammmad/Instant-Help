@@ -14,19 +14,18 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 
-import com.example.hammad.instanthelp.Fragments.HelpFragment;
-import com.google.android.gms.maps.model.LatLng;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
 
 /**
- * Created by shekh chilli on 12/17/2016.
+ * Created by Hammad on 12/17/2016.
  */
 
 public class FirebaseBackgroundService extends Service {
@@ -34,15 +33,11 @@ public class FirebaseBackgroundService extends Service {
     private static final String TAG = "BgService/DEBUGGING";
     protected static Boolean isActivityStarted = false;
     private FirebaseAuth mAuth;
-    private FirebaseAuth.AuthStateListener authStateListener;
-    private FirebaseDatabase firebaseDatabase;
-    private DatabaseReference databaseReference;
-    private HelpFragment helpFragment;
     private AddressResultReceiver addressResultReceiver;
-    private double latitude;
-    private double longitude;
-    private String neederUid;
-    private ArrayList<Needer> needersList;
+    Boolean isBloodDonor;
+    Boolean isFirstAider;
+
+
     int notifyId = 1;
     int i = 0;
 
@@ -58,12 +53,75 @@ public class FirebaseBackgroundService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
 
 
-        firebaseDatabase = FirebaseDatabase.getInstance();
-        databaseReference = firebaseDatabase.getReference();
+        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+        DatabaseReference databaseReference = firebaseDatabase.getReference();
         mAuth = FirebaseAuth.getInstance();
         addressResultReceiver = new AddressResultReceiver(new Handler());
-        needersList = new ArrayList<>();
 
+        userInfoListener(databaseReference);
+
+        userCurrentLocationListener(databaseReference);
+
+        volunteerListener(databaseReference);
+
+
+
+
+        return START_STICKY;
+    }
+
+    private void userInfoListener(DatabaseReference databaseReference) {
+        databaseReference.child("userinfo").child(mAuth.getCurrentUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.e(TAG,"userInfo Listener:   "+dataSnapshot.getKey());
+                User currentUser = dataSnapshot.getValue(User.class);
+                isBloodDonor = currentUser.bloodDonor;
+                isFirstAider = currentUser.firstAider;
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void volunteerListener(DatabaseReference databaseReference) {
+        databaseReference.child("Volunteer").addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                Log.e(TAG, "onChildAdded:   "+dataSnapshot.getKey());
+
+                Volunteer volunteer = dataSnapshot.getValue(Volunteer.class);
+                if(!isActivityStarted  && volunteer.neederUId.equals(mAuth.getCurrentUser().getUid())){
+                        createNotification(volunteer.volunteerName, volunteer.message);
+                    }
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void userCurrentLocationListener(DatabaseReference databaseReference) {
         databaseReference.child("userCurrentLocation").addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -93,47 +151,6 @@ public class FirebaseBackgroundService extends Service {
                 Log.e(TAG, databaseError.toString());
             }
         });
-
-        databaseReference.child("Volunteer").addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                Log.e(TAG, "onChildAdded:   "+dataSnapshot.getKey());
-
-                Volunteer volunteer = dataSnapshot.getValue(Volunteer.class);
-                if(isActivityStarted){
-                    if(volunteer.neederUId.equals(mAuth.getCurrentUser().getUid())){
-
-                        createNotification(volunteer.volunteerName+": "+volunteer.message);
-                    }
-                }
-
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                Log.e(TAG, "pnChildChange: "+ dataSnapshot.getKey());
-
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-
-
-        return START_STICKY;
     }
 
     @Override
@@ -148,15 +165,13 @@ public class FirebaseBackgroundService extends Service {
         Log.e(TAG,"method is working");
 
 //        for (DataSnapshot requiredSnapshot: dataSnapshot.getChildren()){
-            needersList.add(dataSnapshot.getValue(Needer.class));
+            Needer needer = (dataSnapshot.getValue(Needer.class));
             Location location = new Location("");
-            latitude = needersList.get(i).latitude;
-            longitude =  needersList.get(i).longitude;
-            location.setLatitude(latitude);
-            location.setLongitude(longitude);
-                if (! needersList.get(i).uId.equals(mAuth.getCurrentUser().getUid())) {
+            location.setLatitude(needer.latitude);
+            location.setLongitude(needer.longitude);
+                if (! needer.uId.equals(mAuth.getCurrentUser().getUid())) {
 
-                    startIntentService(location,  needersList.get(i).userName,  needersList.get(i).bloodGroup);
+                    startIntentService(location,  needer.userName,  needer.bloodGroup);
 
                 }else{
                         Log.e(TAG, "User is same");
@@ -210,13 +225,13 @@ public class FirebaseBackgroundService extends Service {
         notificationManager.notify(notifyId++, mBuilder.build());
 
     }
-    private void createNotification(String message) {
+    private void createNotification(String title, String message) {
 
 
 
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(FirebaseBackgroundService.this)
                 .setSmallIcon(R.mipmap.ic_launcher)
-                .setContentTitle("Help !!!")
+                .setContentTitle(title)
                 .setContentText(message)
                 .setAutoCancel(true).setPriority(2)
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(message));
@@ -289,10 +304,10 @@ public class FirebaseBackgroundService extends Service {
 
 
                 String message;
-                if(bloodGroup != null)          {message = userName +" required "+ bloodGroup+ " blood at "+addressOutput; }
-                else                            {message = userName +" required First Aid at " + addressOutput; }
-                if(isActivityStarted) {
-                    createNotification(message);
+                if(bloodGroup != null)          {message = " Required "+ bloodGroup+ " blood at "+addressOutput; }
+                else                            {message = " Required First Aid at " + addressOutput; }
+                if(!isActivityStarted ) {
+                    createNotification(userName , message);
                 }
 
             }else{

@@ -56,7 +56,7 @@ public class LocationTracker implements android.location.LocationListener {
     }
 
     /**
-     * Function to get the user's current location
+     * Function to get the currentUser's current location
      *
      * @return
      */
@@ -92,7 +92,7 @@ public class LocationTracker implements android.location.LocationListener {
                         // here to request the missing permissions, and then overriding
                         //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
                         //                                          int[] grantResults)
-                        // to handle the case where the user grants the permission. See the documentation
+                        // to handle the case where the currentUser grants the permission. See the documentation
                         // for ActivityCompat#requestPermissions for more details.
                         return null;
                     }
@@ -151,7 +151,7 @@ public class LocationTracker implements android.location.LocationListener {
                 // here to request the missing permissions, and then overriding
                 //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
                 //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
+                // to handle the case where the currentUser grants the permission. See the documentation
                 // for ActivityCompat#requestPermissions for more details.
                 return;
             }

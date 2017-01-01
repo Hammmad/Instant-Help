@@ -131,30 +131,56 @@ public class SignupFragment extends Fragment implements View.OnClickListener{
     public void onClick(View view) {
 
         int id = view.getId();
+        switch (id){
+            case R.id.signup_button:{
+                createAccount();
+                break;
+            }
+            case R.id.yes_radiobtn:{
+                bloodDonorCheckBox.setVisibility(View.VISIBLE);
+                firstAiderCheckBox.setVisibility(View.VISIBLE);
+                break;
+            }
+            case R.id.no_radiobtn:{
+                bloodDonorCheckBox.setVisibility(View.GONE);
+                firstAiderCheckBox.setVisibility(View.GONE);
+                bloodgroupSpinner.setVisibility(View.GONE);
+
+                bloodDonorCheckBox.setChecked(false);
+                firstAiderCheckBox.setChecked(false);
+                break;
+            }
+            case R.id.bloodDonor_chkbox:{
+                if(bloodDonorCheckBox.isChecked()) {
+                    bloodgroupSpinner.setVisibility(View.VISIBLE);
+                }else{
+                    bloodgroupSpinner.setVisibility(View.GONE);
+                }
+                break;
+            }
+            case R.id.signIn:{
+                callbackSignupFragment.showSigninFragment();
+                break;
+            }
+            default:{
+                break;
+            }
+        }
+
         if(id==R.id.signup_button){
             createAccount();
 
         }else if(id == R.id.yes_radiobtn){
 
-            bloodDonorCheckBox.setVisibility(View.VISIBLE);
-            firstAiderCheckBox.setVisibility(View.VISIBLE);
+
 
         }else if(id == R.id.no_radiobtn){
-            bloodDonorCheckBox.setVisibility(View.GONE);
-            firstAiderCheckBox.setVisibility(View.GONE);
-            bloodgroupSpinner.setVisibility(View.GONE);
 
-            bloodDonorCheckBox.setChecked(false);
-            firstAiderCheckBox.setChecked(false);
 
         }else if(id == R.id.bloodDonor_chkbox){
-            if(bloodDonorCheckBox.isChecked()) {
-                bloodgroupSpinner.setVisibility(View.VISIBLE);
-            }else{
-                bloodgroupSpinner.setVisibility(View.GONE);
-            }
+
         }else if(id == R.id.signIn){
-            callbackSignupFragment.showSigninFragment();
+
         }
 
     }
@@ -165,7 +191,6 @@ public class SignupFragment extends Fragment implements View.OnClickListener{
                 .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
-                Log.e(TAG, " task  successfull  " + task.isSuccessful());
 
                 String Uid = null;
                 if(task.isSuccessful()) {

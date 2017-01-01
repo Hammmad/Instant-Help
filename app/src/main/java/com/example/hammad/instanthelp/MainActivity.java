@@ -32,11 +32,11 @@ public class MainActivity extends AppCompatActivity implements SignupFragment.Ca
                 if(user != null){
                     Intent intent = new Intent(MainActivity.this, HelpActivity.class);
                     startActivity(intent);
-                    Log.e(TAG, "user is signedIn"+ user.getUid());
+                    Log.e(TAG, "currentUser is signedIn"+ user.getUid());
                 }else{
                     getSupportFragmentManager().beginTransaction().
                         replace(R.id.activity_main, new SigninFragment()).commit();
-                    Log.e(TAG, "user is signedOut ");
+                    Log.e(TAG, "currentUser is signedOut ");
                 }
             }
         };
