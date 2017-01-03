@@ -195,8 +195,8 @@ public class FirebaseBackgroundService extends Service {
 //        String[] events = new String[6];
 //        inboxStyle.setBigContentTitle("Blood Required");
 //
-//        for(int i=0; i<events.length; i++){
-//            inboxStyle.addLine(events[i]);
+//        for(int neederMarkerIndex=0; neederMarkerIndex<events.length; neederMarkerIndex++){
+//            inboxStyle.addLine(events[neederMarkerIndex]);
 //        }
 //        mBuilder.setStyle(inboxStyle);
 
@@ -241,8 +241,8 @@ public class FirebaseBackgroundService extends Service {
 //        String[] events = new String[6];
 //        inboxStyle.setBigContentTitle("Blood Required");
 //
-//        for(int i=0; i<events.length; i++){
-//            inboxStyle.addLine(events[i]);
+//        for(int neederMarkerIndex=0; neederMarkerIndex<events.length; neederMarkerIndex++){
+//            inboxStyle.addLine(events[neederMarkerIndex]);
 //        }
 //        mBuilder.setStyle(inboxStyle);
 

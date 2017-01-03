@@ -65,12 +65,14 @@ public class HelpMapActivity extends AppCompatActivity implements LocationListen
     ArrayList<Needer> neederList;
     ArrayList<Volunteer> volunteerList;
     LocationTracker locationTracker;
-    int i = 0;
-    int j = 0;
-    Marker conversationMarker;
+    int neederMarkerIndex = 0;
+    int volunteerMarkerIndex = 0;
+
+
 
     IconGenerator iconFactory;
     ArrayList<Marker> neederMarkers;
+    Marker[] needermarkers;
     ArrayList<Marker> volunteerMarkers;
 
 
@@ -198,91 +200,10 @@ public class HelpMapActivity extends AppCompatActivity implements LocationListen
         final CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLng(myLatLng);
 
 
+        neederListener();
 
 
-        databaseReference.child("userCurrentLocation").addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                Log.e(TAG, "onChildAdded ");
-                    createNeederMarkers(dataSnapshot);
-
-            }
-
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-                removeNeederMarker(dataSnapshot);
-
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.e(TAG, databaseError.toString());
-            }
-        });
-
-
-        databaseReference.child("Volunteer").addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-
-                createVolunteerMarkers(dataSnapshot);
-                }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-//                for(int i = 0; i<volunteerList.size(); i++) {
-//                    if (volunteerList.get(i).neederUId.equals(mAuth.getCurrentUser().getUid())) {
-//
-//
-//                        break;
-//                    }
-//                }
-//                Volunteer volunteer = (dataSnapshot.getValue(Volunteer.class));
-//                Log.e(TAG, String.valueOf(volunteerList.indexOf(dataSnapshot.getValue(Volunteer.class))));
-//
-//                LatLng volunteerLatLng = new LatLng(volunteer.latitude, volunteer.longitude);
-//                iconFactory.setStyle(IconGenerator.STYLE_GREEN);
-//                iconFactory.setRotation(0);
-//                volunteerMarkers.add(addIcon(iconFactory, volunteer.volunteerName,
-//                        volunteerLatLng, volunteer.message,volunteer.volunteerName,VOLUNTEER_ALPHA));
-//                volunteerList.add(volunteer);
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-//                Log.e(TAG, "onChiledRemoved:    "+ dataSnapshot.getKey());
-//                Log.e(TAG, "index of removing item in volunteer list"+String.valueOf(volunteerList.indexOf(dataSnapshot.getValue(Volunteer.class))));
-//                Log.e(TAG, "volunteerList.size" + volunteerList.size());
-                removeVolunteerMarker(dataSnapshot);
-
-
-//                Log.e(TAG, "volunteerList.size" + volunteerList.size());
-
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
+        volunteerListener();
 
 //        createNeederMarkers(iconFactory, neederMarkers);
 
@@ -345,82 +266,164 @@ public class HelpMapActivity extends AppCompatActivity implements LocationListen
 
     }
 
+    private void volunteerListener() {
+        databaseReference.child("Volunteer").addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
+                createVolunteerMarkers(dataSnapshot);
+                }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+//                Log.e(TAG, "onChiledRemoved:    "+ dataSnapshot.getKey());
+//                Log.e(TAG, "index of removing item in volunteer list"+String.valueOf(volunteerList.indexOf(dataSnapshot.getValue(Volunteer.class))));
+//                Log.e(TAG, "volunteerList.size" + volunteerList.size());
+                removeVolunteerMarker(dataSnapshot);
+
+
+//                Log.e(TAG, "volunteerList.size" + volunteerList.size());
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void neederListener() {
+        databaseReference.child("userCurrentLocation").addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                Log.e(TAG, "onChildAdded ");
+                    createNeederMarkers(dataSnapshot);
+
+            }
+
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                removeNeederMarker(dataSnapshot);
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e(TAG, databaseError.toString());
+            }
+        });
+    }
+
     private void removeVolunteerMarker(DataSnapshot dataSnapshot) {
         Volunteer volunteer = dataSnapshot.getValue(Volunteer.class);
 
-        if(volunteer.neederUId.equals(mAuth.getCurrentUser().getUid())) {
+        if (volunteer.neederUId.equals(mAuth.getCurrentUser().getUid())) {
 
-            LatLng volunteerLatLng = new LatLng(volunteer.latitude, volunteer.longitude);
-            Marker marker = addIcon(iconFactory, volunteer.volunteerName, volunteerLatLng, volunteer.message,
-                    volunteer.volunteerName, VOLUNTEER_ALPHA);
+            for (int i = 0; i < volunteerMarkers.size(); i++) {
+                if (volunteerMarkers.get(i).getTitle().equals(volunteer.volunteerName)) {
 
+                    map.clear();
+                    volunteerMarkers.clear();
+                    volunteerList.clear();
+                    volunteerMarkerIndex = 0;
+                    volunteerListener();
+                    break;
+                }
+            }
 
-            volunteerMarkers.get(volunteerMarkers.indexOf(marker)).remove();
-            volunteerMarkers.remove(marker);
-//                    volunteerMarkers.contains(marker);
+            Toast.makeText(this, "Map is cleared Once", Toast.LENGTH_SHORT).show();
+
         }
-        volunteerList.remove(volunteer);
     }
 
     private void createVolunteerMarkers(DataSnapshot dataSnapshot) {
         volunteerList.add(dataSnapshot.getValue(Volunteer.class));
-        if(volunteerList.get(j).neederUId.equals(mAuth.getCurrentUser().getUid())){
-            LatLng volunteerLatLng = new LatLng(volunteerList.get(j).latitude, volunteerList.get(j).longitude);
+        if(volunteerList.get(volunteerMarkerIndex).neederUId.equals(mAuth.getCurrentUser().getUid())){
+            LatLng volunteerLatLng = new LatLng(volunteerList.get(volunteerMarkerIndex).latitude, volunteerList.get(volunteerMarkerIndex).longitude);
             iconFactory.setStyle(IconGenerator.STYLE_GREEN);
             iconFactory.setRotation(0);
-            volunteerMarkers.add(addIcon(iconFactory, volunteerList.get(j).volunteerName,
-                    volunteerLatLng, volunteerList.get(j).message,volunteerList.get(j).volunteerName,VOLUNTEER_ALPHA));
+            volunteerMarkers.add(addIcon(iconFactory, volunteerList.get(volunteerMarkerIndex).volunteerName,
+                    volunteerLatLng, volunteerList.get(volunteerMarkerIndex).message,volunteerList.get(volunteerMarkerIndex).volunteerName,VOLUNTEER_ALPHA));
         }
-        j++;
+        volunteerMarkerIndex++;
     }
 
     private void removeNeederMarker(DataSnapshot dataSnapshot) {
         Needer needer = dataSnapshot.getValue(Needer.class);
 
         if(!needer.uId.equals(mAuth.getCurrentUser().getUid())) {
+            for (int i = 0; i < neederMarkers.size(); i++) {
+                if(neederMarkers.get(i).getTitle().equals(needer.userName)){
 
-            LatLng neederLatLng = new LatLng(needer.latitude, needer.longitude);
-            Marker marker = addIcon(iconFactory, needer.userName, neederLatLng, needer.bloodGroup,
-                    needer.userName, NEEDER_ALPHA);
+                    map.clear();
+                    neederMarkers.clear();
+                    neederList.clear();
+                    neederMarkerIndex = 0;
+                    neederListener();
+                    break;
+                }
+            }
 
-
-            neederMarkers.get(neederMarkers.indexOf(marker)).remove();
-            neederMarkers.remove(marker);
-//                    volunteerMarkers.contains(marker);
+            Toast.makeText(this, "Map is cleared Once", Toast.LENGTH_SHORT).show();
         }
-        neederList.remove(needer);
     }
 
     private void createNeederMarkers(DataSnapshot dataSnapshot) {
 
             neederList.add(dataSnapshot.getValue(Needer.class));
-            if(!neederList.get(i).uId.equals(mAuth.getCurrentUser().getUid())) {
-                LatLng neederLatLng = new LatLng(neederList.get(i).latitude, neederList.get(i).longitude);
+            if(!neederList.get(neederMarkerIndex).uId.equals(mAuth.getCurrentUser().getUid())) {
+                LatLng neederLatLng = new LatLng(neederList.get(neederMarkerIndex).latitude, neederList.get(neederMarkerIndex).longitude);
 
                     iconFactory.setStyle(IconGenerator.STYLE_RED);
                     iconFactory.setRotation(0);
-                    neederMarkers.add(addIcon(iconFactory, neederList.get(i).userName  , neederLatLng,neederList.get(i).bloodGroup
-                            ,neederList.get(i).userName, NEEDER_ALPHA));
+
+
+                    neederMarkers.add(addIcon(iconFactory, neederList.get(neederMarkerIndex).userName  , neederLatLng,neederList.get(neederMarkerIndex).bloodGroup
+                            ,neederList.get(neederMarkerIndex).userName, NEEDER_ALPHA));
+
+
             }
-            i++;
+            neederMarkerIndex++;
     }
 
 //    private void createNeederMarkers(IconGenerator iconFactory, ArrayList<Marker> customMarker) {
 //        if (neederList.size() != 0) {
-//            for (int i = 0; i < neederList.size(); i++) {
-//                if (!neederList.get(i).uId.equals(mAuth.getCurrentUser().getUid())) {
-//                    LatLng neederLatLng = new LatLng(neederList.get(i).latitude, neederList.get(i).longitude);
+//            for (int neederMarkerIndex = 0; neederMarkerIndex < neederList.size(); neederMarkerIndex++) {
+//                if (!neederList.get(neederMarkerIndex).uId.equals(mAuth.getCurrentUser().getUid())) {
+//                    LatLng neederLatLng = new LatLng(neederList.get(neederMarkerIndex).latitude, neederList.get(neederMarkerIndex).longitude);
 //
-//                    if (neederList.get(i).bloodGroup == null) {
+//                    if (neederList.get(neederMarkerIndex).bloodGroup == null) {
 //                        iconFactory.setStyle(IconGenerator.STYLE_RED);
 //                        iconFactory.setRotation(0);
-//                        customMarker.add(addIcon(iconFactory, neederList.get(i).userName + "\nneeds First Aid !", neederLatLng, "needer"));
+//                        customMarker.add(addIcon(iconFactory, neederList.get(neederMarkerIndex).userName + "\nneeds First Aid !", neederLatLng, "needer"));
 //                    } else {
 //                        iconFactory.setStyle(IconGenerator.STYLE_PURPLE);
 //                        iconFactory.setRotation(270);
-//                        customMarker.add(addIcon(iconFactory, neederList.get(i).userName + " needs Blood !", neederLatLng, "needer"));
+//                        customMarker.add(addIcon(iconFactory, neederList.get(neederMarkerIndex).userName + " needs Blood !", neederLatLng, "needer"));
 //                    }
-//
 //                }
 //            }
 //        }
@@ -432,9 +435,8 @@ public class HelpMapActivity extends AppCompatActivity implements LocationListen
                 .position(position).title(userName).snippet(message).alpha(alpha);
 
         return map.addMarker(markerOptions);
-
-
     }
+
 
 //    private void startIntentService(Location requiredLocation) {
 //        Intent intent  = new Intent(this, FetchAddressIntentService.class);
