@@ -2,7 +2,9 @@ package com.example.hammad.instanthelp;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -36,6 +38,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -44,7 +48,19 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.maps.android.ui.IconGenerator;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class HelpMapActivity extends AppCompatActivity implements LocationListener, OnMapReadyCallback, GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks {
 
@@ -68,7 +84,7 @@ public class HelpMapActivity extends AppCompatActivity implements LocationListen
     int neederMarkerIndex = 0;
     int volunteerMarkerIndex = 0;
 
-
+    Polyline polyline = null;
 
     IconGenerator iconFactory;
     ArrayList<Marker> neederMarkers;
@@ -208,9 +224,52 @@ public class HelpMapActivity extends AppCompatActivity implements LocationListen
 //        createNeederMarkers(iconFactory, neederMarkers);
 
 
+        onMapClickListener();
+
+        onMarkerClickListener();
+
+
+        double myLocationLatitude = myLatLng.latitude;
+        double myLocationLongitude = myLatLng.longitude;
+        LatLng startLatLng = new LatLng(myLocationLatitude - 0.05, myLocationLongitude - 0.05);
+        LatLng endLatLng = new LatLng(myLocationLatitude + 0.05, myLocationLongitude + 0.05);
+        LatLngBounds viewPortLatLngBounds = new LatLngBounds(startLatLng, endLatLng);
+        map.setLatLngBoundsForCameraTarget(viewPortLatLngBounds);
+        map.moveCamera(CameraUpdateFactory.newLatLngBounds(viewPortLatLngBounds, 100, 100, 10));
+
+//        map.addMarker(new MarkerOptions().position(myLatLng).title("Me").alpha(0.3f));
+
+        map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the currentUser grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        map.setMyLocationEnabled(true);
+
+    }
+
+    private void onMarkerClickListener() {
         map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
+
+
+
+
+                if(polyline != null) {
+                    polyline.remove();
+                }
+
+                String url = getUrl(myLatLng, marker.getPosition());
+
+                new FetchUrl().execute(url);
+
 
                 if(marker.getAlpha() == 0.7f){
                     for (int i = 0; i <= neederMarkers.size(); i++) {
@@ -239,31 +298,16 @@ public class HelpMapActivity extends AppCompatActivity implements LocationListen
                 return false;
             }
         });
+    }
 
 
-        double myLocationLatitude = myLatLng.latitude;
-        double myLocationLongitude = myLatLng.longitude;
-        LatLng startLatLng = new LatLng(myLocationLatitude - 0.05, myLocationLongitude - 0.05);
-        LatLng endLatLng = new LatLng(myLocationLatitude + 0.05, myLocationLongitude + 0.05);
-        LatLngBounds viewPortLatLngBounds = new LatLngBounds(startLatLng, endLatLng);
-        map.setLatLngBoundsForCameraTarget(viewPortLatLngBounds);
-        map.moveCamera(CameraUpdateFactory.newLatLngBounds(viewPortLatLngBounds, 100, 100, 10));
-
-//        map.addMarker(new MarkerOptions().position(myLatLng).title("Me").alpha(0.3f));
-
-        map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the currentUser grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-        map.setMyLocationEnabled(true);
-
+    private void onMapClickListener() {
+        map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                messagebox.setVisibility(View.GONE);
+            }
+        });
     }
 
     private void volunteerListener() {
@@ -437,15 +481,6 @@ public class HelpMapActivity extends AppCompatActivity implements LocationListen
         return map.addMarker(markerOptions);
     }
 
-
-//    private void startIntentService(Location requiredLocation) {
-//        Intent intent  = new Intent(this, FetchAddressIntentService.class);
-//        intent.putExtra(Constants.RECEIVER, addressResultReceiver);
-//        intent.putExtra(Constants.LOCATION_DATA_EXTRA, requiredLocation);
-//        startService(intent);
-//    }
-
-
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Log.e(TAG, " onConnectionFailed works");
@@ -548,5 +583,242 @@ public class HelpMapActivity extends AppCompatActivity implements LocationListen
 
     }
 
+    public String getUrl(LatLng origin, LatLng destination){
+
+        // Origin of route
+        String str_origin = "origin=" + origin.latitude + "," + origin.longitude;
+
+        // Destination of route
+        String str_dest = "destination=" + destination.latitude + "," + destination.longitude;
+
+        // Sensor enabled
+        String sensor = "sensor=false";
+
+        // Building the parameters to the web service
+        String parameters = str_origin + "&" + str_dest + "&" + sensor;
+
+        // Output format
+        String output = "json";
+
+        // Building the url to the web service
+        String url = "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters;
+
+        return url;
+
+    }
+
+    public class FetchUrl extends AsyncTask<String , Void, String>{
+
+        @Override
+        protected String doInBackground(String... url) {
+            String data;
+
+            data = downloadUrl(url[0]);
+
+            return  data;
+        }
+
+        @Override
+        protected void onPostExecute(String jsonData) {
+            super.onPostExecute(jsonData);
+
+            new ParserTask().execute(jsonData);
+        }
+
+        private String downloadUrl(String Url) {
+            String result = null;
+            InputStream stream = null;
+            HttpURLConnection conn = null;
+
+            try {
+                URL url = new URL(Url);
+                conn = (HttpURLConnection) url.openConnection();
+
+                conn.setRequestMethod("GET");
+
+
+                conn.connect();
+
+                stream = conn.getInputStream();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(stream, "utf-8"), 8);
+                StringBuilder stringBuilder = new StringBuilder();
+
+                String line = null;
+                while ((line = reader.readLine()) != null) {
+                    stringBuilder.append(line);
+                }
+                stream.close();
+                result = stringBuilder.toString();
+                reader.close();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }finally {
+                try {
+                    stream.close();
+                    conn.disconnect();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            return result;
+        }
+    }
+
+    public class ParserTask extends AsyncTask<String, Void,List<List<HashMap<String, String>>>>{
+
+        @Override
+        protected void onPostExecute(List<List<HashMap<String, String>>> result) {
+            super.onPostExecute(result);
+
+            ArrayList<LatLng> points;
+            PolylineOptions lineOptions = null;
+
+            // Traversing through all the routes
+            for (int i = 0; i < result.size(); i++) {
+                points = new ArrayList<>();
+                lineOptions = new PolylineOptions();
+
+                // Fetching i-th route
+                List<HashMap<String, String>> path = result.get(i);
+
+                // Fetching all the points in i-th route
+                for (int j = 0; j < path.size(); j++) {
+                    HashMap<String, String> point = path.get(j);
+
+                    double lat = Double.parseDouble(point.get("lat"));
+                    double lng = Double.parseDouble(point.get("lng"));
+                    LatLng position = new LatLng(lat, lng);
+
+                    points.add(position);
+                }
+
+                // Adding all the points in the route to LineOptions
+                lineOptions.addAll(points);
+                lineOptions.width(10);
+                lineOptions.color(Color.RED);
+
+                Log.d("onPostExecute","onPostExecute lineoptions decoded");
+
+            }
+
+            // Drawing polyline in the Google Map for the i-th route
+            if(lineOptions != null) {
+                polyline = map.addPolyline(lineOptions);
+            }
+            else {
+                Log.e(TAG,"onPostExecute:   "+"without Polylines drawn");
+            }
+        }
+
+        @Override
+        protected List<List<HashMap<String, String>>> doInBackground(String... jsonData) {
+
+            List<List<HashMap<String,String>>> routes = null;
+            try {
+                JSONObject jsonObject = new JSONObject(jsonData[0]);
+
+                DataParser dataParser = new DataParser();
+
+                routes = dataParser.parse(jsonObject);
+
+
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            return routes;
+        }
+    }
+
+    public class DataParser{
+        DataParser() {
+        }
+
+        private List<List<HashMap<String,String>>> parse(JSONObject jObject) {
+
+            List<List<HashMap<String, String>>> routes = new ArrayList<>() ;
+            JSONArray jRoutes;
+            JSONArray jLegs;
+            JSONArray jSteps;
+
+            try {
+
+                jRoutes = jObject.getJSONArray("routes");
+
+                /** Traversing all routes */
+                for(int i=0;i<jRoutes.length();i++){
+                    jLegs = ( (JSONObject)jRoutes.get(i)).getJSONArray("legs");
+                    List path = new ArrayList<>();
+
+                    /** Traversing all legs */
+                    for(int j=0;j<jLegs.length();j++){
+                        jSteps = ( (JSONObject)jLegs.get(j)).getJSONArray("steps");
+
+                        /** Traversing all steps */
+                        for(int k=0;k<jSteps.length();k++){
+                            String polyline;
+                            polyline = (String)((JSONObject)((JSONObject)jSteps.get(k)).get("polyline")).get("points");
+                            List<LatLng> list = decodePoly(polyline);
+
+                            /** Traversing all points */
+                            for(int l=0;l<list.size();l++){
+                                HashMap<String, String> hm = new HashMap<>();
+                                hm.put("lat", Double.toString((list.get(l)).latitude) );
+                                hm.put("lng", Double.toString((list.get(l)).longitude) );
+                                path.add(hm);
+                            }
+                        }
+                        routes.add(path);
+                    }
+                }
+
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+
+
+            return routes;
+
+
+
+        }
+
+        private List<LatLng> decodePoly(String encoded) {
+
+            List<LatLng> poly = new ArrayList<>();
+            int index = 0, len = encoded.length();
+            int lat = 0, lng = 0;
+
+            while (index < len) {
+                int b, shift = 0, result = 0;
+                do {
+                    b = encoded.charAt(index++) - 63;
+                    result |= (b & 0x1f) << shift;
+                    shift += 5;
+                } while (b >= 0x20);
+                int dlat = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
+                lat += dlat;
+
+                shift = 0;
+                result = 0;
+                do {
+                    b = encoded.charAt(index++) - 63;
+                    result |= (b & 0x1f) << shift;
+                    shift += 5;
+                } while (b >= 0x20);
+                int dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
+                lng += dlng;
+
+                LatLng p = new LatLng((((double) lat / 1E5)),
+                        (((double) lng / 1E5)));
+                poly.add(p);
+            }
+
+            return poly;
+        }
+    }
 
 }
+
