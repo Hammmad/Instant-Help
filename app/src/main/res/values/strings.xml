@@ -12,7 +12,7 @@
     <string name="no">No</string>
     <string name="blood_donor">Blood donor</string>
     <string name="first_aider">First aider</string>
-    <string name="register">Register</string>
+    <string name="register">Create Account</string>
     <string name="have_account">Already have Account !</string>
     <string name="signOut">Signout</string>
     <string name="first_aid_required">First Aid required</string>

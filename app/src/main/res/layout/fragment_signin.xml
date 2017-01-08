@@ -1,48 +1,93 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="match_parent"
+android:fitsSystemWindows="true"
+    android:background="@color/colorPrimary"
+android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+<LinearLayout
+    android:id="@+id/coord_linear_layout"
     android:layout_width="match_parent"
+    android:layout_height="50dp"
+    >
+    <android.support.design.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/coord_layout"/>
+
+
+</LinearLayout>
+<LinearLayout
     android:orientation="vertical"
-    android:layout_height="match_parent"
-    tools:context="com.example.hammad.instanthelp.Fragments.SigninFragment">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_below="@id/coord_linear_layout"
+    android:layout_marginTop="16dp"
+    android:paddingLeft="24dp"
+    android:paddingRight="24dp">
+<ImageView
+    android:src="@drawable/help_logo"
+    android:layout_width="100dp"
+    android:layout_height="100dp"
+    android:layout_gravity="center_horizontal"/>
 
-    <!-- TODO: Update blank fragment layout -->
-
-    <EditText
-        android:id="@+id/userName_editText"
-        android:inputType="textEmailAddress"
-        android:layout_width="200dp"
+    <!-- Email Label -->
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/userName"
-        android:layout_alignParentTop="true"
-        android:layout_alignLeft="@+id/password_editText"
-        android:layout_alignStart="@+id/password_editText"
-        android:layout_marginTop="146dp" />
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp">
+        <EditText
+            android:id="@+id/userName_editText"
+            android:textColor="#006064"
+            android:layout_width="match_parent"
+            android:selectAllOnFocus="true"
+            android:layout_height="wrap_content"
+            android:inputType="textEmailAddress"
+            android:hint="Username" />
+    </android.support.design.widget.TextInputLayout>
 
-    <EditText
-        android:layout_centerInParent="true"
-        android:id="@+id/password_editText"
-        android:layout_below="@id/userName_editText"
-        android:inputType="textPassword"
-        android:layout_width="200dp"
+    <!-- Password Label -->
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/password"/>
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        >
+        <EditText android:id="@+id/password_editText"
+            android:textColor="#006064"
+            android:selectAllOnFocus="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            android:hint="Password"/>
+    </android.support.design.widget.TextInputLayout>
 
-   <Button
+    <android.support.v7.widget.AppCompatButton
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
+        android:background="@color/colorPrimaryDark"
         android:id="@+id/signin_button"
-        android:text="signin"
-        android:layout_below="@id/password_editText"
-        android:layout_centerInParent="true"
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"/>
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="24dp"
+        android:padding="12dp"
+        android:text="Login"/>
 
     <TextView
-        android:text="@string/signup"
+        android:textColor="#FFFFFF"
         android:id="@+id/signup_textView"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:text="No account yet? Create one"
+        android:gravity="center"
+        android:textSize="16sp"/>
 
-</RelativeLayout>
+</LinearLayout>
+    </RelativeLayout>
+</ScrollView>

@@ -34,8 +34,8 @@ public class FirebaseBackgroundService extends Service {
     protected static Boolean isActivityStarted = false;
     private FirebaseAuth mAuth;
     private AddressResultReceiver addressResultReceiver;
-    Boolean isBloodDonor;
-    Boolean isFirstAider;
+    boolean isBloodDonor;
+    boolean isFirstAider;
 
 
     int notifyId = 1;
@@ -312,7 +312,7 @@ public class FirebaseBackgroundService extends Service {
 
                 }
                 else {
-                    message = " Required First Aid at " + addressOutput;
+                    message = "Required First Aid at " + addressOutput;
                     if(!isActivityStarted && isFirstAider){
                         createNotification(userName, message);
                     }

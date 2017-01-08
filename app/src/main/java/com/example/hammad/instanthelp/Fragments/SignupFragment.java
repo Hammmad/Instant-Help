@@ -3,13 +3,22 @@ package com.example.hammad.instanthelp.Fragments;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.InputFilter;
+import android.text.Spanned;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -38,15 +47,30 @@ public class SignupFragment extends Fragment implements View.OnClickListener{
     FirebaseAuth.AuthStateListener authStateListener;
     DatabaseReference databaseReference;
     public FirebaseAuth mAuth;
-    EditText emaiEditText;
+    EditText userNameEditText;
     EditText passwordEditText;
+    EditText confirmPasswordEditText;
     CheckBox bloodDonorCheckBox;
     CheckBox firstAiderCheckBox;
     Spinner bloodgroupSpinner;
-    TextView domainAddressTextView;
     RadioButton yesRadioButton;
     RadioButton noRadioButton;
+    View coordinatorLayout;
     CallbackSignupFragment callbackSignupFragment;
+    AlphaAnimation buttonClick;
+    String blockCharacters = "~!@#$%^&*() `-+={}[]:;|?/>.<,";
+    InputFilter inputFilter = new InputFilter() {
+        @Override
+        public CharSequence filter(CharSequence charSequence, int i, int i1, Spanned spanned, int i2, int i3) {
+
+            if(charSequence != null && blockCharacters.contains(charSequence)){
+                return "";
+            }
+            return null;
+        }
+    };
+
+
 
 
 
@@ -58,7 +82,9 @@ public class SignupFragment extends Fragment implements View.OnClickListener{
     }
 
     public interface CallbackSignupFragment{
-        public void showSigninFragment();
+        void showSigninFragment();
+
+
     }
 
 
@@ -104,19 +130,71 @@ public class SignupFragment extends Fragment implements View.OnClickListener{
         rootView.findViewById(R.id.bloodDonor_chkbox).setOnClickListener(this);
         rootView.findViewById(R.id.signIn).setOnClickListener(this);
 
-        emaiEditText = (EditText) rootView.findViewById(R.id.email_editText);
+
+        userNameEditText = (EditText) rootView.findViewById(R.id.email_editText);
         passwordEditText = (EditText) rootView.findViewById(R.id.password_editText);
+        confirmPasswordEditText = (EditText) rootView.findViewById(R.id.confirmPassword_editText);
         bloodDonorCheckBox = (CheckBox) rootView.findViewById(R.id.bloodDonor_chkbox);
         firstAiderCheckBox = (CheckBox) rootView.findViewById(R.id.firstAider_chkbox);
         bloodgroupSpinner = (Spinner) rootView.findViewById(R.id.bloodgroup_spinner);
-        domainAddressTextView = (TextView) rootView.findViewById(R.id.instanthelpdomain_textview);
         yesRadioButton = (RadioButton) rootView.findViewById(R.id.yes_radiobtn);
         noRadioButton = (RadioButton) rootView.findViewById(R.id.no_radiobtn);
+        coordinatorLayout = rootView.findViewById(R.id.coord_layout);
+        buttonClick = new AlphaAnimation(1F, 0.7F);
 
-        domainAddressTextView.setText("@instanthelp.com");
+        userNameEditText.setFilters(new InputFilter[] {inputFilter} );
+        showkeyboard(userNameEditText);
+        editTextFocusListener();
         populateSpinner();
 
         return rootView;
+    }
+
+
+    public void showkeyboard(EditText editText) {
+
+        editText.requestFocus();
+        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED,0);
+
+    }
+
+    private void editTextFocusListener() {
+        userNameEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if (!view.hasFocus()) {
+                    if (userNameEditText.getText().toString().isEmpty() || userNameEditText.getText().toString().length() < 3) {
+                        showErrorMessage("Username contain atleast 3 characters");
+                    }
+                }
+            }
+        });
+
+        passwordEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if(!view.hasFocus()){
+                    if (passwordEditText.getText().toString().isEmpty() || passwordEditText.getText().toString().length() < 6) {
+                        showErrorMessage("Password contain atleast 6 characters");
+                    }
+                }
+            }
+        });
+
+        confirmPasswordEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if(!view.hasFocus()){
+                    if(confirmPasswordEditText.getText().toString().isEmpty() ||
+                            !confirmPasswordEditText.getText().toString().equals(passwordEditText.getText().toString())) {
+                        showErrorMessage("Password is not matching");
+                    }
+                }
+            }
+        });
+
+
     }
 
     private void populateSpinner() {
@@ -133,7 +211,19 @@ public class SignupFragment extends Fragment implements View.OnClickListener{
         int id = view.getId();
         switch (id){
             case R.id.signup_button:{
-                createAccount();
+                view.startAnimation(buttonClick);
+                ConnectivityManager connectivityManager = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+                NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+                String userName = userNameEditText.getText().toString();
+                String password = passwordEditText.getText().toString();
+                String confirmPassword = confirmPasswordEditText.getText().toString();
+                if(isValidate(userName, password, confirmPassword)) {
+                    if(networkInfo.isConnected()) {
+                        createAccount();
+                    }else{
+                        showErrorMessage("No Network Connection !");
+                    }
+                }
                 break;
             }
             case R.id.yes_radiobtn:{
@@ -166,27 +256,10 @@ public class SignupFragment extends Fragment implements View.OnClickListener{
                 break;
             }
         }
-
-        if(id==R.id.signup_button){
-            createAccount();
-
-        }else if(id == R.id.yes_radiobtn){
-
-
-
-        }else if(id == R.id.no_radiobtn){
-
-
-        }else if(id == R.id.bloodDonor_chkbox){
-
-        }else if(id == R.id.signIn){
-
-        }
-
     }
 
     private void createAccount() {
-        mAuth.createUserWithEmailAndPassword(emaiEditText.getText().toString() + "@instanthelp.com",
+        mAuth.createUserWithEmailAndPassword(userNameEditText.getText().toString() + "@instanthelp.com",
                 passwordEditText.getText().toString())
                 .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
             @Override
@@ -201,7 +274,7 @@ public class SignupFragment extends Fragment implements View.OnClickListener{
                     Intent intent = new Intent(getActivity(), HelpActivity.class);
                     startActivity(intent);
                 }else {
-                    Toast.makeText(getActivity(), "Auth Failed", Toast.LENGTH_SHORT).show();
+                    showErrorMessage("Failed to Register");
                 }
             }
         });
@@ -225,7 +298,7 @@ public class SignupFragment extends Fragment implements View.OnClickListener{
 
         if(firstAiderCheckBox.isChecked()) isFirstAider = true;
 
-        return new User(emaiEditText.getText().toString(), passwordEditText.getText().toString(),isVolunteer, isBloodDonor,
+        return new User(userNameEditText.getText().toString(), passwordEditText.getText().toString(),isVolunteer, isBloodDonor,
                 bloodGroup, isFirstAider);
     }
 
@@ -235,5 +308,29 @@ public class SignupFragment extends Fragment implements View.OnClickListener{
 
         callbackSignupFragment = (CallbackSignupFragment) context;
 
+    }
+    public boolean isValidate(String userName, String password, String confirmPassword) {
+
+        if (userName.isEmpty() || userName.length() < 3) {
+            userNameEditText.requestFocus();
+            showErrorMessage("Username contain atleast 3 characters");
+            return false;
+        } else if (password.isEmpty() || password.length() < 6) {
+            passwordEditText.requestFocus();
+            showErrorMessage("Password contain atleast 6 characters");
+            return false;
+        }else if(confirmPassword.isEmpty() || !confirmPassword.equals(password)){
+            confirmPasswordEditText.requestFocus();
+            showErrorMessage("Password is not matching");
+            return false;
+        }else {
+            return true;
+        }
+    }
+
+    private void showErrorMessage(String message) {
+        Snackbar snackbar = Snackbar.make(coordinatorLayout, message, Snackbar.LENGTH_LONG);
+        snackbar.getView().setBackgroundColor(getResources().getColor(R.color.colorError));
+        snackbar.show();
     }
 }

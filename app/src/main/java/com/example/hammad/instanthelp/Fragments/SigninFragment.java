@@ -2,20 +2,24 @@ package com.example.hammad.instanthelp.Fragments;
 
 
 import android.content.Context;
-import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.text.InputFilter;
+import android.text.Spanned;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.example.hammad.instanthelp.HelpActivity;
 import com.example.hammad.instanthelp.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -38,11 +42,25 @@ public class SigninFragment extends Fragment {
     FirebaseAuth.AuthStateListener authStateListener;
     EditText userNameEditText;
     EditText passwordEditText;
+    View coordinatorLayout;
     CallbackSigninFragment callbackSigninFragment;
+    AlphaAnimation buttonClick;
+    NetworkInfo networkInfo;
+    String blockCharacters = "~!@#$%^&*() `-+={}[]:;|?/>.<,";
+    InputFilter inputFilter = new InputFilter() {
+        @Override
+        public CharSequence filter(CharSequence charSequence, int i, int i1, Spanned spanned, int i2, int i3) {
+
+            if(charSequence != null && blockCharacters.contains(charSequence)){
+                return "";
+            }
+            return null;
+        }
+    };
 
 
 
-    public interface CallbackSigninFragment{
+    public interface CallbackSigninFragment {
         public void showSignupFragment();
 
         public void startHelpActivity();
@@ -61,6 +79,8 @@ public class SigninFragment extends Fragment {
 
         userNameEditText = (EditText) rootView.findViewById(R.id.userName_editText);
         passwordEditText = (EditText) rootView.findViewById(R.id.password_editText);
+        coordinatorLayout = rootView.findViewById(R.id.coord_layout);
+        buttonClick = new AlphaAnimation(1F, 0.7F);
 
 
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
@@ -70,19 +90,28 @@ public class SigninFragment extends Fragment {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
-                if(user != null){
-                    Log.e(TAG, "user is signedIn"+ user.getUid());
-                }else{
+                if (user != null) {
+                    Log.e(TAG, "user is signedIn" + user.getUid());
+                } else {
                     Log.e(TAG, "user is signedOut ");
                 }
             }
         };
 
+        userNameEditText.setFilters(new InputFilter[] {inputFilter});
+        showkeyboard(userNameEditText);
         onSigninClickListener();
         onSignupClickListener();
         return rootView;
     }
 
+    public void showkeyboard(EditText editText) {
+
+        editText.requestFocus();
+        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED,0);
+
+    }
     private void onSignupClickListener() {
         TextView signUpButton = (TextView) rootView.findViewById(R.id.signup_textView);
         signUpButton.setOnClickListener(new View.OnClickListener() {
@@ -99,21 +128,41 @@ public class SigninFragment extends Fragment {
         signinButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mAuth.signInWithEmailAndPassword(userNameEditText.getText().toString() + "@instanthelp.com",
-                        passwordEditText.getText().toString())
-                        .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                // start help activity
-                                if(task.isSuccessful()){
-                                    callbackSigninFragment.startHelpActivity();
-                                }else{
-                                    Toast.makeText(getActivity(), "Auth Failed", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        });
+                view.startAnimation(buttonClick);
+                ConnectivityManager connectivityManager = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+                networkInfo = connectivityManager.getActiveNetworkInfo();
+                String userName = String.valueOf(userNameEditText.getText());
+                String password = String.valueOf(passwordEditText.getText());
+
+                if (isValidate(userName, password)) {
+                    if (networkInfo != null && networkInfo.isConnected()) {
+                        logIn();
+                    }
+                    else {
+                        showErrorMessage("No network connection");
+                    }
+                }
             }
         });
+    }
+
+    private void logIn() {
+        mAuth.signInWithEmailAndPassword(userNameEditText.getText().toString() + "@instanthelp.com",
+                passwordEditText.getText().toString())
+                .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        // start help activity
+
+
+                        if (task.isSuccessful()) {
+                            callbackSigninFragment.startHelpActivity();
+                        } else {
+                                showErrorMessage("Username or Password is incorrect !");
+                                userNameEditText.requestFocus();
+                        }
+                    }
+                });
     }
 
     @Override
@@ -125,7 +174,7 @@ public class SigninFragment extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
-        if(mAuth!=null){
+        if (mAuth != null) {
             mAuth.removeAuthStateListener(authStateListener);
         }
     }
@@ -135,5 +184,28 @@ public class SigninFragment extends Fragment {
         super.onAttach(context);
 
         callbackSigninFragment = (CallbackSigninFragment) context;
+    }
+
+    public boolean isValidate(String userName, String password) {
+
+        if (userName.equals("")) {
+            userNameEditText.requestFocus();
+            showErrorMessage("Username is required !");
+            return false;
+        } else if (password.equals("")) {
+            passwordEditText.requestFocus();
+            showErrorMessage("Password is required !");
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+
+
+    private void showErrorMessage(String message) {
+        Snackbar snackbar = Snackbar.make(coordinatorLayout, message, Snackbar.LENGTH_LONG);
+        snackbar.getView().setBackgroundColor(getResources().getColor(R.color.colorError));
+        snackbar.show();
     }
 }

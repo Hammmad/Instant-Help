@@ -1,10 +1,15 @@
 package com.example.hammad.instanthelp;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.InputFilter;
+import android.text.Spanned;
 import android.util.Log;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 
 import com.example.hammad.instanthelp.Fragments.SigninFragment;
 import com.example.hammad.instanthelp.Fragments.SignupFragment;
@@ -49,6 +54,12 @@ public class MainActivity extends AppCompatActivity implements SignupFragment.Ca
         getSupportFragmentManager().beginTransaction().
                 replace(R.id.activity_main, new SigninFragment()).commit();
     }
+
+
+
+
+
+
 
     @Override
     public void showSignupFragment() {
