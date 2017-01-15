@@ -218,7 +218,7 @@ public class SignupFragment extends Fragment implements View.OnClickListener{
                 String password = passwordEditText.getText().toString();
                 String confirmPassword = confirmPasswordEditText.getText().toString();
                 if(isValidate(userName, password, confirmPassword)) {
-                    if(networkInfo.isConnected()) {
+                    if(networkInfo != null && networkInfo.isConnected()) {
                         createAccount();
                     }else{
                         showErrorMessage("No Network Connection !");

@@ -33,5 +33,15 @@
 
     </string-array>
 
+    <string-array name="drawer_menu">
+        <item>First Aid Guide</item>
+        <item>Register as volunteer</item>
+        <item>Add location</item>
+        <item>Feedback</item>
+        <item>Settings</item>
+        <item>Signout</item>
+
+    </string-array>
+
 
 </resources>
