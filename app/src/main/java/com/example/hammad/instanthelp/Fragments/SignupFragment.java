@@ -9,10 +9,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.text.Editable;
 import android.text.InputFilter;
 import android.text.Spanned;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,12 +22,11 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.Spinner;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import com.example.hammad.instanthelp.HelpActivity;
+import com.example.hammad.instanthelp.activity.HelpActivity;
 import com.example.hammad.instanthelp.R;
-import com.example.hammad.instanthelp.User;
+import com.example.hammad.instanthelp.activity.HomeActivity;
+import com.example.hammad.instanthelp.models.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -141,6 +138,7 @@ public class SignupFragment extends Fragment implements View.OnClickListener{
         noRadioButton = (RadioButton) rootView.findViewById(R.id.no_radiobtn);
         coordinatorLayout = rootView.findViewById(R.id.coord_layout);
         buttonClick = new AlphaAnimation(1F, 0.7F);
+
 
         userNameEditText.setFilters(new InputFilter[] {inputFilter} );
         showkeyboard(userNameEditText);
@@ -265,13 +263,13 @@ public class SignupFragment extends Fragment implements View.OnClickListener{
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
 
-                String Uid = null;
+                String Uid;
                 if(task.isSuccessful()) {
                     Uid = mAuth.getCurrentUser().getUid();
                     User user = getUserInfo();
                     databaseReference.child("userinfo").child(Uid).setValue(user);
 
-                    Intent intent = new Intent(getActivity(), HelpActivity.class);
+                    Intent intent = new Intent(getActivity(), HomeActivity.class);
                     startActivity(intent);
                 }else {
                     showErrorMessage("Failed to Register");
@@ -285,12 +283,12 @@ public class SignupFragment extends Fragment implements View.OnClickListener{
         boolean isVolunteer = false;
         boolean isBloodDonor = false;
         boolean isFirstAider = false;
-        String bloodGroup = bloodgroupSpinner.getSelectedItem().toString();
+        String bloodGroup;
 
         if(yesRadioButton.isChecked()){ isVolunteer = true; }
         if(noRadioButton.isChecked()) {isVolunteer = false; bloodGroup = "N/A";}
-        if(bloodDonorCheckBox.isChecked())
-        { isBloodDonor = true;
+        if(bloodDonorCheckBox.isChecked()) {
+            isBloodDonor = true;
           bloodGroup = bloodgroupSpinner.getSelectedItem().toString();
         }else{
             bloodGroup = "N/A";

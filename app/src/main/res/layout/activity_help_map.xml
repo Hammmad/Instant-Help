@@ -6,7 +6,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-   tools:context="com.example.hammad.instanthelp.HelpMapActivity">
+   tools:context="com.example.hammad.instanthelp.activity.HelpMapActivity">
 
 
 
@@ -18,22 +18,29 @@
         android:layout_weight="9"
         map:cameraZoom="17"
         />
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/messagebox"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:background="@color/colorPrimary"
         android:layout_weight="1">
-    <EditText
+        <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/send_button"
+            android:src="@drawable/ic_send_black_24dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_width="60dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentBottom="true" />
+
+        <EditText
+            android:inputType="textCapSentences"
+            android:hint="@string/type_text_message"
         android:id="@+id/message_editText"
-        android:layout_width="0dp"
-        android:layout_weight="3"
-        android:layout_height="wrap_content" />
-       <Button
-           android:id="@+id/send_button"
-           android:text="send"
-           android:layout_weight="1"
-           android:layout_width="0dp"
-           android:layout_height="wrap_content" />
-    </LinearLayout>
+        android:layout_width="match_parent"
+        android:layout_toLeftOf="@id/send_button"
+        android:layout_toStartOf="@id/send_button"
+        android:layout_height="match_parent" />
+       </RelativeLayout>
 </LinearLayout>

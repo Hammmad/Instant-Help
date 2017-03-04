@@ -117,6 +117,7 @@
     <Spinner
         android:visibility="gone"
         android:textColor="#006064"
+        android:background="@color/colorPrimary"
         android:id="@+id/bloodgroup_spinner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
@@ -131,10 +132,9 @@
 
     <android.support.v7.widget.AppCompatButton
         android:id="@+id/signup_button"
-        android:background="@color/colorPrimaryDark"
-        android:textColor="#FFFFFF"
+        style="@style/button"
         android:layout_marginTop="16dp"
-        android:textStyle="bold"
+
         android:text="@string/register"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />

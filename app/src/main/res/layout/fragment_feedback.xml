@@ -1,0 +1,38 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@color/colorPrimary"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.hammad.instanthelp.Fragments.FeedbackFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+    <TextView
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:text="@string/feedback_sentence"
+        android:paddingBottom="16dp"
+        android:textSize="16sp"
+        android:textColor="@color/colorPrimaryDark"
+        />
+    <EditText
+        android:layout_width="match_parent"
+        android:hint="@string/description"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:lines="10"
+        android:gravity="top"
+        android:background="#FFFFFF"
+        />
+
+
+    <Button
+        android:text="@string/send"
+        style="@style/button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+
+
+</LinearLayout>

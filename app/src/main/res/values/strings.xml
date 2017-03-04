@@ -19,6 +19,11 @@
     <string name="map_help">Map Help</string>
     <string name="blood_required">Blood required</string>
     <string name="signup">Signup</string>
+    <string name="open_drawer">open navigation drawer</string>
+    <string name="close_drawer">close navigation drawer</string>
+    <string name="feedback_sentence">Tell us what changes you\'d like to see, or bugs you\'ve discovered.</string>
+    <string name="description">Description</string>
+    <string name="send">Send</string>
 
     <string-array name="bloodgroups">
         <item>A+ve</item>
@@ -28,7 +33,6 @@
         <item>B-ve</item>
         <item>B+ve</item>
         <item>O-ve</item>
-
 
 
     </string-array>
@@ -42,6 +46,15 @@
         <item>Signout</item>
 
     </string-array>
+    <string name="title_activity_home">HomeActivity</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="type_text_message">Type text Message</string>
+    <string name="username">Username</string>
+    <string name="no_account_yet_create_one">No account yet? Create one</string>
 
 
 </resources>

@@ -21,13 +21,18 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.hammad.instanthelp.R;
+import com.example.hammad.instanthelp.models.User;
+import com.example.hammad.instanthelp.utils.CurrentUser;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -36,7 +41,6 @@ public class SigninFragment extends Fragment {
 
     private static final String TAG = "DEBUGGING";
     private View rootView;
-    private FirebaseDatabase firebaseDatabase;
     private DatabaseReference databaseReference;
     FirebaseAuth mAuth;
     FirebaseAuth.AuthStateListener authStateListener;
@@ -61,9 +65,9 @@ public class SigninFragment extends Fragment {
 
 
     public interface CallbackSigninFragment {
-        public void showSignupFragment();
+        void showSignupFragment();
 
-        public void startHelpActivity();
+        void startHelpActivity();
     }
 
     public SigninFragment() {
@@ -83,8 +87,8 @@ public class SigninFragment extends Fragment {
         buttonClick = new AlphaAnimation(1F, 0.7F);
 
 
-        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-        databaseReference = firebaseDatabase.getReference();
+
+        databaseReference = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
         authStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -156,7 +160,9 @@ public class SigninFragment extends Fragment {
 
 
                         if (task.isSuccessful()) {
-                            callbackSigninFragment.startHelpActivity();
+                            userInfoListener(databaseReference);
+
+
                         } else {
                                 showErrorMessage("Username or Password is incorrect !");
                                 userNameEditText.requestFocus();
@@ -165,6 +171,24 @@ public class SigninFragment extends Fragment {
                 });
     }
 
+    private void userInfoListener(DatabaseReference databaseReference) {
+        databaseReference.child("userinfo").child(mAuth.getCurrentUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.e(TAG,"userInfo Listener:   "+dataSnapshot.getKey());
+                User user = dataSnapshot.getValue(User.class);
+                CurrentUser currentUser = new CurrentUser(getActivity());
+                currentUser.setCurrentUser(user);
+                callbackSigninFragment.startHelpActivity();
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
     @Override
     public void onStart() {
         super.onStart();

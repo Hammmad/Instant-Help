@@ -1,45 +1,45 @@
 package com.example.hammad.instanthelp.Fragments;
 
 
-import android.Manifest;
+import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.hammad.instanthelp.LocationTracker;
-import com.example.hammad.instanthelp.Needer;
-import com.example.hammad.instanthelp.FirebaseBackgroundService;
-import com.example.hammad.instanthelp.HelpMapActivity;
+import com.example.hammad.instanthelp.models.Constants;
+import com.example.hammad.instanthelp.models.User;
+import com.example.hammad.instanthelp.sevices.GeofenceTransitionsIntentService;
+import com.example.hammad.instanthelp.utils.LocationTracker;
+import com.example.hammad.instanthelp.models.Needer;
+import com.example.hammad.instanthelp.sevices.FirebaseBackgroundService;
+import com.example.hammad.instanthelp.activity.HelpMapActivity;
 import com.example.hammad.instanthelp.R;
-import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.Geofence;
+import com.google.android.gms.location.GeofencingRequest;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class HelpFragment extends Fragment implements View.OnClickListener {
+public class HelpFragment extends Fragment implements View.OnClickListener{
 
 
     private View rootView;
@@ -47,8 +47,10 @@ public class HelpFragment extends Fragment implements View.OnClickListener {
     private FirebaseAuth.AuthStateListener authStateListener;
     private DatabaseReference databaseReference;
     private static final String TAG = "HelpFragment/DEBUGGING";
-    double currentLongitude;
-    double currentLatitude;
+
+    ArrayList<Geofence> geofenceList;
+    LocationTracker locationTracker;
+
 
 
     GoogleApiClient mGoogleApiClient;
@@ -66,18 +68,13 @@ public class HelpFragment extends Fragment implements View.OnClickListener {
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_help, container, false);
 
-        String[] drawerMenu = getResources().getStringArray(R.array.drawer_menu);
-        DrawerLayout drawerLayout = (DrawerLayout) rootView.findViewById(R.id.drawer_layout);
-        ListView menuListView = (ListView) rootView.findViewById(R.id.left_drawer);
-
-        menuListView.setAdapter(new ArrayAdapter<String>(getActivity(),
-                android.R.layout.simple_list_item_1,drawerMenu));
-
+        geofenceList = new ArrayList<>();
 
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference();
         mAuth = FirebaseAuth.getInstance();
         authStateListener = new FirebaseAuth.AuthStateListener() {
+
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
@@ -94,16 +91,14 @@ public class HelpFragment extends Fragment implements View.OnClickListener {
         rootView.findViewById(R.id.map_help_button).setOnClickListener(this);
         rootView.findViewById(R.id.blood_require_button).setOnClickListener(this);
         rootView.findViewById(R.id.first_aid_button).setOnClickListener(this);
-        rootView.findViewById(R.id.signout_textView).setOnClickListener(this);
-        rootView.findViewById(R.id.register_volunteer_textview).setOnClickListener(this);
 
 
-        LocationTracker locationTracker = new LocationTracker(getActivity());
+
+        locationTracker = new LocationTracker(getActivity());
         if(locationTracker.canGetLocation()){
             locationTracker.getLocation();
-            currentLatitude = locationTracker.getLatitude();
-            currentLongitude = locationTracker.getLongitude();
-            Toast.makeText(getActivity(), "currentLatitude,currentLongitude:   "+ currentLatitude + currentLongitude, Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), "currentLatitude,currentLongitude:   "+ locationTracker.getLatitude()
+                    + locationTracker.getLongitude(), Toast.LENGTH_SHORT).show();
             Intent serviceIntent = new Intent(getActivity(), FirebaseBackgroundService.class);
             getActivity().startService(serviceIntent);
         }else{
@@ -160,17 +155,14 @@ public class HelpFragment extends Fragment implements View.OnClickListener {
                 startActivity(intent);
                 break;
             }
-            case R.id.signout_textView: {
 
-                mAuth.signOut();
-                Log.e(TAG, "Signout clicked");
-                break;
-            }
             case R.id.blood_require_button: {
                 showBloodGrouplist();
                 break;
             }
             case R.id.first_aid_button:{
+
+//                startGeofence();
 
                 requiredBloodGroup = null;
                 sendMylocationUp();
@@ -182,18 +174,42 @@ public class HelpFragment extends Fragment implements View.OnClickListener {
         }
     }
 
+    private void startGeofence() {
+        locationTracker.getLocation();
+        geofenceList.add(new Geofence.Builder().setRequestId("myFence")
+        .setCircularRegion(locationTracker.getLatitude(), locationTracker.getLongitude(), Constants.RADIUS_IN_METERS)
+        .setExpirationDuration(Constants.GEOFENCE_EXPIRATION_TIME_IN_MILLIS)
+        .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER | Geofence.GEOFENCE_TRANSITION_EXIT)
+        .build());
+    }
 
+    private GeofencingRequest getGeofencingRequest(){
+        GeofencingRequest.Builder builder = new GeofencingRequest.Builder();
+        builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER);
+        builder.addGeofences(geofenceList);
+        return builder.build();
+    }
+
+    PendingIntent geofencePendingIntent;
+    private PendingIntent getGeofencePendingIntent(){
+        if(geofencePendingIntent != null){
+            return geofencePendingIntent;
+        }
+
+        Intent intent = new Intent(getActivity(), GeofenceTransitionsIntentService.class);
+        return  PendingIntent.getService(getActivity(), 0, intent,PendingIntent.FLAG_UPDATE_CURRENT);
+    }
 
     private void sendMylocationUp() {
-        if (currentLatitude != 0){
+
             if(mAuth.getCurrentUser() != null) {
                 String Uid = mAuth.getCurrentUser().getUid();
                 String userName = mAuth.getCurrentUser().getEmail();
                 userName = userName.replace("@instanthelp.com", "");
 
-
+                locationTracker.getLocation();
                 final Needer needer = new Needer
-                        (userName, requiredBloodGroup,currentLatitude,currentLongitude, mAuth.getCurrentUser().getUid());
+                        (userName, requiredBloodGroup,locationTracker.getLatitude(),locationTracker.getLongitude(), mAuth.getCurrentUser().getUid());
                 databaseReference.child("userCurrentLocation").child(Uid).removeValue(new DatabaseReference.CompletionListener() {
                     @Override
                     public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
@@ -201,7 +217,7 @@ public class HelpFragment extends Fragment implements View.OnClickListener {
                     }
                 });
             }
-        }
+
     }
 
     private void showBloodGrouplist() {
@@ -221,4 +237,18 @@ public class HelpFragment extends Fragment implements View.OnClickListener {
         builder.create().show();
     }
 
+    private void userInfoListener(DatabaseReference databaseReference) {
+        databaseReference.child("userinfo").child(mAuth.getCurrentUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.e(TAG,"userInfo Listener:   "+dataSnapshot.getKey());
+                User currentUser = dataSnapshot.getValue(User.class);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
 }
