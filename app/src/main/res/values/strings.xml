@@ -55,6 +55,15 @@
     <string name="type_text_message">Type text Message</string>
     <string name="username">Username</string>
     <string name="no_account_yet_create_one">No account yet? Create one</string>
+    <string name="unknown_geofence_transition">Unknown Geofence Transition</string>
+    <string name="geofence_transition_dwell">Geofence Transition Dwell</string>
+    <string name="home">Home</string>
+    <string name="first_aid_guide">First Aid Guide</string>
+    <string name="feedback">Feedback</string>
+    <string name="tools">Tools</string>
+    <string name="improve_your_location">Improve your location</string>
+    <string name="settings">Settings</string>
+    <string name="logout">Logout</string>
 
 
 </resources>

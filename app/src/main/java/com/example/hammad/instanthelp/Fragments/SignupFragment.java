@@ -11,6 +11,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.text.InputFilter;
 import android.text.Spanned;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,13 +28,21 @@ import com.example.hammad.instanthelp.activity.HelpActivity;
 import com.example.hammad.instanthelp.R;
 import com.example.hammad.instanthelp.activity.HomeActivity;
 import com.example.hammad.instanthelp.models.User;
+import com.example.hammad.instanthelp.utils.CurrentUser;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -56,16 +65,8 @@ public class SignupFragment extends Fragment implements View.OnClickListener{
     CallbackSignupFragment callbackSignupFragment;
     AlphaAnimation buttonClick;
     String blockCharacters = "~!@#$%^&*() `-+={}[]:;|?/>.<,";
-    InputFilter inputFilter = new InputFilter() {
-        @Override
-        public CharSequence filter(CharSequence charSequence, int i, int i1, Spanned spanned, int i2, int i3) {
-
-            if(charSequence != null && blockCharacters.contains(charSequence)){
-                return "";
-            }
-            return null;
-        }
-    };
+    InputFilter inputFilter;
+    StorageReference storageReference;
 
 
 
@@ -106,6 +107,8 @@ public class SignupFragment extends Fragment implements View.OnClickListener{
         // Inflate the layout for this fragment
         rootView =  inflater.inflate(R.layout.fragment_signup, container, false);
 
+
+        storageReference = FirebaseStorage.getInstance().getReferenceFromUrl("gs://instant-help.appspot.com");
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference();
         mAuth = FirebaseAuth.getInstance();
@@ -120,6 +123,7 @@ public class SignupFragment extends Fragment implements View.OnClickListener{
                 }
             }
         };
+        inputFilter();
 
         rootView.findViewById(R.id.signup_button).setOnClickListener(this);
         rootView.findViewById(R.id.yes_radiobtn).setOnClickListener(this);
@@ -146,6 +150,19 @@ public class SignupFragment extends Fragment implements View.OnClickListener{
         populateSpinner();
 
         return rootView;
+    }
+
+    private void inputFilter() {
+        inputFilter = new InputFilter() {
+            @Override
+            public CharSequence filter(CharSequence charSequence, int i, int i1, Spanned spanned, int i2, int i3) {
+
+                if (charSequence != null && blockCharacters.contains(charSequence)) {
+                    return "";
+                }
+                return null;
+            }
+        };
     }
 
 
@@ -268,9 +285,9 @@ public class SignupFragment extends Fragment implements View.OnClickListener{
                     Uid = mAuth.getCurrentUser().getUid();
                     User user = getUserInfo();
                     databaseReference.child("userinfo").child(Uid).setValue(user);
+                    userInfoListener(databaseReference);
 
-                    Intent intent = new Intent(getActivity(), HomeActivity.class);
-                    startActivity(intent);
+
                 }else {
                     showErrorMessage("Failed to Register");
                 }
@@ -296,8 +313,8 @@ public class SignupFragment extends Fragment implements View.OnClickListener{
 
         if(firstAiderCheckBox.isChecked()) isFirstAider = true;
 
-        return new User(userNameEditText.getText().toString(), passwordEditText.getText().toString(),isVolunteer, isBloodDonor,
-                bloodGroup, isFirstAider);
+        return new User(mAuth.getCurrentUser().getUid(), userNameEditText.getText().toString(), passwordEditText.getText().toString(),isVolunteer, isBloodDonor,
+                bloodGroup, isFirstAider, "ProfilePictures/userImage.PNG");
     }
 
     @Override
@@ -324,6 +341,48 @@ public class SignupFragment extends Fragment implements View.OnClickListener{
         }else {
             return true;
         }
+    }
+    private void userInfoListener(DatabaseReference databaseReference) {
+        databaseReference.child("userinfo").child(mAuth.getCurrentUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.e(TAG, "userInfo Listener:   " + dataSnapshot.getKey());
+                final User user = dataSnapshot.getValue(User.class);
+                final long ONE_MEGABYTE = 1024*1024;
+                storageReference.child(user.profileImagePath).getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                    @Override
+                    public void onSuccess(byte[] bytes) {
+                        String profileImage = Base64.encodeToString(bytes, Base64.DEFAULT);
+                        User updatedUser = new User(
+                                user.uId,
+                                user.emaiAddress,
+                                user.password,
+                                user.volunteer,
+                                user.bloodDonor,
+                                user.bloodGroup,
+                                user.firstAider,
+                                profileImage);
+                        CurrentUser currentUser = new CurrentUser(getActivity());
+                        currentUser.setCurrentUser(updatedUser);
+
+                        Intent intent = new Intent(getActivity(), HomeActivity.class);
+                        startActivity(intent);
+
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+
+                    }
+                });
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     private void showErrorMessage(String message) {

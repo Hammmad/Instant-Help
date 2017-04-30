@@ -1,11 +1,15 @@
 package com.example.hammad.instanthelp.Fragments;
 
 
+import android.Manifest;
 import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -23,9 +27,13 @@ import com.example.hammad.instanthelp.models.Needer;
 import com.example.hammad.instanthelp.sevices.FirebaseBackgroundService;
 import com.example.hammad.instanthelp.activity.HelpMapActivity;
 import com.example.hammad.instanthelp.R;
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingRequest;
+import com.google.android.gms.location.LocationServices;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -39,28 +47,26 @@ import java.util.ArrayList;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class HelpFragment extends Fragment implements View.OnClickListener{
+public class HomeFragment extends Fragment implements View.OnClickListener, GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener, ResultCallback<Status> {
 
 
     private View rootView;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener authStateListener;
     private DatabaseReference databaseReference;
-    private static final String TAG = "HelpFragment/DEBUGGING";
+    private static final String TAG = "HomeFragment/DEBUGGING";
 
     ArrayList<Geofence> geofenceList;
     LocationTracker locationTracker;
-
-
-
     GoogleApiClient mGoogleApiClient;
+    PendingIntent geofencePendingIntent;
     private String requiredBloodGroup = null;
 
 
-    public HelpFragment() {
+    public HomeFragment() {
         // Required empty public constructor
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -68,7 +74,6 @@ public class HelpFragment extends Fragment implements View.OnClickListener{
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_help, container, false);
 
-        geofenceList = new ArrayList<>();
 
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference();
@@ -86,25 +91,24 @@ public class HelpFragment extends Fragment implements View.OnClickListener{
             }
         };
 
-        TextView userNameTextView = (TextView) rootView.findViewById(R.id.userName_textView);
-        userNameTextView.setText(mAuth.getCurrentUser().getEmail().replace("@instanthelp.com", ""));
         rootView.findViewById(R.id.map_help_button).setOnClickListener(this);
         rootView.findViewById(R.id.blood_require_button).setOnClickListener(this);
         rootView.findViewById(R.id.first_aid_button).setOnClickListener(this);
 
 
-
         locationTracker = new LocationTracker(getActivity());
-        if(locationTracker.canGetLocation()){
+        if (locationTracker.canGetLocation()) {
             locationTracker.getLocation();
-            Toast.makeText(getActivity(), "currentLatitude,currentLongitude:   "+ locationTracker.getLatitude()
+            Toast.makeText(getActivity(), "currentLatitude,currentLongitude:   " + locationTracker.getLatitude()
                     + locationTracker.getLongitude(), Toast.LENGTH_SHORT).show();
             Intent serviceIntent = new Intent(getActivity(), FirebaseBackgroundService.class);
             getActivity().startService(serviceIntent);
-        }else{
+        } else {
             Log.e(TAG, "No provider");
         }
 
+        geofenceList = new ArrayList<>();
+        populateGeofenceList();
 //        ValueEventListener valueEventListener = new ValueEventListener() {
 //            @Override
 //            public void onDataChange(DataSnapshot dataSnapshot) {
@@ -122,17 +126,25 @@ public class HelpFragment extends Fragment implements View.OnClickListener{
 //            }
 //        };
 //        databaseReference.addValueEventListener(valueEventListener);
-//        buildGoogleApiClient();
+        buildGoogleApiClient();
 
 
         return rootView;
+    }
+
+    protected synchronized void buildGoogleApiClient() {
+        mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
     }
 
     @Override
     public void onStart() {
         super.onStart();
         mAuth.addAuthStateListener(authStateListener);
-//        mGoogleApiClient.connect();
+        mGoogleApiClient.connect();
     }
 
     @Override
@@ -140,7 +152,7 @@ public class HelpFragment extends Fragment implements View.OnClickListener{
         super.onStop();
         if (mAuth != null) {
             mAuth.removeAuthStateListener(authStateListener);
-//            mGoogleApiClient.disconnect();
+            mGoogleApiClient.disconnect();
 
         }
     }
@@ -160,12 +172,14 @@ public class HelpFragment extends Fragment implements View.OnClickListener{
                 showBloodGrouplist();
                 break;
             }
-            case R.id.first_aid_button:{
-
-//                startGeofence();
+            case R.id.first_aid_button: {
 
                 requiredBloodGroup = null;
-                sendMylocationUp();
+//                sendMylocationUp();
+
+                addGeofence();
+
+
                 break;
             }
             default:{
@@ -174,7 +188,28 @@ public class HelpFragment extends Fragment implements View.OnClickListener{
         }
     }
 
-    private void startGeofence() {
+    private void addGeofence() {
+        if (!mGoogleApiClient.isConnected()) {
+            Toast.makeText(getActivity(), "Not Connected Api Client", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        LocationServices.GeofencingApi.addGeofences(
+                mGoogleApiClient, getGeofencingRequest(),
+                getGeofencePendingIntent()).setResultCallback(this);
+    }
+
+    private void populateGeofenceList() {
         locationTracker.getLocation();
         geofenceList.add(new Geofence.Builder().setRequestId("myFence")
         .setCircularRegion(locationTracker.getLatitude(), locationTracker.getLongitude(), Constants.RADIUS_IN_METERS)
@@ -189,8 +224,6 @@ public class HelpFragment extends Fragment implements View.OnClickListener{
         builder.addGeofences(geofenceList);
         return builder.build();
     }
-
-    PendingIntent geofencePendingIntent;
     private PendingIntent getGeofencePendingIntent(){
         if(geofencePendingIntent != null){
             return geofencePendingIntent;
@@ -250,5 +283,31 @@ public class HelpFragment extends Fragment implements View.OnClickListener{
 
             }
         });
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        Log.d(TAG, "Connected to GoogleApiClient");
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        Log.d(TAG, "Connection suspended");
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Log.d(TAG, "Connection failed: ConnectionResult.getErrorCode() = " + connectionResult.getErrorCode());
+    }
+
+    @Override
+    public void onResult(@NonNull Status status) {
+
+        if(status.isSuccess()){
+            Toast.makeText(getActivity(), "onResult Success", Toast.LENGTH_SHORT).show();
+        }else{
+            Toast.makeText(getActivity(), "onResult Success", Toast.LENGTH_SHORT).show();
+        }
     }
 }

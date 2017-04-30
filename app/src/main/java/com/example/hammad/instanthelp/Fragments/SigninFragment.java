@@ -10,6 +10,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.text.InputFilter;
 import android.text.Spanned;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +25,8 @@ import com.example.hammad.instanthelp.R;
 import com.example.hammad.instanthelp.models.User;
 import com.example.hammad.instanthelp.utils.CurrentUser;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -33,6 +36,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -61,7 +66,7 @@ public class SigninFragment extends Fragment {
             return null;
         }
     };
-
+    StorageReference storageReference;
 
 
     public interface CallbackSigninFragment {
@@ -87,7 +92,7 @@ public class SigninFragment extends Fragment {
         buttonClick = new AlphaAnimation(1F, 0.7F);
 
 
-
+        storageReference = FirebaseStorage.getInstance().getReferenceFromUrl("gs://instant-help.appspot.com");
         databaseReference = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
         authStateListener = new FirebaseAuth.AuthStateListener() {
@@ -176,10 +181,43 @@ public class SigninFragment extends Fragment {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Log.e(TAG,"userInfo Listener:   "+dataSnapshot.getKey());
-                User user = dataSnapshot.getValue(User.class);
-                CurrentUser currentUser = new CurrentUser(getActivity());
-                currentUser.setCurrentUser(user);
-                callbackSigninFragment.startHelpActivity();
+                final User user = dataSnapshot.getValue(User.class);
+
+//                if(user.profileImagePath == null){
+//                    CurrentUser currentUser = new CurrentUser(getActivity());
+//                    currentUser.setNoImageCurrentUser(user);
+//                    callbackSigninFragment.startHelpActivity();
+//                }else{
+                    final long ONE_MEGABYTE  = 1024*1024;
+                    storageReference.child(user.profileImagePath).getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                        @Override
+                        public void onSuccess(byte[] bytes) {
+                            String profileImage = Base64.encodeToString(bytes, Base64.DEFAULT);
+                            User updatedUser = new User(
+                                    user.uId,
+                                    user.emaiAddress,
+                                    user.password,
+                                    user.volunteer,
+                                    user.bloodDonor,
+                                    user.bloodGroup,
+                                    user.firstAider,
+                                    profileImage);
+                            CurrentUser currentUser = new CurrentUser(getActivity());
+                            currentUser.setCurrentUser(updatedUser);
+                            callbackSigninFragment.startHelpActivity();
+
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+
+                        }
+                    });
+//                }
+
+
+
+
 
             }
 
