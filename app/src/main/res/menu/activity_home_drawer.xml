@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:checked="true"
+            android:id="@+id/nav_home"
+            android:icon="@drawable/ic_home_outline_black_24dp"
+            android:title="@string/home" />
+        <item
+            android:id="@+id/nav_guide"
+            android:icon="@drawable/ic_hospital_black_24dp"
+            android:title="@string/first_aid_guide" />
+
+        <item
+            android:id="@+id/nav_feedback"
+            android:icon="@drawable/ic_insert_comment_white_24dp"
+            android:title="@string/feedback" />
+    </group>
+
+    <item android:title="@string/tools">
+        <menu> <item
+            android:id="@+id/nav_improve_location"
+            android:icon="@drawable/ic_account_location_black_24dp"
+            android:title="@string/improve_your_location" />
+            <item
+                android:id="@+id/nav_settings"
+                android:icon="@drawable/ic_settings_white_24dp"
+                android:title="@string/settings" />
+            <item
+                android:id="@+id/nav_logout"
+                android:icon="@drawable/ic_logout_black_24dp"
+                android:title="@string/logout" />
+        </menu>
+    </item>
+
+</menu>
