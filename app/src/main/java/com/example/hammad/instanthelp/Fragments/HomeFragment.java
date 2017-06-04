@@ -16,17 +16,16 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.hammad.instanthelp.R;
+import com.example.hammad.instanthelp.activity.HelpMapActivity;
 import com.example.hammad.instanthelp.models.Constants;
+import com.example.hammad.instanthelp.models.Needer;
 import com.example.hammad.instanthelp.models.User;
+import com.example.hammad.instanthelp.sevices.FirebaseBackgroundService;
 import com.example.hammad.instanthelp.sevices.GeofenceTransitionsIntentService;
 import com.example.hammad.instanthelp.utils.LocationTracker;
-import com.example.hammad.instanthelp.models.Needer;
-import com.example.hammad.instanthelp.sevices.FirebaseBackgroundService;
-import com.example.hammad.instanthelp.activity.HelpMapActivity;
-import com.example.hammad.instanthelp.R;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
@@ -94,6 +93,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Goog
         rootView.findViewById(R.id.map_help_button).setOnClickListener(this);
         rootView.findViewById(R.id.blood_require_button).setOnClickListener(this);
         rootView.findViewById(R.id.first_aid_button).setOnClickListener(this);
+
+
 
 
         locationTracker = new LocationTracker(getActivity());
@@ -169,7 +170,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Goog
             }
 
             case R.id.blood_require_button: {
-                showBloodGrouplist();
+//                showBloodGrouplist();
+                PostFragment postFragment = new PostFragment();
+                this.getFragmentManager().beginTransaction().replace(R.id.content_home, postFragment, null).addToBackStack(null).commit();
                 break;
             }
             case R.id.first_aid_button: {

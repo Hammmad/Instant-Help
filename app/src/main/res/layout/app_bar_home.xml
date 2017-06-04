@@ -1,46 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
+    android:orientation="vertical"
     tools:context="com.example.hammad.instanthelp.activity.HomeActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
+        android:background="@color/colorPrimary"
         android:titleTextColor="#fff"
-        android:background="@drawable/side_nav_bar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        app:layout_scrollFlags="scroll|enterAlways"
         app:layout_collapseMode="pin"
-        >
+        app:layout_scrollFlags="scroll|enterAlways"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            >
+            android:layout_height="match_parent">
 
             <!-- This is a centered logo -->
-            <ImageView
-                android:id="@+id/toolbar_logo"
-                android:src="@drawable/help_logo"
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:layout_marginRight="?attr/actionBarSize"
-                android:layout_marginTop="4dp"
-                android:layout_marginBottom="4dp"
-                android:layout_gravity="center"
-                />
+            <!--<ImageView-->
+            <!--android:id="@+id/toolbar_logo"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="fill_parent"-->
+            <!--android:layout_marginBottom="4dp"-->
+            <!--android:layout_marginRight="?attr/actionBarSize"-->
+            <!--android:layout_marginTop="4dp"-->
+            <!--android:src="@drawable/logo" />-->
         </FrameLayout>
     </android.support.v7.widget.Toolbar>
 
-    <include layout="@layout/content_home"
-
-        />
+    <include layout="@layout/content_home"/>
 
 
 </LinearLayout>

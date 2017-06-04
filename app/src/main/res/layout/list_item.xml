@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/tools"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/card_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="5dp">
+
+    <LinearLayout
+        android:padding="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/post_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Contact: "
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/post_contact"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:textStyle="bold" />
+        </RelativeLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp">
+
+            <com.michaelmuenzer.android.scrollablennumberpicker.ScrollableNumberPicker
+                android:id="@+id/post_feed_donate_picker"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_marginTop="10dp"
+                android:paddingEnd="8dp"
+                android:paddingStart="8dp"
+                app:snp_buttonPaddingBottom="8dp"
+                app:snp_buttonPaddingLeft="8dp"
+                app:snp_buttonPaddingTop="8dp"
+                app:snp_maxValue="5"
+                app:snp_minValue="1"
+                app:snp_orientation="horizontal"
+                app:snp_scrollEnabled="true"
+                app:snp_stepSize="1"
+                app:snp_updateInterval="25"
+                app:snp_value="1"
+                app:snp_valueMarginEnd="30dp"
+                app:snp_valueMarginStart="30dp" />
+            <Button
+                style="@style/button"
+                android:id="@+id/post_donate_button"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:text="Donate" />
+        </LinearLayout>
+    </LinearLayout>
+</android.support.v7.widget.CardView>
