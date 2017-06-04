@@ -3,32 +3,136 @@
     android:id="@+id/content_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.hammad.instanthelp.Fragments.HomeFragment"
-    >
+    android:background="@color/body_bg"
+    tools:context="com.example.hammad.instanthelp.Fragments.HomeFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <Button
-        android:layout_marginTop="100dp"
-        android:layout_centerHorizontal="true"
+
+    <android.support.v7.widget.CardView
         android:id="@+id/blood_require_button"
-        android:text="@string/blood_required"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-    <Button
-        android:layout_centerHorizontal="true"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_marginBottom="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="150dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/colorPrimary"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="220dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:gravity="center_horizontal"
+                android:text="@string/blood_required" />
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="@color/grey" />
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/blood_icon" />
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
         android:id="@+id/first_aid_button"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
         android:layout_below="@id/blood_require_button"
-        android:text="@string/first_aid_required"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-    <Button
-        android:layout_centerHorizontal="true"
+        android:layout_margin="20dp">
 
-        android:layout_below="@id/first_aid_button"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/colorPrimary"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="220dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:gravity="center_horizontal"
+                android:text="@string/first_aid_required" />
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="@color/grey" />
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/first_aid_icon" />
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
         android:id="@+id/map_help_button"
-        android:text="@string/map_help"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_below="@id/first_aid_button"
+        android:layout_margin="20dp">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/colorPrimary"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="220dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:gravity="center_horizontal"
+                android:text="@string/map_help" />
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="@color/grey" />
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/location_icon" />
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+
+    <!--<Button-->
+    <!--android:id="@+id/blood_require_button"-->
+    <!--style="@style/button"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_centerHorizontal="true"-->
+    <!--android:layout_marginBottom="10dp"-->
+    <!--android:layout_marginTop="100dp"-->
+    <!--android:text="@string/blood_required" />-->
+
+    <!--<Button-->
+    <!--android:id="@+id/first_aid_button"-->
+    <!--style="@style/button"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_below="@id/blood_require_button"-->
+    <!--android:layout_centerHorizontal="true"-->
+    <!--android:layout_marginBottom="10dp"-->
+    <!--android:text="@string/first_aid_required" />-->
+
+    <!--<Button-->
+    <!--android:id="@+id/map_help_button"-->
+    <!--style="@style/button"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_below="@id/first_aid_button"-->
+    <!--android:layout_centerHorizontal="true"-->
+    <!--android:text="@string/map_help" />-->
 
 </RelativeLayout>

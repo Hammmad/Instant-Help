@@ -1,0 +1,148 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:padding="10dp"
+    tools:context="com.example.hammad.instanthelp.Fragments.PostFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+
+            <com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner
+                android:id="@+id/bloodGroupSpinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusableInTouchMode="true"
+                android:hint="Blood Group"
+                app:met_floatingLabel="normal" />
+
+            <RelativeLayout
+                android:layout_marginTop="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:textColor="#bdbdbd"
+                    android:text="Required Units"
+                    android:textSize="18dp" />
+
+                <com.michaelmuenzer.android.scrollablennumberpicker.ScrollableNumberPicker
+                    android:id="@+id/number_picker_units"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginTop="10dp"
+                    android:paddingEnd="8dp"
+                    android:paddingStart="8dp"
+                    app:snp_buttonPaddingBottom="8dp"
+                    app:snp_buttonPaddingLeft="8dp"
+                    app:snp_buttonPaddingTop="8dp"
+                    app:snp_maxValue="10"
+                    app:snp_minValue="1"
+                    app:snp_orientation="horizontal"
+                    app:snp_scrollEnabled="true"
+                    app:snp_stepSize="1"
+                    app:snp_updateInterval="25"
+                    app:snp_value="1"
+                    app:snp_valueMarginEnd="30dp"
+                    app:snp_valueMarginStart="30dp" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_marginTop="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:textColor="#bdbdbd"
+                    android:text="Within"
+                    android:textSize="18dp" />
+
+                <com.michaelmuenzer.android.scrollablennumberpicker.ScrollableNumberPicker
+                    android:id="@+id/number_picker_day"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginTop="10dp"
+                    android:paddingEnd="8dp"
+                    android:paddingStart="8dp"
+                    app:snp_buttonPaddingBottom="8dp"
+                    app:snp_buttonPaddingLeft="8dp"
+                    app:snp_buttonPaddingTop="8dp"
+                    app:snp_maxValue="5"
+                    app:snp_minValue="1"
+                    app:snp_orientation="horizontal"
+                    app:snp_scrollEnabled="true"
+                    app:snp_stepSize="1"
+                    app:snp_updateInterval="25"
+                    app:snp_value="1"
+                    app:snp_valueMarginEnd="30dp"
+                    app:snp_valueMarginStart="30dp" />
+            </RelativeLayout>
+
+            <com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner
+                android:id="@+id/countrySpinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusableInTouchMode="true"
+                android:hint="Country"
+                app:met_floatingLabel="normal" />
+
+
+            <com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner
+                android:id="@+id/citySpinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusableInTouchMode="true"
+                android:hint="City"
+                app:met_floatingLabel="normal" />
+
+            <com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner
+                android:id="@+id/hospitalSpinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusableInTouchMode="true"
+                android:hint="Hospital"
+                app:met_floatingLabel="normal" />
+
+
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:id="@+id/contact"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusableInTouchMode="true"
+                android:hint="Contact No"
+                android:inputType="number"
+                app:met_floatingLabel="normal" />
+
+            <Button
+                android:id="@+id/postButton"
+                style="@style/button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/contact"
+                android:text="Post" />
+
+
+        </LinearLayout>
+    </LinearLayout>
+
+</ScrollView>
+

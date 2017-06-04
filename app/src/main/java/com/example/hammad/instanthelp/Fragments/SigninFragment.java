@@ -1,6 +1,7 @@
 package com.example.hammad.instanthelp.Fragments;
 
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -51,7 +52,9 @@ public class SigninFragment extends Fragment {
     FirebaseAuth.AuthStateListener authStateListener;
     EditText userNameEditText;
     EditText passwordEditText;
+    TextView instantTextView;
     View coordinatorLayout;
+    ProgressDialog progressDialog;
     CallbackSigninFragment callbackSigninFragment;
     AlphaAnimation buttonClick;
     NetworkInfo networkInfo;
@@ -60,7 +63,7 @@ public class SigninFragment extends Fragment {
         @Override
         public CharSequence filter(CharSequence charSequence, int i, int i1, Spanned spanned, int i2, int i3) {
 
-            if(charSequence != null && blockCharacters.contains(charSequence)){
+            if (charSequence != null && blockCharacters.contains(charSequence)) {
                 return "";
             }
             return null;
@@ -88,6 +91,12 @@ public class SigninFragment extends Fragment {
 
         userNameEditText = (EditText) rootView.findViewById(R.id.userName_editText);
         passwordEditText = (EditText) rootView.findViewById(R.id.password_editText);
+        instantTextView = (TextView) rootView.findViewById(R.id.instanhelptText);
+        instantTextView.setText("@intanthelp.com");
+        progressDialog = new ProgressDialog(getActivity(),
+                R.style.AppTheme_Dark_Dialog);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setMessage("Loading...");
         coordinatorLayout = rootView.findViewById(R.id.coord_layout);
         buttonClick = new AlphaAnimation(1F, 0.7F);
 
@@ -107,8 +116,9 @@ public class SigninFragment extends Fragment {
             }
         };
 
-        userNameEditText.setFilters(new InputFilter[] {inputFilter});
+        userNameEditText.setFilters(new InputFilter[]{inputFilter});
         showkeyboard(userNameEditText);
+
         onSigninClickListener();
         onSignupClickListener();
         return rootView;
@@ -118,9 +128,10 @@ public class SigninFragment extends Fragment {
 
         editText.requestFocus();
         InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED,0);
+        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
 
     }
+
     private void onSignupClickListener() {
         TextView signUpButton = (TextView) rootView.findViewById(R.id.signup_textView);
         signUpButton.setOnClickListener(new View.OnClickListener() {
@@ -143,11 +154,12 @@ public class SigninFragment extends Fragment {
                 String userName = String.valueOf(userNameEditText.getText());
                 String password = String.valueOf(passwordEditText.getText());
 
+                progressDialog.show();
                 if (isValidate(userName, password)) {
                     if (networkInfo != null && networkInfo.isConnected()) {
                         logIn();
-                    }
-                    else {
+                    } else {
+                        progressDialog.dismiss();
                         showErrorMessage("No network connection");
                     }
                 }
@@ -156,7 +168,7 @@ public class SigninFragment extends Fragment {
     }
 
     private void logIn() {
-        mAuth.signInWithEmailAndPassword(userNameEditText.getText().toString() + "@instanthelp.com",
+        mAuth.signInWithEmailAndPassword(userNameEditText.getText().toString() + "@intanthelp.com",
                 passwordEditText.getText().toString())
                 .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
                     @Override
@@ -166,11 +178,13 @@ public class SigninFragment extends Fragment {
 
                         if (task.isSuccessful()) {
                             userInfoListener(databaseReference);
-
-
+                            progressDialog.show();
+                            userNameEditText.setText(null);
+                            passwordEditText.setText(null);
                         } else {
-                                showErrorMessage("Username or Password is incorrect !");
-                                userNameEditText.requestFocus();
+                            progressDialog.dismiss();
+                            showErrorMessage("Username or Password is incorrect !");
+                            userNameEditText.requestFocus();
                         }
                     }
                 });
@@ -180,7 +194,7 @@ public class SigninFragment extends Fragment {
         databaseReference.child("userinfo").child(mAuth.getCurrentUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.e(TAG,"userInfo Listener:   "+dataSnapshot.getKey());
+                Log.e(TAG, "userInfo Listener:   " + dataSnapshot.getKey());
                 final User user = dataSnapshot.getValue(User.class);
 
 //                if(user.profileImagePath == null){
@@ -188,35 +202,32 @@ public class SigninFragment extends Fragment {
 //                    currentUser.setNoImageCurrentUser(user);
 //                    callbackSigninFragment.startHelpActivity();
 //                }else{
-                    final long ONE_MEGABYTE  = 1024*1024;
-                    storageReference.child(user.profileImagePath).getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                        @Override
-                        public void onSuccess(byte[] bytes) {
-                            String profileImage = Base64.encodeToString(bytes, Base64.DEFAULT);
-                            User updatedUser = new User(
-                                    user.uId,
-                                    user.emaiAddress,
-                                    user.password,
-                                    user.volunteer,
-                                    user.bloodDonor,
-                                    user.bloodGroup,
-                                    user.firstAider,
-                                    profileImage);
-                            CurrentUser currentUser = new CurrentUser(getActivity());
-                            currentUser.setCurrentUser(updatedUser);
-                            callbackSigninFragment.startHelpActivity();
+                final long ONE_MEGABYTE = 1024 * 1024;
+                storageReference.child(user.profileImagePath).getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                    @Override
+                    public void onSuccess(byte[] bytes) {
+                        String profileImage = Base64.encodeToString(bytes, Base64.DEFAULT);
+                        User updatedUser = new User(
+                                user.uId,
+                                user.emaiAddress,
+                                user.password,
+                                user.volunteer,
+                                user.bloodDonor,
+                                user.bloodGroup,
+                                user.firstAider,
+                                profileImage);
+                        CurrentUser currentUser = new CurrentUser(getActivity());
+                        currentUser.setCurrentUser(updatedUser);
+                        callbackSigninFragment.startHelpActivity();
 
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
 
-                        }
-                    });
+                    }
+                });
 //                }
-
-
-
 
 
             }
@@ -227,6 +238,7 @@ public class SigninFragment extends Fragment {
             }
         });
     }
+
     @Override
     public void onStart() {
         super.onStart();
@@ -253,16 +265,17 @@ public class SigninFragment extends Fragment {
         if (userName.equals("")) {
             userNameEditText.requestFocus();
             showErrorMessage("Username is required !");
+            progressDialog.dismiss();
             return false;
         } else if (password.equals("")) {
             passwordEditText.requestFocus();
             showErrorMessage("Password is required !");
+            progressDialog.dismiss();
             return false;
         } else {
             return true;
         }
     }
-
 
 
     private void showErrorMessage(String message) {

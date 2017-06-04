@@ -5,6 +5,9 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="map">Map</string>
     <string name="userName">Username</string>
+    <string name="firstName">First Name</string>
+    <string name="lastName">Last Name</string>
+    <string name="email">Email</string>
     <string name="password">Password</string>
     <string name="confirm_password">Confirm Password</string>
     <string name="register_as_volunteer">Register as Volunteer</string>
@@ -25,17 +28,162 @@
     <string name="description">Description</string>
     <string name="send">Send</string>
 
+
     <string-array name="bloodgroups">
-        <item>A+ve</item>
-        <item>B+ve</item>
-        <item>AB+ve</item>
         <item>O+ve</item>
-        <item>B-ve</item>
-        <item>B+ve</item>
         <item>O-ve</item>
-
-
+        <item>A+ve</item>
+        <item>A-ve</item>
+        <item>B+ve</item>
+        <item>B-ve</item>
+        <item>AB+ve</item>
+        <item>AB-ve</item>
     </string-array>
+
+    <string-array name="country">
+        <item>Bangladesh</item>
+        <item>Nepal</item>
+        <item>Pakistan</item>
+        <item>Iran</item>
+        <item>Srilanka</item>
+        <item>Afghanistan</item>
+    </string-array>
+
+    <string-array name="bangladeshCities">
+        <item>Dhaka</item>
+        <item>Chittagong</item>
+    </string-array>
+
+    <string-array name="nepalCities">
+        <item>Kathmandu</item>
+        <item>Pokhara</item>
+    </string-array>
+
+    <string-array name="pakistanCities">
+        <item>Karachi</item>
+        <item>Lahore</item>
+        <item>Islamabad</item>
+        <item>Rawalpindi</item>
+        <item>Multan</item>
+    </string-array>
+
+    <string-array name="iranCities">
+        <item>Tehran</item>
+        <item>Mashhad</item>
+    </string-array>
+
+    <string-array name="srilankaCities">
+        <item>Colombo</item>
+        <item>Galkissa</item>
+    </string-array>
+
+    <string-array name="afganistanCities">
+        <item>Kabul</item>
+        <item>Kandhar</item>
+        <item>Jalalabad</item>
+    </string-array>
+
+    <string-array name="dhakaHosp">
+        <item>Apollo Hospitals Dhaka</item>
+        <item>SQUARE Hospitals Ltd</item>
+        <item>Abir General Hospital</item>
+    </string-array>
+
+    <string-array name="chittagongHosp">
+        <item>Al-Zahar Hospital Ltd.</item>
+        <item>Centre Point Hospital (Pvt)Ltd.</item>
+        <item>Chittagong Diabetic Hospital</item>
+    </string-array>
+
+    <string-array name="khatmanduHosp">
+        <item>Samaj Dental Hospital</item>
+        <item>Dr. Narayan Bahadur Basnet</item>
+        <item>IVF Surrogacy Nepal</item>
+    </string-array>
+
+    <string-array name="potharaHosp">
+        <item>Green Pastures Hospital</item>
+        <item>Pokhara Hospital And Research Centre Pvt. Ltd.</item>
+        <item>Fishtail Hospital and Research Center</item>
+    </string-array>
+
+    <string-array name="karachiHosp">
+        <item>Civil Hospital</item>
+        <item>Kulsum Bai Valika Social Security Hospital</item>
+        <item>Nazimabad Chest Clinic</item>
+        <item>Dow University of Health Sciences Ojha Campus</item>
+        <item>Sindh Government Qatar Hospital</item>
+        <item>Sindh Institute of Skin Diseases</item>
+        <item>Bantva Hospital</item>
+        <item>Abbasi Shaheed Hospital (ASH)</item>
+        <item>Nasir Hussein Shaheed Hospital</item>
+        <item>Lyari General Hospital</item>
+        <item>Kutiyana Memon Hospital</item>
+    </string-array>
+
+    <string-array name="lahoreHosp">
+        <item>Al-Khidmat Hospital, Multan Road</item>
+        <item>Lady Aitchison Hospital</item>
+        <item>Mayo Hospital</item>
+        <item>Punjab Institute of Cardiology</item>
+        <item>Lady Willingdon Hospital</item>
+        <item>Shaikh Zayed Hospital</item>
+    </string-array>
+
+    <string-array name="islamabadHosp">
+        <item>Al-Fatima Clinic</item>
+        <item>CDA Dispensary</item>
+        <item>D.H.Q Hospital</item>
+    </string-array>
+
+    <string-array name="pindiHosp">
+        <item>Al-Sadiq Hospital</item>
+        <item>AMC Hospital</item>
+        <item>Armed Forces Institute of Transfusion (AFIT)</item>
+    </string-array>
+
+    <string-array name="multanHosp">
+        <item>Amna Blood Bank</item>
+        <item>Combined Military Hospital Multan</item>
+        <item>Dr Riaz Shehbaz Clinic</item>
+    </string-array>
+
+    <string-array name="tehranHosp">
+        <item>Day General Hospital</item>
+        <item>Kasra General Hospital</item>
+        <item>Iamat Center</item>
+    </string-array>
+
+    <string-array name="mashadHosp">
+        <item>Imam Hospitals</item>
+        <item>MEHAR Hospitals</item>
+        <item>Razavi Hospitals</item>
+    </string-array>
+
+    <string-array name="colomboHosp">
+        <item>Colombo South Teaching Hospital, Kalubowila</item>
+        <item>Castle Street Hospital for Women, Colombo</item>
+        <item>Mulleriyawa Base Hospital (Colombo East General Hospital), Mulleriyawa</item>
+    </string-array>
+
+    <string-array name="galkissaHosp">
+        <item>Mt. Lavinia Branch</item>
+    </string-array>
+
+    <string-array name="kabulHosp">
+        <item>DK-German Medical Diagnostic Center</item>
+        <item>Matab Healthcare Hospital</item>
+    </string-array>
+
+    <string-array name="kandharHosp">
+        <item>Sovereign Healthcare Clinic</item>
+    </string-array>
+
+    <string-array name="jalabadHosp">
+        <item>Parchinar Main Hospital</item>
+        <item>Sayad Afzal Hussain Hospital</item>
+    </string-array>
+
 
     <string-array name="drawer_menu">
         <item>First Aid Guide</item>
@@ -44,7 +192,6 @@
         <item>Feedback</item>
         <item>Settings</item>
         <item>Signout</item>
-
     </string-array>
     <string name="title_activity_home">HomeActivity</string>
 

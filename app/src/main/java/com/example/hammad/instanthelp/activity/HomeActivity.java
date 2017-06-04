@@ -40,6 +40,7 @@ import android.widget.Toast;
 
 import com.example.hammad.instanthelp.Fragments.FeedbackFragment;
 import com.example.hammad.instanthelp.Fragments.HomeFragment;
+import com.example.hammad.instanthelp.Fragments.PostFeedFrag;
 import com.example.hammad.instanthelp.R;
 import com.example.hammad.instanthelp.models.Constants;
 import com.example.hammad.instanthelp.models.User;
@@ -378,7 +379,15 @@ public class HomeActivity extends AppCompatActivity
             // Handle the camera action
             getSupportFragmentManager().beginTransaction().
                     replace(R.id.content_home, new HomeFragment()).commit();
-        } else if (id == R.id.nav_guide) {
+        }
+        else if (id == R.id.nav_post) {
+            Toast.makeText(this, "Posts", Toast.LENGTH_SHORT).show();
+            getSupportFragmentManager().beginTransaction().
+                    replace(R.id.content_home, new PostFeedFrag()).commit();
+        }
+        else if (id == R.id.nav_myPost) {
+            Toast.makeText(this, "My Posts", Toast.LENGTH_SHORT).show();
+        }else if (id == R.id.nav_guide) {
 
         } else if (id == R.id.nav_improve_location) {
 

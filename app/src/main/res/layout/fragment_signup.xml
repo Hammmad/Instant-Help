@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:background="@color/colorPrimary"
     android:layout_height="match_parent"
     tools:context="com.example.hammad.instanthelp.Fragments.SignupFragment">
 
@@ -11,143 +11,291 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-    <LinearLayout
 
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:id="@+id/coord_linear_layout">
-    <android.support.design.widget.CoordinatorLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/coord_layout"/>
-    </LinearLayout>
-<LinearLayout
-    android:layout_centerHorizontal="true"
-    android:paddingLeft="32dp"
-    android:paddingRight="32dp"
-    android:layout_below="@id/coord_linear_layout"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
-    <android.support.design.widget.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp">
-    <EditText
-        android:id="@+id/email_editText"
-        android:hint="@string/userName"
-        android:selectAllOnFocus="true"
-        android:textColor="#006064"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="textPersonName" />
-    </android.support.design.widget.TextInputLayout>
+        <LinearLayout
 
-    <android.support.design.widget.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp">
-    <EditText
-        android:id="@+id/password_editText"
-        android:textColor="#006064"
-        android:hint="@string/password"
-        android:selectAllOnFocus="true"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="textPassword" />
-    </android.support.design.widget.TextInputLayout>
+            android:id="@+id/coord_linear_layout"
+            android:layout_width="match_parent"
+            android:layout_height="50dp">
 
-    <android.support.design.widget.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp">
-    <EditText
-        android:id="@+id/confirmPassword_editText"
-        android:selectAllOnFocus="true"
-        android:hint="@string/confirm_password"
-        android:textColor="#006064"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="textPassword" />
-    </android.support.design.widget.TextInputLayout>
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-    <TextView
-        android:text="@string/register_as_volunteer"
-        android:textSize="14sp"
-        android:textColor="#006064"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-        <RadioGroup
-            android:orientation="horizontal"
-            android:textColor="#006064"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            <android.support.design.widget.CoordinatorLayout
+                android:id="@+id/coord_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
 
-        <RadioButton
-            android:id="@+id/yes_radiobtn"
-            android:textColor="#006064"
-            android:text="@string/yes"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/coord_linear_layout"
+            android:layout_centerHorizontal="true"
+            android:orientation="vertical"
+            android:paddingLeft="24dp"
+            android:paddingRight="24dp">
 
-        <RadioButton
-            android:checked="true"
-            android:id="@+id/no_radiobtn"
-            android:textColor="#006064"
-            android:text="@string/no"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        </RadioGroup>
-    </LinearLayout>
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="8dp">
 
-    <CheckBox
-        android:visibility="gone"
-        android:textColor="#006064"
-        android:id="@+id/bloodDonor_chkbox"
-        android:text="@string/blood_donor"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+                <EditText
+                    android:id="@+id/fname_editText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/firstName"
+                    android:inputType="textPersonName"
+                    android:selectAllOnFocus="true"
+                    android:textColor="#006064" />
+            </android.support.design.widget.TextInputLayout>
 
-    <Spinner
-        android:visibility="gone"
-        android:textColor="#006064"
-        android:background="@color/colorPrimary"
-        android:id="@+id/bloodgroup_spinner"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="8dp">
 
-    <CheckBox
-        android:textColor="#006064"
-        android:visibility="gone"
-        android:id="@+id/firstAider_chkbox"
-        android:text="@string/first_aider"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+                <EditText
+                    android:id="@+id/lname_editText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/lastName"
+                    android:inputType="textPersonName"
+                    android:textColor="#006064" />
+            </android.support.design.widget.TextInputLayout>
 
-    <android.support.v7.widget.AppCompatButton
-        android:id="@+id/signup_button"
-        style="@style/button"
-        android:layout_marginTop="16dp"
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
-        android:text="@string/register"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_weight="1">
 
-    <TextView
-        android:id="@+id/signIn"
-        android:text="@string/have_account"
-        android:textSize="16sp"
-        android:layout_marginTop="16dp"
-        android:textColor="#FFFFFF"
-        android:layout_gravity="center_horizontal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-</LinearLayout>
+                    <EditText
+                        android:id="@+id/email_editText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left"
+                        android:hint="@string/username"
+                        android:inputType="textPersonName"
+                        android:selectAllOnFocus="false"
+                        android:textColor="#006064" />
+                </android.support.design.widget.TextInputLayout>
+
+                <TextView
+                    android:id="@+id/instantText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:gravity="right"
+                    android:textColor="@color/text_color" />
+            </LinearLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="8dp">
+
+                <EditText
+                    android:id="@+id/signup_contact"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Contact"
+                    android:inputType="number"
+                    android:textColor="#006064" />
+            </android.support.design.widget.TextInputLayout>
+
+            <com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner
+                android:id="@+id/signUpCountry_Spinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusableInTouchMode="true"
+                android:hint="Country"
+                app:met_floatingLabel="normal" />
+
+            <com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner
+                android:id="@+id/signUpCity_Spinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusableInTouchMode="true"
+                android:hint="City"
+                app:met_floatingLabel="normal" />
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="8dp">
+
+                <EditText
+                    android:id="@+id/password_editText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/password"
+                    android:inputType="textPassword"
+                    android:selectAllOnFocus="true"
+                    android:textColor="#006064" />
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="8dp">
+
+                <EditText
+                    android:id="@+id/confirmPassword_editText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/confirm_password"
+                    android:inputType="textPassword"
+                    android:selectAllOnFocus="true"
+                    android:textColor="#006064" />
+            </android.support.design.widget.TextInputLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="Gender"
+                    android:textColor="@color/text_color"
+                    android:textSize="14sp" />
+
+                <RadioGroup
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:orientation="horizontal"
+                    android:textColor="#006064">
+
+                    <RadioButton
+                        android:id="@+id/male_radiobtn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:buttonTint="@color/colorPrimaryDark"
+                        android:checked="true"
+                        android:text="Male"
+                        android:textColor="@color/text_color" />
+
+                    <RadioButton
+
+                        android:id="@+id/female_radiobtn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:buttonTint="@color/colorPrimaryDark"
+                        android:text="Female"
+                        android:textColor="@color/text_color" />
+                </RadioGroup>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="@string/register_as_volunteer"
+                    android:textColor="@color/text_color"
+                    android:textSize="14sp" />
+
+                <RadioGroup
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:orientation="horizontal"
+                    android:textColor="#006064">
+
+                    <RadioButton
+                        android:id="@+id/yes_radiobtn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:buttonTint="@color/colorPrimaryDark"
+                        android:text="@string/yes"
+                        android:textColor="@color/text_color" />
+
+                    <RadioButton
+                        android:id="@+id/no_radiobtn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:buttonTint="@color/colorPrimaryDark"
+                        android:checked="true"
+                        android:text="@string/no"
+                        android:textColor="@color/text_color" />
+                </RadioGroup>
+            </RelativeLayout>
+
+            <CheckBox
+                android:id="@+id/ambulance_chkbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/colorPrimaryDark"
+                android:text="Ambulance Service"
+                android:textColor="@color/text_color"
+                android:visibility="gone" />
+
+            <CheckBox
+                android:id="@+id/bloodDonor_chkbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/colorPrimaryDark"
+                android:text="@string/blood_donor"
+                android:textColor="@color/text_color"
+                android:visibility="gone" />
+
+            <Spinner
+                android:id="@+id/bloodgroup_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="5dp"
+                android:background="@color/colorPrimary"
+                android:textColor="@color/text_color"
+                android:visibility="gone" />
+
+            <CheckBox
+                android:id="@+id/firstAider_chkbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/colorPrimaryDark"
+                android:text="@string/first_aider"
+                android:textColor="@color/text_color"
+                android:visibility="gone" />
+
+            <android.support.v7.widget.AppCompatButton
+                android:id="@+id/signup_button"
+                style="@style/button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/register" />
+
+            <TextView
+                android:id="@+id/signIn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="20dp"
+                android:layout_marginTop="16dp"
+                android:text="@string/have_account"
+                android:textColor="@color/text_color"
+                android:textSize="16sp" />
+        </LinearLayout>
     </RelativeLayout>
 </ScrollView>
