@@ -15,6 +15,8 @@ import android.widget.Toast;
 
 import com.example.hammad.instanthelp.R;
 import com.example.hammad.instanthelp.models.PostModule;
+import com.example.hammad.instanthelp.models.User;
+import com.example.hammad.instanthelp.utils.CurrentUser;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -69,7 +71,9 @@ public class PostFeedAdapter extends ArrayAdapter<PostModule> implements View.On
 
         switch (v.getId()){
             case R.id.post_donate_button:
-                Toast.makeText(mContext, ""+dataModel.getmName(), Toast.LENGTH_SHORT).show();
+                CurrentUser currentUser = new CurrentUser(mContext);
+                User user = currentUser.getCurrentUser();
+                Toast.makeText(mContext, ""+user.emaiAddress, Toast.LENGTH_SHORT).show();
         }
     }
 

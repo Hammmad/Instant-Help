@@ -16,6 +16,7 @@ public class User {
     public String country;
     public String city;
     public String password;
+    public Boolean gender;
     public Boolean volunteer;
     public Boolean bloodDonor;
     public String bloodGroup;
@@ -28,6 +29,24 @@ public class User {
 
     public String profileImagePath;
 
+
+    public User(String uId, String fname, String lname, String emaiAddress, String contact, String country, String city, String password, Boolean gender, Boolean volunteer, Boolean bloodDonor, String bloodGroup, Boolean firstAider, Boolean ambulance, String profileImagePath) {
+        this.uId = uId;
+        this.fname = fname;
+        this.lname = lname;
+        this.emaiAddress = emaiAddress;
+        this.contact = contact;
+        this.country = country;
+        this.city = city;
+        this.password = password;
+        this.gender = gender;
+        this.volunteer = volunteer;
+        this.bloodDonor = bloodDonor;
+        this.bloodGroup = bloodGroup;
+        this.firstAider = firstAider;
+        this.ambulance = ambulance;
+        this.profileImagePath = profileImagePath;
+    }
 
     public User(String uId, String fname, String lname, String emaiAddress, String country, String city, String password, Boolean volunteer, Boolean bloodDonor, String bloodGroup, Boolean firstAider, Boolean ambulance) {
         this.uId = uId;
@@ -59,6 +78,23 @@ public class User {
         this.firstAider = firstAider;
         this.ambulance = ambulance;
         this.profileImagePath = profileImagePath;
+    }
+
+    public User(String uId, String fname, String lname, String emaiAddress, String contact, String country, String city, String password, Boolean gender, Boolean volunteer, Boolean bloodDonor, String bloodGroup, Boolean firstAider, Boolean ambulance) {
+        this.uId = uId;
+        this.fname = fname;
+        this.lname = lname;
+        this.emaiAddress = emaiAddress;
+        this.contact = contact;
+        this.country = country;
+        this.city = city;
+        this.password = password;
+        this.gender = gender;
+        this.volunteer = volunteer;
+        this.bloodDonor = bloodDonor;
+        this.bloodGroup = bloodGroup;
+        this.firstAider = firstAider;
+        this.ambulance = ambulance;
     }
 
     public User(String uId, String emaiAddress, String password, Boolean volunteer, Boolean bloodDonor, String bloodGroup, Boolean firstAider) {

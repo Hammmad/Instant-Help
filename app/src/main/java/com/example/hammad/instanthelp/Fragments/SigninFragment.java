@@ -195,6 +195,7 @@ public class SigninFragment extends Fragment {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Log.e(TAG, "userInfo Listener:   " + dataSnapshot.getKey());
+                Log.d(TAG, "USERINFO: "+ dataSnapshot);
                 final User user = dataSnapshot.getValue(User.class);
 
 //                if(user.profileImagePath == null){
@@ -209,12 +210,19 @@ public class SigninFragment extends Fragment {
                         String profileImage = Base64.encodeToString(bytes, Base64.DEFAULT);
                         User updatedUser = new User(
                                 user.uId,
+                                user.fname,
+                                user.lname,
                                 user.emaiAddress,
+                                user.contact,
+                                user.country,
+                                user.city,
                                 user.password,
+                                user.gender,
                                 user.volunteer,
                                 user.bloodDonor,
                                 user.bloodGroup,
                                 user.firstAider,
+                                user.ambulance,
                                 profileImage);
                         CurrentUser currentUser = new CurrentUser(getActivity());
                         currentUser.setCurrentUser(updatedUser);

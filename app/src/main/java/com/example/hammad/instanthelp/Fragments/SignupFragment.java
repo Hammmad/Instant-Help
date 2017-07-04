@@ -172,6 +172,7 @@ public class SignupFragment extends Fragment implements View.OnClickListener {
 
         maleRadioButton = (RadioButton) rootView.findViewById(R.id.male_radiobtn);
         femaleRadioButton = (RadioButton) rootView.findViewById(R.id.female_radiobtn);
+
         yesRadioButton = (RadioButton) rootView.findViewById(R.id.yes_radiobtn);
         noRadioButton = (RadioButton) rootView.findViewById(R.id.no_radiobtn);
 
@@ -486,6 +487,7 @@ public class SignupFragment extends Fragment implements View.OnClickListener {
         boolean isBloodDonor = false;
         boolean isFirstAider = false;
         boolean isAmbulance = false;
+        boolean isGender = false;
         String bloodGroup;
 
         if (yesRadioButton.isChecked()) {
@@ -494,6 +496,13 @@ public class SignupFragment extends Fragment implements View.OnClickListener {
         if (noRadioButton.isChecked()) {
             isVolunteer = false;
             bloodGroup = "N/A";
+        }
+        if (maleRadioButton.isChecked()){
+            isGender = true;
+        }
+        if (femaleRadioButton.isChecked()){
+            isGender = false;
+
         }
         if (bloodDonorCheckBox.isChecked()) {
             isBloodDonor = true;
@@ -519,6 +528,7 @@ public class SignupFragment extends Fragment implements View.OnClickListener {
                 countrySpinner.getText().toString(),
                 citySpinner.getText().toString(),
                 passwordEditText.getText().toString(),
+                isGender,
                 isVolunteer, isBloodDonor,
                 bloodGroup,
                 isFirstAider, isAmbulance,
