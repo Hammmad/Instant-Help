@@ -12,7 +12,13 @@ public final class Constants {
     public static final String RECEIVER = PACKAGE_NAME+".RECEIVER";
     public static final String RESULT_DATA_KEY = PACKAGE_NAME+".RESULT_DATA_KEY";
     public static final String LOCATION_DATA_EXTRA = PACKAGE_NAME+".LOCATION_DATA_EXTRA";
-    public static final String USERNAME = "USERNAME";
+    public static final String FNAME = "FNAME";
+    public static final String LNAME = "LNAME";
+    public static final String EMAILADDRESS = "EMAILADDRESS";
+    public static final String CONTACT = "CONTACT";
+    public static final String COUNTRY = "COUNTRY";
+    public static final String CITY = "CITY";
+    public static final String AMBULANCE = "AMBULANCE";
     public static final String PASSWORD = "PASSWORD";
     public static final String BLOOD_DONOR = "BLOOD_DONOR";
     public static final String FIRST_AIDER = "FIRST_AIDER";

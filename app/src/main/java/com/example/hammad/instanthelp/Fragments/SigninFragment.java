@@ -209,12 +209,18 @@ public class SigninFragment extends Fragment {
                         String profileImage = Base64.encodeToString(bytes, Base64.DEFAULT);
                         User updatedUser = new User(
                                 user.uId,
-                                user.emaiAddress,
+                                user.fName,
+                                user.lName,
+                                user.emailAddress,
+                                user.contact,
+                                user.country,
+                                user.city,
                                 user.password,
                                 user.volunteer,
                                 user.bloodDonor,
                                 user.bloodGroup,
                                 user.firstAider,
+                                user.ambulance,
                                 profileImage);
                         CurrentUser currentUser = new CurrentUser(getActivity());
                         currentUser.setCurrentUser(updatedUser);
