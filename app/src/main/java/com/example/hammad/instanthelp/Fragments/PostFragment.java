@@ -104,7 +104,7 @@ public class PostFragment extends Fragment {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 User currentUser = dataSnapshot.getValue(User.class);
 
-                PostModule module = new PostModule(uuid, currentUser.fname+" "+currentUser.lname, bloodGrp, noOfUnitValue, country, city, hosp, cont, 0, noOfUnitValue, days, pushKey);
+                PostModule module = new PostModule(uuid, currentUser.fName +" "+currentUser.lName, bloodGrp, noOfUnitValue, country, city, hosp, cont, 0, noOfUnitValue, days, pushKey);
                 myRef.child("post-feed").child(country).child(city).child(uuid).setValue(module);
                 progressDialog.dismiss();
                 HomeFragment homeFragment = new HomeFragment();
