@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:padding="16dp"
-    android:background="@color/colorPrimary"
+    android:background="@color/body_bg"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.hammad.instanthelp.Fragments.FeedbackFragment">
@@ -14,7 +14,7 @@
         android:text="@string/feedback_sentence"
         android:paddingBottom="16dp"
         android:textSize="16sp"
-        android:textColor="@color/colorPrimaryDark"
+        android:textColor="@color/text_color"
         />
     <EditText
         android:layout_width="match_parent"
@@ -28,6 +28,7 @@
 
 
     <Button
+        android:layout_marginTop="10dp"
         android:text="@string/send"
         style="@style/button"
         android:layout_width="match_parent"

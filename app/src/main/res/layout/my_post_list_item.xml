@@ -14,7 +14,7 @@
         android:padding="10dp">
 
         <TextView
-            android:id="@+id/post_description"
+            android:id="@+id/myPost_description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
@@ -31,7 +31,7 @@
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/post_contact"
+                android:id="@+id/myPost_contact"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
@@ -51,49 +51,11 @@
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/post_current_requir"
+                android:id="@+id/myPost_current_requir"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
                 android:textStyle="bold" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="3dp"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_marginTop="1dp"
-                android:layout_gravity="center_vertical"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Choose Units For Donation: "
-                android:textStyle="bold" />
-
-            <com.michaelmuenzer.android.scrollablennumberpicker.ScrollableNumberPicker
-                android:id="@+id/post_feed_donate_picker"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_marginTop="10dp"
-                android:layout_weight="1"
-                android:paddingEnd="8dp"
-                android:paddingStart="8dp"
-                app:snp_buttonPaddingBottom="8dp"
-                app:snp_buttonPaddingLeft="8dp"
-                app:snp_buttonPaddingTop="8dp"
-                app:snp_maxValue="5"
-                app:snp_minValue="1"
-                app:snp_orientation="horizontal"
-                app:snp_scrollEnabled="true"
-                app:snp_stepSize="1"
-                app:snp_updateInterval="25"
-                app:snp_value="1"
-                app:snp_valueMarginEnd="30dp"
-                app:snp_valueMarginStart="30dp" />
-
         </LinearLayout>
 
         <RelativeLayout
@@ -102,12 +64,20 @@
             android:layout_marginTop="10dp"
             android:orientation="horizontal">
 
-            <Button
-                android:id="@+id/post_donate_button"
-                style="@style/button"
-                android:layout_width="100dp"
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Donate" />
+                android:layout_marginLeft="5dp"
+                android:textStyle="bold" />
+
+            <Button
+                android:visibility="gone"
+                android:id="@+id/myPost_fullfill_button"
+                style="@style/button"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:text="Full-Filled" />
         </RelativeLayout>
     </LinearLayout>
 </android.support.v7.widget.CardView>

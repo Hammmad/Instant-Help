@@ -22,6 +22,7 @@ public class User {
     public String bloodGroup;
     public Boolean firstAider;
     public Boolean ambulance;
+    public int donatedUnits;
 
     public void setProfileImagePath(String profileImagePath) {
         this.profileImagePath = profileImagePath;
@@ -29,6 +30,23 @@ public class User {
 
     public String profileImagePath;
 
+    public User(String uId, String fname, String lname, String emaiAddress, String contact, int donatedUnits, String profileImagePath) {
+        this.uId = uId;
+        this.fname = fname;
+        this.lname = lname;
+        this.emaiAddress = emaiAddress;
+        this.contact = contact;
+        this.donatedUnits = donatedUnits;
+        this.profileImagePath = profileImagePath;
+    }
+
+    public int getDonatedUnits() {
+        return donatedUnits;
+    }
+
+    public void setDonatedUnits(int donatedUnits) {
+        this.donatedUnits = donatedUnits;
+    }
 
     public User(String uId, String fname, String lname, String emaiAddress, String contact, String country, String city, String password, Boolean gender, Boolean volunteer, Boolean bloodDonor, String bloodGroup, Boolean firstAider, Boolean ambulance, String profileImagePath) {
         this.uId = uId;

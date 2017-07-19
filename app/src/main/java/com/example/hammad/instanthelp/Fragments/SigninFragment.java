@@ -1,7 +1,7 @@
 package com.example.hammad.instanthelp.Fragments;
 
 
-import android.app.ProgressDialog;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -40,6 +40,8 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import dmax.dialog.SpotsDialog;
+
 /**
  * A simple {@link Fragment} subclass.
  */
@@ -54,7 +56,7 @@ public class SigninFragment extends Fragment {
     EditText passwordEditText;
     TextView instantTextView;
     View coordinatorLayout;
-    ProgressDialog progressDialog;
+    AlertDialog progressDialog;
     CallbackSigninFragment callbackSigninFragment;
     AlphaAnimation buttonClick;
     NetworkInfo networkInfo;
@@ -93,10 +95,7 @@ public class SigninFragment extends Fragment {
         passwordEditText = (EditText) rootView.findViewById(R.id.password_editText);
         instantTextView = (TextView) rootView.findViewById(R.id.instanhelptText);
         instantTextView.setText("@intanthelp.com");
-        progressDialog = new ProgressDialog(getActivity(),
-                R.style.AppTheme_Dark_Dialog);
-        progressDialog.setIndeterminate(true);
-        progressDialog.setMessage("Loading...");
+        progressDialog = new SpotsDialog(getActivity(), R.style.Custom);
         coordinatorLayout = rootView.findViewById(R.id.coord_layout);
         buttonClick = new AlphaAnimation(1F, 0.7F);
 

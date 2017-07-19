@@ -62,6 +62,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".activity.PostDetailsActivity" />
+        <activity android:name=".activity.FirstAidGuidActivity"></activity>
     </application>
 
 </manifest>

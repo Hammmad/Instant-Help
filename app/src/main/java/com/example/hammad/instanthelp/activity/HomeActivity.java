@@ -1,6 +1,7 @@
 package com.example.hammad.instanthelp.activity;
 
 import android.Manifest;
+import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -40,6 +41,7 @@ import android.widget.Toast;
 
 import com.example.hammad.instanthelp.Fragments.FeedbackFragment;
 import com.example.hammad.instanthelp.Fragments.HomeFragment;
+import com.example.hammad.instanthelp.Fragments.MyPostFragment;
 import com.example.hammad.instanthelp.Fragments.PostFeedFrag;
 import com.example.hammad.instanthelp.R;
 import com.example.hammad.instanthelp.models.Constants;
@@ -391,18 +393,18 @@ public class HomeActivity extends AppCompatActivity
             getSupportFragmentManager().beginTransaction().
                     replace(R.id.content_home, new HomeFragment()).commit();
         } else if (id == R.id.nav_post) {
-            Toast.makeText(this, "Posts", Toast.LENGTH_SHORT).show();
-            getSupportFragmentManager().beginTransaction().
-                    replace(R.id.content_home, new PostFeedFrag()).commit();
-        } else if (id == R.id.nav_myPost) {
-            Toast.makeText(this, "My Posts", Toast.LENGTH_SHORT).show();
-        } else if (id == R.id.nav_guide) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.content_home, new PostFeedFrag()).commit();
 
+        } else if (id == R.id.nav_myPost) {
+//            Toast.makeText(this, "My Posts", Toast.LENGTH_SHORT).show();
+            getSupportFragmentManager().beginTransaction().replace(R.id.content_home, new MyPostFragment()).commit();
+        } else if (id == R.id.nav_guide) {
+            Intent intent = new Intent(HomeActivity.this, FirstAidGuidActivity.class);
+            startActivity(intent);
         } else if (id == R.id.nav_improve_location) {
 
             showSettingsAlert();
         } else if (id == R.id.nav_feedback) {
-
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.content_home, new FeedbackFragment()).commit();
 
