@@ -1,6 +1,7 @@
 package com.example.hammad.instanthelp.activity;
 
 import android.Manifest;
+import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -40,6 +41,7 @@ import android.widget.Toast;
 
 import com.example.hammad.instanthelp.Fragments.FeedbackFragment;
 import com.example.hammad.instanthelp.Fragments.HomeFragment;
+import com.example.hammad.instanthelp.Fragments.MyPostFragment;
 import com.example.hammad.instanthelp.Fragments.PostFeedFrag;
 import com.example.hammad.instanthelp.R;
 import com.example.hammad.instanthelp.models.Constants;
@@ -92,12 +94,11 @@ public class HomeActivity extends AppCompatActivity
         toggle.syncState();
 
         LayoutInflater inflater = (LayoutInflater) HomeActivity.this.getSystemService(LAYOUT_INFLATER_SERVICE);
-        View navHeader = inflater.inflate(R.layout.nav_header_home,null);
+        View navHeader = inflater.inflate(R.layout.nav_header_home, null);
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.addHeaderView(navHeader);
         navigationView.setNavigationItemSelectedListener(this);
-
 
 
         TextView textView = (TextView) navHeader.findViewById(R.id.userName_textView);
@@ -108,7 +109,6 @@ public class HomeActivity extends AppCompatActivity
         userImageClickListener(userImageButton);
 
 
-
         storageReference = FirebaseStorage.getInstance().getReferenceFromUrl("gs://instant-help.appspot.com");
         databaseReference = FirebaseDatabase.getInstance().getReference();
 
@@ -116,16 +116,16 @@ public class HomeActivity extends AppCompatActivity
         authStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                if(firebaseAuth.getCurrentUser() != null){
+                if (firebaseAuth.getCurrentUser() != null) {
                     getSupportFragmentManager().beginTransaction().
                             replace(R.id.content_home, new HomeFragment()).commit();
-                }else {
-                          showSignInFragment();
+                } else {
+                    showSignInFragment();
                 }
             }
         };
-        if(user != null) {
-            if(user.profileImagePath !=null){
+        if (user != null) {
+            if (user.profileImagePath != null) {
                 Log.d(TAG, user.profileImagePath);
                 byte[] bytes = Base64.decode(user.profileImagePath, Base64.DEFAULT);
                 Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
@@ -161,7 +161,7 @@ public class HomeActivity extends AppCompatActivity
             public void onClick(DialogInterface dialogInterface, int i) {
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
-                if(intent.resolveActivity(getPackageManager()) != null){
+                if (intent.resolveActivity(getPackageManager()) != null) {
                     startActivityForResult(intent, CAMERA_REQUESTT_CODE);
                 }
             }
@@ -176,8 +176,8 @@ public class HomeActivity extends AppCompatActivity
     protected void onActivityResult(int requestCode, int resultCode, final Intent data) {
 
 
-        if(resultCode == RESULT_OK) {
-            if(requestCode == CropImage.PICK_IMAGE_CHOOSER_REQUEST_CODE) {
+        if (resultCode == RESULT_OK) {
+            if (requestCode == CropImage.PICK_IMAGE_CHOOSER_REQUEST_CODE) {
                 Uri imageUri = CropImage.getPickImageResultUri(this, data);
 
                 // For API >= 23 we need to check specifically that we have permissions to read external storage.
@@ -189,19 +189,19 @@ public class HomeActivity extends AppCompatActivity
                     // no permissions required or already grunted, can start crop image activity
                     startCropimageActivity(imageUri);
                 }
-            }else if(requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE){
+            } else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
                 CropImage.ActivityResult result = CropImage.getActivityResult(data);
                 Uri resultUri = result.getUri();
-               Picasso.with(this).load(resultUri).into(userImageButton);
+                Picasso.with(this).load(resultUri).into(userImageButton);
 
 
                 Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    uploadImage();
-                }
-            }, 5000);
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        uploadImage();
+                    }
+                }, 5000);
             }
 
 //            if (requestCode == CAMERA_REQUESTT_CODE) {
@@ -251,9 +251,9 @@ public class HomeActivity extends AppCompatActivity
 
     private void startCropimageActivity(Uri imageUri) {
         CropImage.activity(imageUri)
-                .setMinCropResultSize(200,200)
-                .setMaxCropResultSize(500,500)
-                .setRequestedSize(100,100)
+                .setMinCropResultSize(200, 200)
+                .setMaxCropResultSize(500, 500)
+                .setRequestedSize(100, 100)
                 .start(this);
     }
 
@@ -266,13 +266,13 @@ public class HomeActivity extends AppCompatActivity
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
         byte[] bytes = byteArrayOutputStream.toByteArray();
 
-        UploadTask uploadTask = storageReference.child("images/"+ databaseReference.push().getKey()).putBytes(bytes);
+        UploadTask uploadTask = storageReference.child("images/" + databaseReference.push().getKey()).putBytes(bytes);
         uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 CurrentUser currentUser = new CurrentUser(HomeActivity.this);
                 User user = currentUser.getCurrentUser();
-                if(user!=null){
+                if (user != null) {
                     updateUserInfo(taskSnapshot, currentUser, user);
                 }
             }
@@ -287,13 +287,16 @@ public class HomeActivity extends AppCompatActivity
     private void updateUserInfo(UploadTask.TaskSnapshot taskSnapshot, CurrentUser currentUser, final User user) {
         User updatedUser = new User(
                 user.uId,
-                user.fName,
-                user.lName,
-                user.emailAddress,
+
+                user.fname,
+                user.lname,
+                user.emaiAddress,
+
                 user.contact,
                 user.country,
                 user.city,
                 user.password,
+                user.gender,
                 user.volunteer,
                 user.bloodDonor,
                 user.bloodGroup,
@@ -314,7 +317,6 @@ public class HomeActivity extends AppCompatActivity
 //        });
 
 
-
     }
 
     private void setupPreference(User user) {
@@ -322,19 +324,23 @@ public class HomeActivity extends AppCompatActivity
         userImageButton.buildDrawingCache();
         Bitmap bitmap = userImageButton.getDrawingCache();
         ByteArrayOutputStream boas = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG,100,boas);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, boas);
         byte[] bytes = boas.toByteArray();
         String imageString = Base64.encodeToString(bytes, Base64.DEFAULT);
 
         User updatedUser =new User(
                 user.uId,
-                user.fName,
-                user.lName,
-                user.emailAddress,
+
+                user.fname,
+                user.lname,
+                user.emaiAddress,
+
+
                 user.contact,
                 user.country,
                 user.city,
                 user.password,
+                user.gender,
                 user.volunteer,
                 user.bloodDonor,
                 user.bloodGroup,
@@ -391,21 +397,19 @@ public class HomeActivity extends AppCompatActivity
             // Handle the camera action
             getSupportFragmentManager().beginTransaction().
                     replace(R.id.content_home, new HomeFragment()).commit();
-        }
-        else if (id == R.id.nav_post) {
-            Toast.makeText(this, "Posts", Toast.LENGTH_SHORT).show();
-            getSupportFragmentManager().beginTransaction().
-                    replace(R.id.content_home, new PostFeedFrag()).commit();
-        }
-        else if (id == R.id.nav_myPost) {
-            Toast.makeText(this, "My Posts", Toast.LENGTH_SHORT).show();
-        }else if (id == R.id.nav_guide) {
+        } else if (id == R.id.nav_post) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.content_home, new PostFeedFrag()).commit();
 
+        } else if (id == R.id.nav_myPost) {
+//            Toast.makeText(this, "My Posts", Toast.LENGTH_SHORT).show();
+            getSupportFragmentManager().beginTransaction().replace(R.id.content_home, new MyPostFragment()).commit();
+        } else if (id == R.id.nav_guide) {
+            Intent intent = new Intent(HomeActivity.this, FirstAidGuidActivity.class);
+            startActivity(intent);
         } else if (id == R.id.nav_improve_location) {
 
             showSettingsAlert();
         } else if (id == R.id.nav_feedback) {
-
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.content_home, new FeedbackFragment()).commit();
 
@@ -440,7 +444,7 @@ public class HomeActivity extends AppCompatActivity
     @Override
     protected void onStop() {
         super.onStop();
-        if(mAuth!=null){
+        if (mAuth != null) {
             mAuth.removeAuthStateListener(authStateListener);
         }
     }

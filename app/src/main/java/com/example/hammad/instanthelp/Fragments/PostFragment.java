@@ -1,7 +1,10 @@
 package com.example.hammad.instanthelp.Fragments;
 
 
-import android.app.ProgressDialog;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
@@ -27,6 +30,8 @@ import com.michaelmuenzer.android.scrollablennumberpicker.ScrollableNumberPicker
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner;
 
+import dmax.dialog.SpotsDialog;
+
 /**
  * A simple {@link Fragment} subclass.
  */
@@ -42,8 +47,8 @@ public class PostFragment extends Fragment {
     Button postBtn;
     ArrayAdapter bloodSpinnerAdapter, countrySpinnerAdapter, citySpinnerAdapter, hospitalSpinnerAdapter;
     String bloodGrpValue, countryValue, cityValue, hospitalValue, contactValue;
-    int  noOfUnitValue, days;
-    ProgressDialog progressDialog;
+    int noOfUnitValue, days;
+    AlertDialog progressDialog;
 
     public PostFragment() {
         // Required empty public constructor
@@ -84,21 +89,34 @@ public class PostFragment extends Fragment {
     }
 
     private void post() {
-        progressDialog = new ProgressDialog(getActivity(),
-                R.style.AppTheme_Dark_Dialog);
-        progressDialog.setIndeterminate(true);
-        progressDialog.setMessage("Posting...");
+        ConnectivityManager connectivityManager = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        progressDialog = new SpotsDialog(getActivity(), R.style.Custom);
         progressDialog.show();
 
-        final String uuid = mAuth.getCurrentUser().getUid();
-        final String pushKey = myRef.getKey();
-        final String bloodGrp = bloodSpinner.getText().toString();
-//
-        final String country = countrySpinner.getText().toString();
-        final String city = citySpinner.getText().toString();
-        final String hosp = hospitalSpinner.getText().toString();
-        final String cont = contact.getText().toString();
+        if (networkInfo != null && networkInfo.isConnected()) {
+            final String bloodGrp = bloodSpinner.getText().toString();
+            final String country = countrySpinner.getText().toString();
+            final String city = citySpinner.getText().toString();
+            final String hosp = hospitalSpinner.getText().toString();
+            final String cont = contact.getText().toString();
 
+            myRef.child("userinfo").child(mAuth.getCurrentUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    User currentUser = dataSnapshot.getValue(User.class);
+                    final String pushKey = myRef.push().getKey();
+                    PostModule module = new PostModule(currentUser.uId, currentUser.fname + " " + currentUser.lname, bloodGrp, noOfUnitValue, country, city, hosp, cont, 0, noOfUnitValue, days, pushKey);
+                    myRef.child("post-feed").child(pushKey).setValue(module);
+                    myRef.child("my-post").child(currentUser.uId).child(pushKey).setValue(module);
+                    myRef.child("push-key").child(country).child(city).child(currentUser.uId).push().setValue(pushKey);
+
+                    progressDialog.dismiss();
+                    HomeFragment homeFragment = new HomeFragment();
+                    getFragmentManager().beginTransaction().replace(R.id.content_home, homeFragment, null).addToBackStack(null).commit();
+
+
+               
         myRef.child("userinfo").child(mAuth.getCurrentUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -112,14 +130,19 @@ public class PostFragment extends Fragment {
                 
             }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
 
-                progressDialog.dismiss();
-                Toast.makeText(getActivity(), ""+ databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    progressDialog.dismiss();
+                    Toast.makeText(getActivity(), "" + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
 
+
+        } else {
+            Toast.makeText(getActivity(), "No Network Connection !", Toast.LENGTH_SHORT).show();
+            progressDialog.dismiss();
+        }
     }
 
 
@@ -129,7 +152,7 @@ public class PostFragment extends Fragment {
             @Override
             public void onNumberPicked(int value) {
                 noOfUnitValue = value;
-                if(value == unitPicker.getMaxValue()) {
+                if (value == unitPicker.getMaxValue()) {
                     Toast.makeText(getActivity(), "You can't request more than 10 units", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -139,7 +162,7 @@ public class PostFragment extends Fragment {
             @Override
             public void onNumberPicked(int value) {
                 days = value;
-                if(value == dayPicker.getMaxValue()) {
+                if (value == dayPicker.getMaxValue()) {
                     Toast.makeText(getActivity(), "You can't request for more than 5 days", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -306,6 +329,5 @@ public class PostFragment extends Fragment {
             }
         });
     }
-
 
 }

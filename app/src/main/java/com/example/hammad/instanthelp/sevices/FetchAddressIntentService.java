@@ -46,8 +46,9 @@ public class FetchAddressIntentService extends IntentService {
         }
 
         Location mLocation = intent.getParcelableExtra(Constants.LOCATION_DATA_EXTRA);
-         fName= intent.getStringExtra(Constants.FNAME);
-         lName= intent.getStringExtra(Constants.LNAME);
+
+        userName = intent.getStringExtra(Constants.FNAME + " " + Constants.LNAME);
+
         bloodGruoup = intent.getStringExtra(Constants.BLOODGROUP);
 
         if(mLocation == null){
@@ -89,8 +90,9 @@ public class FetchAddressIntentService extends IntentService {
     public void deliverResultToReceiver(int resultCode, String message){
         Bundle bundle = new Bundle();
         bundle.putString(Constants.RESULT_DATA_KEY, message);
-        bundle.putString(Constants.FNAME, fName );
-        bundle.putString(Constants.LNAME, lName );
+
+        bundle.putString(Constants.FNAME +" "+ Constants.LNAME, userName );
+
         bundle.putString(Constants.BLOODGROUP, bloodGruoup );
         mResultReciever.send(resultCode, bundle);
     }

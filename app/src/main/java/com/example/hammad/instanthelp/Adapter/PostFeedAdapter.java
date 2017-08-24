@@ -15,9 +15,16 @@ import android.widget.Toast;
 
 import com.example.hammad.instanthelp.R;
 import com.example.hammad.instanthelp.models.PostModule;
+import com.example.hammad.instanthelp.models.User;
+import com.example.hammad.instanthelp.utils.CurrentUser;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.michaelmuenzer.android.scrollablennumberpicker.ScrollableNumberPicker;
 import com.michaelmuenzer.android.scrollablennumberpicker.ScrollableNumberPickerListener;
 
@@ -34,18 +41,21 @@ public class PostFeedAdapter extends ArrayAdapter<PostModule> implements View.On
     FirebaseDatabase database;
     DatabaseReference myRef;
     FirebaseAuth mAuth;
+    int spinner;
 
     FirebaseAuth.AuthStateListener mAuthListener;
 
     @Override
     public void onNumberPicked(int value) {
-        Toast.makeText(mContext, ""+value, Toast.LENGTH_SHORT).show();
+        spinner = value;
+        Toast.makeText(mContext, "" + value, Toast.LENGTH_SHORT).show();
     }
 
     // View lookup cache
     private static class ViewHolder {
         TextView txtDesc;
         TextView txtContact;
+        TextView txtCurrentRequir;
         ScrollableNumberPicker donationPicker;
         Button post;
     }
@@ -58,18 +68,52 @@ public class PostFeedAdapter extends ArrayAdapter<PostModule> implements View.On
     }
 
     @Override
-    public void onClick(View v) {
+    public void onClick(final View v) {
 
         database = FirebaseDatabase.getInstance();
         myRef = database.getReference();
         mAuth = FirebaseAuth.getInstance();
 
         int position = (Integer) v.getTag();
-        PostModule dataModel = getItem(position);
+        final PostModule dataModel = getItem(position);
 
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.post_donate_button:
-                Toast.makeText(mContext, ""+dataModel.getmName(), Toast.LENGTH_SHORT).show();
+                CurrentUser currentUser = new CurrentUser(mContext);
+                User user = currentUser.getCurrentUser();
+                User donor = new User(user.uId, user.fname, user.lname, user.emaiAddress, user.contact, spinner, user.profileImagePath);
+                PostModule updatePostModule = new PostModule(dataModel.getUuid(), dataModel.getmName(), dataModel.getmGroup(), dataModel.getmNoofUnits(), dataModel.getmCountry(), dataModel.getmCity(), dataModel.getmHospital(), dataModel.getmContact(), dataModel.getDonatedUnits() + spinner, dataModel.getCurrentRequirement() - spinner, dataModel.getWithinDuration(), dataModel.getPushkey());
+//                if (dataModel.getCurrentRequirement() == 0){
+//                    myRef.child("post-feed").child(dataModel.getPushkey()).removeValue();
+//                    int deletePos = Integer.parseInt(v.getTag().toString());
+//                    dataSet.remove(deletePos);
+//                }else {
+
+//                }
+                myRef.child("post-feed").child(dataModel.getPushkey()).setValue(updatePostModule).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        myRef.child("post-feed").child(dataModel.getPushkey()).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                PostModule checkReq = dataSnapshot.getValue(PostModule.class);
+                                if (checkReq.getCurrentRequirement() == 0){
+                                    myRef.child("post-feed").child(dataModel.getPushkey()).removeValue();
+                                    int deletePos = Integer.parseInt(v.getTag().toString());
+                                    dataSet.remove(deletePos);
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+                    }
+                });
+                myRef.child("my-post").child(dataModel.getUuid()).child(dataModel.getPushkey()).setValue(updatePostModule);
+                myRef.child("donors").child(dataModel.getPushkey()).push().setValue(donor);
+
         }
     }
 
@@ -88,6 +132,7 @@ public class PostFeedAdapter extends ArrayAdapter<PostModule> implements View.On
             convertView = inflater.inflate(R.layout.list_item, parent, false);
             viewHolder.txtDesc = (TextView) convertView.findViewById(R.id.post_description);
             viewHolder.txtContact = (TextView) convertView.findViewById(R.id.post_contact);
+            viewHolder.txtCurrentRequir = (TextView) convertView.findViewById(R.id.post_current_requir);
             viewHolder.post = (Button) convertView.findViewById(R.id.post_donate_button);
             viewHolder.donationPicker = (ScrollableNumberPicker) convertView.findViewById(R.id.post_feed_donate_picker);
             result = convertView;
@@ -101,8 +146,13 @@ public class PostFeedAdapter extends ArrayAdapter<PostModule> implements View.On
         result.startAnimation(animation);
         lastPosition = position;
 
-        viewHolder.txtDesc.setText(dataModel.getmName()+" needs "+dataModel.getmNoofUnits()+ " bottles of "+dataModel.getmGroup()+ " blood group at "+dataModel.getmHospital()+", "+dataModel.getmCity()+" within "+dataModel.getWithinDuration()+" days.");
+        viewHolder.txtDesc.setText(dataModel.getmName() + " needs " + dataModel.getmNoofUnits() + " bottles of " + dataModel.getmGroup() + " blood group at " + dataModel.getmHospital() + ", " + dataModel.getmCity() + " within " + dataModel.getWithinDuration() + " days.");
         viewHolder.txtContact.setText(dataModel.getmContact());
+//        if (dataModel.getCurrentRequirement() == 0) {
+//            myRef.child("post-feed").child(dataModel.getPushkey()).removeValue();
+//            dataSet.remove(position);
+//        }
+        viewHolder.txtCurrentRequir.setText(Integer.toString(dataModel.getCurrentRequirement()));
         viewHolder.donationPicker.setListener(this);
         viewHolder.donationPicker.setTag(position);
         viewHolder.post.setOnClickListener(this);

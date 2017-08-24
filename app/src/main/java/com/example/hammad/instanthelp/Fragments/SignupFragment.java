@@ -1,6 +1,7 @@
 package com.example.hammad.instanthelp.Fragments;
 
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
@@ -48,6 +49,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner;
 
+import dmax.dialog.SpotsDialog;
+
 /**
  * A simple {@link Fragment} subclass.
  */
@@ -77,6 +80,7 @@ public class SignupFragment extends Fragment implements View.OnClickListener {
     Spinner bloodgroupSpinner;
     String countrySpinnerValue;
     String citySpinnerValue;
+    AlertDialog progressDialog;
 
     View coordinatorLayout;
     CallbackSignupFragment callbackSignupFragment;
@@ -164,6 +168,8 @@ public class SignupFragment extends Fragment implements View.OnClickListener {
         emailEditText.setFilters(new InputFilter[]{inputFilter});
         showkeyboard(userFnameEditText);
 
+        progressDialog = new SpotsDialog(getActivity(), R.style.Custom);
+
         countrySpinner = (MaterialBetterSpinner) rootView.findViewById(R.id.signUpCountry_Spinner);
         citySpinner = (MaterialBetterSpinner) rootView.findViewById(R.id.signUpCity_Spinner);
 
@@ -172,6 +178,7 @@ public class SignupFragment extends Fragment implements View.OnClickListener {
 
         maleRadioButton = (RadioButton) rootView.findViewById(R.id.male_radiobtn);
         femaleRadioButton = (RadioButton) rootView.findViewById(R.id.female_radiobtn);
+
         yesRadioButton = (RadioButton) rootView.findViewById(R.id.yes_radiobtn);
         noRadioButton = (RadioButton) rootView.findViewById(R.id.no_radiobtn);
 
@@ -397,6 +404,7 @@ public class SignupFragment extends Fragment implements View.OnClickListener {
         int id = view.getId();
         switch (id) {
             case R.id.signup_button: {
+                progressDialog.show();
                 view.startAnimation(buttonClick);
                 ConnectivityManager connectivityManager = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
                 NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
@@ -410,7 +418,10 @@ public class SignupFragment extends Fragment implements View.OnClickListener {
                         createAccount();
                     } else {
                         showErrorMessage("No Network Connection !");
+                        progressDialog.dismiss();
                     }
+                }else {
+                    progressDialog.dismiss();
                 }
                 break;
             }
@@ -472,8 +483,10 @@ public class SignupFragment extends Fragment implements View.OnClickListener {
                                 databaseReference.child("first-aider").child(countrySpinnerValue).child(citySpinnerValue).child(Uid).setValue(user);
                             }
                             userInfoListener(databaseReference);
+                            progressDialog.dismiss();
 
                         } else {
+                            progressDialog.dismiss();
                             showErrorMessage("Failed to Register");
                         }
                     }
@@ -486,6 +499,7 @@ public class SignupFragment extends Fragment implements View.OnClickListener {
         boolean isBloodDonor = false;
         boolean isFirstAider = false;
         boolean isAmbulance = false;
+        boolean isGender = false;
         String bloodGroup;
 
         if (yesRadioButton.isChecked()) {
@@ -494,6 +508,13 @@ public class SignupFragment extends Fragment implements View.OnClickListener {
         if (noRadioButton.isChecked()) {
             isVolunteer = false;
             bloodGroup = "N/A";
+        }
+        if (maleRadioButton.isChecked()){
+            isGender = true;
+        }
+        if (femaleRadioButton.isChecked()){
+            isGender = false;
+
         }
         if (bloodDonorCheckBox.isChecked()) {
             isBloodDonor = true;
@@ -519,6 +540,7 @@ public class SignupFragment extends Fragment implements View.OnClickListener {
                 countrySpinner.getText().toString(),
                 citySpinner.getText().toString(),
                 passwordEditText.getText().toString(),
+                isGender,
                 isVolunteer, isBloodDonor,
                 bloodGroup,
                 isFirstAider, isAmbulance,
