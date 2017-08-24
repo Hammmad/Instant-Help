@@ -172,7 +172,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Goog
             case R.id.blood_require_button: {
 //                showBloodGrouplist();
                 PostFragment postFragment = new PostFragment();
-                this.getFragmentManager().beginTransaction().replace(R.id.content_home, postFragment, null).addToBackStack(null).commit();
+                this.getFragmentManager().beginTransaction().replace
+                        (R.id.content_home, postFragment, null).addToBackStack(null).commit();
                 break;
             }
             case R.id.first_aid_button: {

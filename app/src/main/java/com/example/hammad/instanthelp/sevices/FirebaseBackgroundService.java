@@ -288,7 +288,9 @@ public class FirebaseBackgroundService extends Service {
         Intent intent = new Intent(this, FetchAddressIntentService.class);
         intent.putExtra(Constants.RECEIVER, addressResultReceiver);
         intent.putExtra(Constants.LOCATION_DATA_EXTRA, requiredLocation);
+
         intent.putExtra(Constants.FNAME +" "+ Constants.LNAME,userName);
+
         intent.putExtra(Constants.BLOODGROUP, bloodGroup);
 
         startService(intent);
@@ -310,7 +312,9 @@ public class FirebaseBackgroundService extends Service {
         protected void onReceiveResult(int resultCode, Bundle resultData) {
 
             String addressOutput = resultData.getString(Constants.RESULT_DATA_KEY);
+
             String userName = resultData.getString(Constants.FNAME +" "+ Constants.LNAME);
+
             String bloodGroup = resultData.getString(Constants.BLOODGROUP);
             if(resultCode == Constants.RESULT_SUCCESS){
 
@@ -324,7 +328,7 @@ public class FirebaseBackgroundService extends Service {
                                 location.getLatitude() > (locationTracker.getLatitude() - 0.02) &&
                                 location.getLongitude() > (locationTracker.getLongitude() - 0.02)
                                 ) {
-                            createNotification(userName, message);
+                            createNotification(fName+" "+lName, message);
                         }
                     }
                 }
@@ -336,7 +340,7 @@ public class FirebaseBackgroundService extends Service {
                                 location.getLatitude() > (locationTracker.getLatitude() - 0.02) &&
                                 location.getLongitude() > (locationTracker.getLongitude() - 0.02)
                                 ){
-                        createNotification(userName, message);
+                        createNotification(fName+" "+lName , message);
                         }
                     }
                 }

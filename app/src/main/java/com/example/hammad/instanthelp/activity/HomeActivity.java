@@ -130,7 +130,7 @@ public class HomeActivity extends AppCompatActivity
                 byte[] bytes = Base64.decode(user.profileImagePath, Base64.DEFAULT);
                 Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                 userImageButton.setImageBitmap(bitmap);
-                textView.setText(user.emaiAddress);
+                textView.setText(user.emailAddress);
             }
         }
     }
@@ -287,9 +287,11 @@ public class HomeActivity extends AppCompatActivity
     private void updateUserInfo(UploadTask.TaskSnapshot taskSnapshot, CurrentUser currentUser, final User user) {
         User updatedUser = new User(
                 user.uId,
+
                 user.fname,
                 user.lname,
                 user.emaiAddress,
+
                 user.contact,
                 user.country,
                 user.city,
@@ -326,11 +328,14 @@ public class HomeActivity extends AppCompatActivity
         byte[] bytes = boas.toByteArray();
         String imageString = Base64.encodeToString(bytes, Base64.DEFAULT);
 
-        User updatedUser = new User(
+        User updatedUser =new User(
                 user.uId,
+
                 user.fname,
                 user.lname,
                 user.emaiAddress,
+
+
                 user.contact,
                 user.country,
                 user.city,

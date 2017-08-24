@@ -595,9 +595,9 @@ public class SignupFragment extends Fragment implements View.OnClickListener {
                         String profileImage = Base64.encodeToString(bytes, Base64.DEFAULT);
                         User updatedUser = new User(
                                 user.uId,
-                                user.fname,
-                                user.lname,
-                                user.emaiAddress,
+                                user.fName,
+                                user.lName,
+                                user.emailAddress,
                                 user.contact,
                                 user.country,
                                 user.city,

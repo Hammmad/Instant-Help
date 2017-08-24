@@ -115,7 +115,21 @@ public class PostFragment extends Fragment {
                     HomeFragment homeFragment = new HomeFragment();
                     getFragmentManager().beginTransaction().replace(R.id.content_home, homeFragment, null).addToBackStack(null).commit();
 
-                }
+
+               
+        myRef.child("userinfo").child(mAuth.getCurrentUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                User currentUser = dataSnapshot.getValue(User.class);
+
+                PostModule module = new PostModule(uuid, currentUser.fName +" "+currentUser.lName, bloodGrp, noOfUnitValue, country, city, hosp, cont, 0, noOfUnitValue, days, pushKey);
+                myRef.child("post-feed").child(country).child(city).child(uuid).setValue(module);
+                progressDialog.dismiss();
+                HomeFragment homeFragment = new HomeFragment();
+                getFragmentManager().beginTransaction().replace(R.id.content_home, homeFragment, null).addToBackStack(null).commit();
+                
+            }
+
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {

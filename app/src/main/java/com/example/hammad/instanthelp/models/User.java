@@ -9,9 +9,9 @@ public class User {
     }
 
     public String uId;
-    public String fname;
-    public String lname;
-    public String emaiAddress;
+    public String fName;
+    public String lName;
+    public String emailAddress;
     public String contact;
     public String country;
     public String city;
@@ -66,11 +66,15 @@ public class User {
         this.profileImagePath = profileImagePath;
     }
 
-    public User(String uId, String fname, String lname, String emaiAddress, String country, String city, String password, Boolean volunteer, Boolean bloodDonor, String bloodGroup, Boolean firstAider, Boolean ambulance) {
+    public User(String uId, String fName, String lName, String emailAddress, String contact,
+                String country, String city, String password, Boolean volunteer,
+                Boolean bloodDonor, String bloodGroup, Boolean firstAider,
+                Boolean ambulance) {
         this.uId = uId;
-        this.fname = fname;
-        this.lname = lname;
-        this.emaiAddress = emaiAddress;
+        this.fName = fName;
+        this.lName = lName;
+        this.emailAddress = emailAddress;
+        this.contact = contact;
         this.country = country;
         this.city = city;
         this.password = password;
@@ -81,11 +85,15 @@ public class User {
         this.ambulance = ambulance;
     }
 
-    public User(String uId, String fname, String lname, String emaiAddress, String contact, String country, String city, String password, Boolean volunteer, Boolean bloodDonor, String bloodGroup, Boolean firstAider, Boolean ambulance, String profileImagePath) {
+    public User(String uId, String fName, String lName,
+                String emailAddress, String contact, String country,
+                String city, String password, Boolean volunteer,
+                Boolean bloodDonor, String bloodGroup, Boolean firstAider,
+                Boolean ambulance, String profileImagePath) {
         this.uId = uId;
-        this.fname = fname;
-        this.lname = lname;
-        this.emaiAddress = emaiAddress;
+        this.fName = fName;
+        this.lName = lName;
+        this.emailAddress = emailAddress;
         this.contact = contact;
         this.country = country;
         this.city = city;
@@ -97,6 +105,7 @@ public class User {
         this.ambulance = ambulance;
         this.profileImagePath = profileImagePath;
     }
+
 
     public User(String uId, String fname, String lname, String emaiAddress, String contact, String country, String city, String password, Boolean gender, Boolean volunteer, Boolean bloodDonor, String bloodGroup, Boolean firstAider, Boolean ambulance) {
         this.uId = uId;
@@ -136,4 +145,5 @@ public class User {
         this.firstAider = firstAider;
         this.profileImagePath = profileImagePath;
     }
+
 }
