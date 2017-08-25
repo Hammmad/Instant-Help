@@ -8,6 +8,7 @@
     android:layout_margin="5dp">
 
     <LinearLayout
+        android:background="@color/body_li8bg"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -20,12 +21,14 @@
             android:orientation="horizontal">
 
             <TextView
+                android:textColor="@color/text_color"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Donor Name: "
                 android:textStyle="bold" />
 
             <TextView
+                android:textColor="@color/text_color"
                 android:id="@+id/donor_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -41,12 +44,14 @@
             android:orientation="horizontal">
 
             <TextView
+                android:textColor="@color/text_color"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Donated Unit: "
                 android:textStyle="bold" />
 
             <TextView
+                android:textColor="@color/text_color"
                 android:id="@+id/donor_donated_units"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -62,12 +67,14 @@
             android:orientation="horizontal">
 
             <TextView
+                android:textColor="@color/text_color"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Contact: "
                 android:textStyle="bold" />
 
             <TextView
+                android:textColor="@color/text_color"
                 android:id="@+id/donor_contact"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

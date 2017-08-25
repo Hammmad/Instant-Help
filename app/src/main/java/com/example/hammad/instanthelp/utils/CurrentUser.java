@@ -33,7 +33,7 @@ public class CurrentUser {
         editor.putString(Constants.COUNTRY, user.country);
         editor.putString(Constants.CITY, user.city);
         editor.putString(Constants.PASSWORD, user.password);
-        editor.putBoolean(Constants.GENDER, user.gender);
+        editor.putString(Constants.GENDER, user.gender);
         editor.putString(Constants.BLOODGROUP, user.bloodGroup);
         editor.putString(Constants.IMAGE_PATH, user.profileImagePath);
         editor.putBoolean(Constants.VOLUNTEER, user.volunteer);
@@ -55,7 +55,7 @@ public class CurrentUser {
         String country = currentUser.getString(Constants.COUNTRY, null);
         String city = currentUser.getString(Constants.CITY, null);
         String password = currentUser.getString(Constants.PASSWORD, null);
-        Boolean gender = currentUser.getBoolean(Constants.GENDER, true);
+        String gender = currentUser.getString(Constants.GENDER, null);
         String bloodGroup = currentUser.getString(Constants.BLOODGROUP, null);
         String imagePath = currentUser.getString(Constants.IMAGE_PATH, null);
         Boolean ambulance = currentUser.getBoolean(Constants.AMBULANCE, true);
@@ -80,7 +80,7 @@ public class CurrentUser {
         editor.putString(Constants.COUNTRY, user.country);
         editor.putString(Constants.CITY, user.city);
         editor.putString(Constants.PASSWORD, user.password);
-        editor.putBoolean(Constants.GENDER, user.gender);
+        editor.putString(Constants.GENDER, user.gender);
         editor.putString(Constants.BLOODGROUP, user.bloodGroup);
 //        editor.putString(Constants.IMAGE_PATH, user.profileImagePath);
         editor.putBoolean(Constants.VOLUNTEER, user.volunteer);
@@ -102,7 +102,7 @@ public class CurrentUser {
         String country = currentUser.getString(Constants.COUNTRY, null);
         String city = currentUser.getString(Constants.CITY, null);
         String password = currentUser.getString(Constants.PASSWORD, null);
-        Boolean gender = currentUser.getBoolean(Constants.GENDER, true);
+        String gender = currentUser.getString(Constants.GENDER, null);
         String bloodGroup = currentUser.getString(Constants.BLOODGROUP, null);
 //        String imagePath = currentUser.getString(Constants.IMAGE_PATH, null);
         Boolean ambulance = currentUser.getBoolean(Constants.AMBULANCE, true);

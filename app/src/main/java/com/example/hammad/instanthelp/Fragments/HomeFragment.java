@@ -19,7 +19,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.hammad.instanthelp.R;
-import com.example.hammad.instanthelp.activity.HelpMapActivity;
+import com.example.hammad.instanthelp.activity.FirstAidGuidActivity;
 import com.example.hammad.instanthelp.models.Constants;
 import com.example.hammad.instanthelp.models.Needer;
 import com.example.hammad.instanthelp.models.User;
@@ -95,8 +95,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Goog
         rootView.findViewById(R.id.first_aid_button).setOnClickListener(this);
 
 
-
-
         locationTracker = new LocationTracker(getActivity());
         if (locationTracker.canGetLocation()) {
             locationTracker.getLocation();
@@ -164,7 +162,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Goog
 
         switch (id) {
             case R.id.map_help_button: {
-                Intent intent = new Intent(getActivity(), HelpMapActivity.class);
+//                Intent intent = new Intent(getActivity(), HelpMapActivity.class);
+//                startActivity(intent);
+                Intent intent = new Intent(getContext(), FirstAidGuidActivity.class);
                 startActivity(intent);
                 break;
             }
@@ -185,7 +185,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Goog
 
                 break;
             }
-            default:{
+            default: {
                 break;
             }
         }
@@ -215,50 +215,51 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Goog
     private void populateGeofenceList() {
         locationTracker.getLocation();
         geofenceList.add(new Geofence.Builder().setRequestId("myFence")
-        .setCircularRegion(locationTracker.getLatitude(), locationTracker.getLongitude(), Constants.RADIUS_IN_METERS)
-        .setExpirationDuration(Constants.GEOFENCE_EXPIRATION_TIME_IN_MILLIS)
-        .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER | Geofence.GEOFENCE_TRANSITION_EXIT)
-        .build());
+                .setCircularRegion(locationTracker.getLatitude(), locationTracker.getLongitude(), Constants.RADIUS_IN_METERS)
+                .setExpirationDuration(Constants.GEOFENCE_EXPIRATION_TIME_IN_MILLIS)
+                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER | Geofence.GEOFENCE_TRANSITION_EXIT)
+                .build());
     }
 
-    private GeofencingRequest getGeofencingRequest(){
+    private GeofencingRequest getGeofencingRequest() {
         GeofencingRequest.Builder builder = new GeofencingRequest.Builder();
         builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER);
         builder.addGeofences(geofenceList);
         return builder.build();
     }
-    private PendingIntent getGeofencePendingIntent(){
-        if(geofencePendingIntent != null){
+
+    private PendingIntent getGeofencePendingIntent() {
+        if (geofencePendingIntent != null) {
             return geofencePendingIntent;
         }
 
         Intent intent = new Intent(getActivity(), GeofenceTransitionsIntentService.class);
-        return  PendingIntent.getService(getActivity(), 0, intent,PendingIntent.FLAG_UPDATE_CURRENT);
+        return PendingIntent.getService(getActivity(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     private void sendMylocationUp() {
 
-            if(mAuth.getCurrentUser() != null) {
-                String Uid = mAuth.getCurrentUser().getUid();
-                String userName = mAuth.getCurrentUser().getEmail();
-                userName = userName.replace("@instanthelp.com", "");
+        if (mAuth.getCurrentUser() != null) {
+            String Uid = mAuth.getCurrentUser().getUid();
+            String userName = mAuth.getCurrentUser().getEmail();
+            userName = userName.replace("@instanthelp.com", "");
 
-                locationTracker.getLocation();
-                final Needer needer = new Needer
-                        (userName, requiredBloodGroup,locationTracker.getLatitude(),locationTracker.getLongitude(), mAuth.getCurrentUser().getUid());
-                databaseReference.child("userCurrentLocation").child(Uid).removeValue(new DatabaseReference.CompletionListener() {
-                    @Override
-                    public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                        databaseReference.setValue(needer);
-                    }
-                });
-            }
+            locationTracker.getLocation();
+            final Needer needer = new Needer
+                    (userName, requiredBloodGroup, locationTracker.getLatitude(), locationTracker.getLongitude(), mAuth.getCurrentUser().getUid());
+            databaseReference.child("userCurrentLocation").child(Uid).removeValue(new DatabaseReference.CompletionListener() {
+                @Override
+                public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                    databaseReference.setValue(needer);
+                }
+            });
+        }
 
     }
 
     private void showBloodGrouplist() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        final String[] bloodGroups = {"A +ve", "A -ve","B +ve","AB +ve","O +ve","O -ve"};
+        final String[] bloodGroups = {"A +ve", "A -ve", "B +ve", "AB +ve", "O +ve", "O -ve"};
 
         builder.setTitle("Pick Blood Group").setItems(bloodGroups, new DialogInterface.OnClickListener() {
             @Override
@@ -277,7 +278,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Goog
         databaseReference.child("userinfo").child(mAuth.getCurrentUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.e(TAG,"userInfo Listener:   "+dataSnapshot.getKey());
+                Log.e(TAG, "userInfo Listener:   " + dataSnapshot.getKey());
                 User currentUser = dataSnapshot.getValue(User.class);
             }
 
@@ -307,9 +308,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Goog
     @Override
     public void onResult(@NonNull Status status) {
 
-        if(status.isSuccess()){
+        if (status.isSuccess()) {
             Toast.makeText(getActivity(), "onResult Success", Toast.LENGTH_SHORT).show();
-        }else{
+        } else {
             Toast.makeText(getActivity(), "onResult Success", Toast.LENGTH_SHORT).show();
         }
     }

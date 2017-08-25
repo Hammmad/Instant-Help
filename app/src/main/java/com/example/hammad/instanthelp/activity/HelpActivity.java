@@ -44,8 +44,8 @@ public class HelpActivity extends AppCompatActivity {
         final DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         ListView drawerList = (ListView) findViewById(R.id.left_drawer);
         List<ItemDrawer> list = new ArrayList<>();
-        list.add(new ItemDrawer("Home", R.drawable.ic_home_outline_white_24dp));
-        list.add(new ItemDrawer("First Aid Guide", R.drawable.ic_hospital_white_24dp));
+        list.add(new ItemDrawer("Home", R.drawable.home_icon));
+        list.add(new ItemDrawer("First Aid Guide", R.drawable.first_aid_guide_icon));
         list.add(new ItemDrawer("Be a Volunteer", R.drawable.ic_account_convert_white_24dp));
         list.add(new ItemDrawer("Add location", R.drawable.ic_add_location_white_24dp));
         list.add(new ItemDrawer("Improve your location", R.drawable.ic_account_location_white_24dp));

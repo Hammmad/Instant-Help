@@ -1,7 +1,6 @@
 package com.example.hammad.instanthelp.activity;
 
 import android.Manifest;
-import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -21,20 +20,22 @@ import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.View;
-import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -72,6 +73,8 @@ public class HomeActivity extends AppCompatActivity
     StorageReference storageReference;
     DatabaseReference databaseReference;
     private Uri mCropImageUri;
+    MenuItem shemerItem, defaultItem;
+    CompoundButton shemerSwitch, defaultSwitch;
 
 
     @Override
@@ -100,6 +103,23 @@ public class HomeActivity extends AppCompatActivity
         navigationView.addHeaderView(navHeader);
         navigationView.setNavigationItemSelectedListener(this);
 
+        shemerItem = navigationView.getMenu().findItem(R.id.shemerSwitch);
+        shemerSwitch = (CompoundButton) MenuItemCompat.getActionView(shemerItem);
+        shemerSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                Log.d("isChecked ", "" + isChecked);
+            }
+        });
+
+        defaultItem = navigationView.getMenu().findItem(R.id.defaultSwitch);
+        defaultSwitch = (CompoundButton) MenuItemCompat.getActionView(defaultItem);
+        defaultSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                Log.d("isChecked ", "" + isChecked);
+            }
+        });
 
         TextView textView = (TextView) navHeader.findViewById(R.id.userName_textView);
         userImageButton = (ImageView) navHeader.findViewById(R.id.user_imageView);
@@ -130,7 +150,7 @@ public class HomeActivity extends AppCompatActivity
                 byte[] bytes = Base64.decode(user.profileImagePath, Base64.DEFAULT);
                 Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                 userImageButton.setImageBitmap(bitmap);
-                textView.setText(user.emaiAddress);
+                textView.setText(user.fname + " " + user.lname);
             }
         }
     }
@@ -398,11 +418,17 @@ public class HomeActivity extends AppCompatActivity
         } else if (id == R.id.nav_myPost) {
 //            Toast.makeText(this, "My Posts", Toast.LENGTH_SHORT).show();
             getSupportFragmentManager().beginTransaction().replace(R.id.content_home, new MyPostFragment()).commit();
-        } else if (id == R.id.nav_guide) {
-            Intent intent = new Intent(HomeActivity.this, FirstAidGuidActivity.class);
-            startActivity(intent);
-        } else if (id == R.id.nav_improve_location) {
-
+        }
+//        else if (id == R.id.nav_shemer) {
+////            Intent intent = new Intent(HomeActivity.this, FirstAidGuidActivity.class);
+////            startActivity(intent);
+////            ((Switch) item.getActionView()).toggle();
+//            Toast.makeText(this, "Shemer", Toast.LENGTH_SHORT).show();
+//        } else if (id == R.id.nav_default) {
+//            Toast.makeText(this, "Default", Toast.LENGTH_SHORT).show();
+////            ((Switch) item.getActionView()).toggle();
+//        }
+        else if (id == R.id.nav_improve_location) {
             showSettingsAlert();
         } else if (id == R.id.nav_feedback) {
             getSupportFragmentManager().beginTransaction()

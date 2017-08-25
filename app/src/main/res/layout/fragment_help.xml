@@ -1,9 +1,10 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/content_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/body_bg"
+    android:orientation="vertical"
     tools:context="com.example.hammad.instanthelp.Fragments.HomeFragment">
 
     <!-- TODO: Update blank fragment layout -->
@@ -11,16 +12,14 @@
     <android.support.v7.widget.CardView
         android:id="@+id/blood_require_button"
         android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:layout_marginBottom="20dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:layout_marginTop="150dp">
+        android:layout_height="0dp"
+        android:layout_margin="20dp"
+        android:layout_weight="1">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/colorPrimary"
+            android:background="@color/body_li8bg"
             android:orientation="horizontal">
 
             <TextView
@@ -28,7 +27,10 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:gravity="center_horizontal"
-                android:text="@string/blood_required" />
+                android:text="@string/blood_required"
+                android:textColor="@color/colorPrimary"
+                android:textSize="22sp"
+                android:textStyle="bold" />
 
             <View
                 android:layout_width="1dp"
@@ -38,21 +40,22 @@
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:src="@drawable/blood_icon" />
+                android:src="@drawable/blood_required_icon" />
         </LinearLayout>
     </android.support.v7.widget.CardView>
 
     <android.support.v7.widget.CardView
         android:id="@+id/first_aid_button"
         android:layout_width="match_parent"
-        android:layout_height="80dp"
+        android:layout_height="0dp"
         android:layout_below="@id/blood_require_button"
-        android:layout_margin="20dp">
+        android:layout_margin="20dp"
+        android:layout_weight="1">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/colorPrimary"
+            android:background="@color/body_li8bg"
             android:orientation="horizontal">
 
             <TextView
@@ -60,7 +63,10 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:gravity="center_horizontal"
-                android:text="@string/first_aid_required" />
+                android:text="@string/first_aid_required"
+                android:textColor="@color/colorPrimary"
+                android:textSize="22sp"
+                android:textStyle="bold" />
 
             <View
                 android:layout_width="1dp"
@@ -70,21 +76,22 @@
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:src="@drawable/first_aid_icon" />
+                android:src="@drawable/first_aid_required_icon" />
         </LinearLayout>
     </android.support.v7.widget.CardView>
 
     <android.support.v7.widget.CardView
         android:id="@+id/map_help_button"
         android:layout_width="match_parent"
-        android:layout_height="80dp"
+        android:layout_height="0dp"
         android:layout_below="@id/first_aid_button"
-        android:layout_margin="20dp">
+        android:layout_margin="20dp"
+        android:layout_weight="1">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/colorPrimary"
+            android:background="@color/body_li8bg"
             android:orientation="horizontal">
 
             <TextView
@@ -92,7 +99,10 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:gravity="center_horizontal"
-                android:text="@string/map_help" />
+                android:text="@string/first_aid_guide"
+                android:textColor="@color/colorPrimary"
+                android:textSize="22sp"
+                android:textStyle="bold" />
 
             <View
                 android:layout_width="1dp"
@@ -102,7 +112,7 @@
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:src="@drawable/location_icon" />
+                android:src="@drawable/first_aid_guide_icon" />
         </LinearLayout>
     </android.support.v7.widget.CardView>
 
@@ -135,4 +145,4 @@
     <!--android:layout_centerHorizontal="true"-->
     <!--android:text="@string/map_help" />-->
 
-</RelativeLayout>
+</LinearLayout>

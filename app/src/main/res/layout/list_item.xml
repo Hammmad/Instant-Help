@@ -8,12 +8,14 @@
     android:layout_margin="5dp">
 
     <LinearLayout
+        android:background="@color/body_li8bg"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="10dp">
 
         <TextView
+            android:textColor="@color/text_color"
             android:id="@+id/post_description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
@@ -25,12 +27,14 @@
             android:orientation="horizontal">
 
             <TextView
+                android:textColor="@color/text_color"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Contact: "
                 android:textStyle="bold" />
 
             <TextView
+                android:textColor="@color/text_color"
                 android:id="@+id/post_contact"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -45,12 +49,14 @@
             android:orientation="horizontal">
 
             <TextView
+                android:textColor="@color/text_color"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Current Requirement: "
                 android:textStyle="bold" />
 
             <TextView
+                android:textColor="@color/text_color"
                 android:id="@+id/post_current_requir"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -65,6 +71,7 @@
             android:orientation="horizontal">
 
             <TextView
+                android:textColor="@color/text_color"
                 android:layout_marginTop="1dp"
                 android:layout_gravity="center_vertical"
                 android:layout_width="wrap_content"
@@ -82,6 +89,7 @@
                 android:paddingEnd="8dp"
                 android:paddingStart="8dp"
                 app:snp_buttonPaddingBottom="8dp"
+                card_view:snp_value_text_color="@color/text_color"
                 app:snp_buttonPaddingLeft="8dp"
                 app:snp_buttonPaddingTop="8dp"
                 app:snp_maxValue="5"

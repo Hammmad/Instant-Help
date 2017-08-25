@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/body_bg"
     android:fitsSystemWindows="true"
     android:padding="2dp"
     tools:context="com.example.hammad.instanthelp.Fragments.PostFragment">
@@ -25,19 +26,20 @@
                 android:layout_height="wrap_content"
                 android:focusableInTouchMode="true"
                 android:hint="Blood Group"
+                android:textColor="@color/text_color"
                 app:met_floatingLabel="normal" />
 
             <RelativeLayout
-                android:layout_marginTop="5dp"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:textColor="#bdbdbd"
                     android:text="Required Units"
+                    android:textColor="@color/text_color"
                     android:textSize="18dp" />
 
                 <com.michaelmuenzer.android.scrollablennumberpicker.ScrollableNumberPicker
@@ -48,6 +50,7 @@
                     android:layout_marginTop="10dp"
                     android:paddingEnd="8dp"
                     android:paddingStart="8dp"
+                    app:snp_value_text_color="@color/text_color"
                     app:snp_buttonPaddingBottom="8dp"
                     app:snp_buttonPaddingLeft="8dp"
                     app:snp_buttonPaddingTop="8dp"
@@ -63,16 +66,16 @@
             </RelativeLayout>
 
             <RelativeLayout
-                android:layout_marginTop="10dp"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:textColor="#bdbdbd"
                     android:text="Within"
+                    android:textColor="@color/text_color"
                     android:textSize="18dp" />
 
                 <com.michaelmuenzer.android.scrollablennumberpicker.ScrollableNumberPicker
@@ -84,6 +87,7 @@
                     android:paddingEnd="8dp"
                     android:paddingStart="8dp"
                     app:snp_buttonPaddingBottom="8dp"
+                    app:snp_value_text_color="@color/text_color"
                     app:snp_buttonPaddingLeft="8dp"
                     app:snp_buttonPaddingTop="8dp"
                     app:snp_maxValue="5"

@@ -65,6 +65,7 @@ public class SignupFragment extends Fragment implements View.OnClickListener {
     EditText userLnameEditText;
     EditText emailEditText;
     EditText contactEditText;
+    EditText guardianEditText;
     TextView instantTextView;
     MaterialBetterSpinner countrySpinner;
     MaterialBetterSpinner citySpinner;
@@ -163,6 +164,7 @@ public class SignupFragment extends Fragment implements View.OnClickListener {
         userLnameEditText = (EditText) rootView.findViewById(R.id.lname_editText);
         emailEditText = (EditText) rootView.findViewById(R.id.email_editText);
         contactEditText = (EditText) rootView.findViewById(R.id.signup_contact);
+        guardianEditText = (EditText) rootView.findViewById(R.id.signup_guardian);
         instantTextView = (TextView) rootView.findViewById(R.id.instantText);
         instantTextView.setText("@instanthelp.com");
         emailEditText.setFilters(new InputFilter[]{inputFilter});
@@ -340,6 +342,17 @@ public class SignupFragment extends Fragment implements View.OnClickListener {
                 }
             }
         });
+
+        guardianEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!v.hasFocus()) {
+                    if (guardianEditText.getText().toString().isEmpty() || guardianEditText.getText().toString().length() < 11) {
+                        showErrorMessage("Guardian Contact must be defined / Contact no is incorrect");
+                    }
+                }
+            }
+        });
         countrySpinner.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
@@ -412,15 +425,16 @@ public class SignupFragment extends Fragment implements View.OnClickListener {
                 String userLname = userLnameEditText.getText().toString();
                 String password = passwordEditText.getText().toString();
                 String contact = contactEditText.getText().toString();
+                String guardian = guardianEditText.getText().toString();
                 String confirmPassword = confirmPasswordEditText.getText().toString();
-                if (isValidate(userFname, userLname, password, contact, confirmPassword)) {
+                if (isValidate(userFname, userLname, password, contact, guardian, confirmPassword)) {
                     if (networkInfo != null && networkInfo.isConnected()) {
                         createAccount();
                     } else {
                         showErrorMessage("No Network Connection !");
                         progressDialog.dismiss();
                     }
-                }else {
+                } else {
                     progressDialog.dismiss();
                 }
                 break;
@@ -462,7 +476,7 @@ public class SignupFragment extends Fragment implements View.OnClickListener {
     }
 
     private void createAccount() {
-        mAuth.createUserWithEmailAndPassword(emailEditText.getText().toString()+"@intanthelp.com",
+        mAuth.createUserWithEmailAndPassword(emailEditText.getText().toString() + "@intanthelp.com",
                 passwordEditText.getText().toString())
                 .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
                     @Override
@@ -473,13 +487,13 @@ public class SignupFragment extends Fragment implements View.OnClickListener {
                             Uid = mAuth.getCurrentUser().getUid();
                             User user = getUserInfo();
                             databaseReference.child("userinfo").child(Uid).setValue(user);
-                            if (ambulanceCheckBox.isChecked()){
+                            if (ambulanceCheckBox.isChecked()) {
                                 databaseReference.child("ambulance").child(countrySpinnerValue).child(citySpinnerValue).child(Uid).setValue(user);
                             }
-                            if (bloodDonorCheckBox.isChecked()){
+                            if (bloodDonorCheckBox.isChecked()) {
                                 databaseReference.child("blood-donor").child(countrySpinnerValue).child(citySpinnerValue).child(bloodgroupSpinner.getSelectedItem().toString()).child(Uid).setValue(user);
                             }
-                            if (firstAiderCheckBox.isChecked()){
+                            if (firstAiderCheckBox.isChecked()) {
                                 databaseReference.child("first-aider").child(countrySpinnerValue).child(citySpinnerValue).child(Uid).setValue(user);
                             }
                             userInfoListener(databaseReference);
@@ -499,7 +513,7 @@ public class SignupFragment extends Fragment implements View.OnClickListener {
         boolean isBloodDonor = false;
         boolean isFirstAider = false;
         boolean isAmbulance = false;
-        boolean isGender = false;
+        String isGender = null;
         String bloodGroup;
 
         if (yesRadioButton.isChecked()) {
@@ -509,11 +523,11 @@ public class SignupFragment extends Fragment implements View.OnClickListener {
             isVolunteer = false;
             bloodGroup = "N/A";
         }
-        if (maleRadioButton.isChecked()){
-            isGender = true;
+        if (maleRadioButton.isChecked()) {
+            isGender = "male";
         }
-        if (femaleRadioButton.isChecked()){
-            isGender = false;
+        if (femaleRadioButton.isChecked()) {
+            isGender = "female";
 
         }
         if (bloodDonorCheckBox.isChecked()) {
@@ -537,6 +551,7 @@ public class SignupFragment extends Fragment implements View.OnClickListener {
                 userLnameEditText.getText().toString(),
                 emailEditText.getText().toString(),
                 contactEditText.getText().toString(),
+                guardianEditText.getText().toString(),
                 countrySpinner.getText().toString(),
                 citySpinner.getText().toString(),
                 passwordEditText.getText().toString(),
@@ -555,7 +570,7 @@ public class SignupFragment extends Fragment implements View.OnClickListener {
 
     }
 
-    public boolean isValidate(String userFname, String userLname, String password, String contact, String confirmPassword) {
+    public boolean isValidate(String userFname, String userLname, String password, String contact, String guardian, String confirmPassword) {
 
         if (userFname.isEmpty() || userFname.length() < 3) {
             userFnameEditText.requestFocus();
@@ -565,7 +580,7 @@ public class SignupFragment extends Fragment implements View.OnClickListener {
             userLnameEditText.requestFocus();
             showErrorMessage("Last name contain atleast 3 characters");
             return false;
-        }else if (password.isEmpty() || password.length() < 6) {
+        } else if (password.isEmpty() || password.length() < 6) {
             passwordEditText.requestFocus();
             showErrorMessage("Password contain atleast 6 characters");
             return false;
@@ -573,7 +588,11 @@ public class SignupFragment extends Fragment implements View.OnClickListener {
             contactEditText.requestFocus();
             showErrorMessage("Contact Number is invalid Or incomplete");
             return false;
-        } else if (confirmPassword.isEmpty() || !confirmPassword.equals(password)) {
+        } else if (guardian.isEmpty() || guardian.length() < 11) {
+            guardianEditText.requestFocus();
+            showErrorMessage("Contact Number is invalid Or incomplete");
+            return false;
+        }else if (confirmPassword.isEmpty() || !confirmPassword.equals(password)) {
             confirmPasswordEditText.requestFocus();
             showErrorMessage("Password is not matching");
             return false;
@@ -599,9 +618,11 @@ public class SignupFragment extends Fragment implements View.OnClickListener {
                                 user.lname,
                                 user.emaiAddress,
                                 user.contact,
+                                user.guardian,
                                 user.country,
                                 user.city,
                                 user.password,
+                                user.gender,
                                 user.volunteer,
                                 user.bloodDonor,
                                 user.bloodGroup,

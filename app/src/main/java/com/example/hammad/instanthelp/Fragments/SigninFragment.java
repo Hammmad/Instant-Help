@@ -173,8 +173,6 @@ public class SigninFragment extends Fragment {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         // start help activity
-
-
                         if (task.isSuccessful()) {
                             userInfoListener(databaseReference);
                             progressDialog.show();
@@ -196,7 +194,6 @@ public class SigninFragment extends Fragment {
                 Log.e(TAG, "userInfo Listener:   " + dataSnapshot.getKey());
                 Log.d(TAG, "USERINFO: "+ dataSnapshot);
                 final User user = dataSnapshot.getValue(User.class);
-
 //                if(user.profileImagePath == null){
 //                    CurrentUser currentUser = new CurrentUser(getActivity());
 //                    currentUser.setNoImageCurrentUser(user);

@@ -23,12 +23,12 @@
         android:padding="8dp"
         android:lines="10"
         android:gravity="top"
-        android:background="#FFFFFF"
+        android:background="@drawable/edittextbackground"
         />
 
 
     <Button
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="20dp"
         android:text="@string/send"
         style="@style/button"
         android:layout_width="match_parent"

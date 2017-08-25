@@ -9,7 +9,8 @@
     android:background="@color/body_bg"
     tools:context="com.example.hammad.instanthelp.activity.PostDetailsActivity">
 
-    <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    <android.support.v7.widget.CardView
+        xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/tools"
         xmlns:card_view="http://schemas.android.com/apk/res-auto"
         android:id="@+id/card_view"
@@ -17,12 +18,14 @@
         android:layout_height="wrap_content">
 
         <LinearLayout
+            android:background="@color/body_li8bg"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="10dp">
 
             <TextView
+                android:textColor="@color/text_color"
                 android:id="@+id/myPostDetail_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
@@ -34,12 +37,14 @@
                 android:orientation="horizontal">
 
                 <TextView
+                    android:textColor="@color/text_color"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Contact: "
                     android:textStyle="bold" />
 
                 <TextView
+                    android:textColor="@color/text_color"
                     android:id="@+id/myPostDetail_contact"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -54,12 +59,14 @@
                 android:orientation="horizontal">
 
                 <TextView
+                    android:textColor="@color/text_color"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Current Requirement: "
                     android:textStyle="bold" />
 
                 <TextView
+                    android:textColor="@color/text_color"
                     android:id="@+id/myPostDetail_current_requir"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -74,6 +81,7 @@
                 android:orientation="horizontal">
 
                 <TextView
+                    android:textColor="@color/text_color"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="5dp"
