@@ -15,6 +15,7 @@ import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 
 
+import com.example.hammad.instanthelp.activity.HomeActivity;
 import com.example.hammad.instanthelp.models.Constants;
 import com.example.hammad.instanthelp.activity.HelpMapActivity;
 import com.example.hammad.instanthelp.utils.CurrentUser;
@@ -48,6 +49,7 @@ public class FirebaseBackgroundService extends Service {
     int notifyId = 1;
     LocationTracker locationTracker;
     int i = 0;
+	HomeActivity homeActivity;
 
 
 
@@ -108,7 +110,7 @@ public class FirebaseBackgroundService extends Service {
 
                 Volunteer volunteer = dataSnapshot.getValue(Volunteer.class);
                 if(!isActivityStarted  && volunteer.neederUId.equals(mAuth.getCurrentUser().getUid())){
-                        createNotification(volunteer.volunteerName, volunteer.message);
+
                     }
             }
 
@@ -237,51 +239,6 @@ public class FirebaseBackgroundService extends Service {
         notificationManager.notify(notifyId++, mBuilder.build());
 
     }
-    private void createNotification(String title, String message) {
-
-
-
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(FirebaseBackgroundService.this)
-                .setSmallIcon(R.drawable.help_logo)
-                .setContentTitle(title)
-                .setContentText(message)
-                .setAutoCancel(true).setPriority(2)
-                .setStyle(new NotificationCompat.BigTextStyle().bigText(message));
-
-//        NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
-
-//        String[] events = new String[6];
-//        inboxStyle.setBigContentTitle("Blood Required");
-//
-//        for(int neederMarkerIndex=0; neederMarkerIndex<events.length; neederMarkerIndex++){
-//            inboxStyle.addLine(events[neederMarkerIndex]);
-//        }
-//        mBuilder.setStyle(inboxStyle);
-
-        Intent resultintent = new Intent(FirebaseBackgroundService.this, HelpMapActivity.class);
-
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(FirebaseBackgroundService.this);
-
-        stackBuilder.addParentStack(HelpMapActivity.class);
-
-        stackBuilder.addNextIntent(resultintent);
-
-        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        mBuilder.setContentIntent(resultPendingIntent);
-
-        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-
-
-//        int numMessages = 0;
-//
-//        mBuilder.setContentText(userName +" required "+ bloodGroup+ " blood at "+address).setNumber(++numMessages);
-
-
-        notificationManager.notify(notifyId++, mBuilder.build());
-
-    }
 
 
     private void startIntentService(Location requiredLocation,String userName, String bloodGroup) {
@@ -324,7 +281,7 @@ public class FirebaseBackgroundService extends Service {
                                 location.getLatitude() > (locationTracker.getLatitude() - 0.02) &&
                                 location.getLongitude() > (locationTracker.getLongitude() - 0.02)
                                 ) {
-                            createNotification(userName, message);
+							createNotification(userName, message,FirebaseBackgroundService.this,HomeActivity.class, notifyId);
                         }
                     }
                 }
@@ -336,7 +293,7 @@ public class FirebaseBackgroundService extends Service {
                                 location.getLatitude() > (locationTracker.getLatitude() - 0.02) &&
                                 location.getLongitude() > (locationTracker.getLongitude() - 0.02)
                                 ){
-                        createNotification(userName, message);
+                        	createNotification(userName, message,FirebaseBackgroundService.this,HomeActivity.class, notifyId);
                         }
                     }
                 }
@@ -347,4 +304,50 @@ public class FirebaseBackgroundService extends Service {
 
 
     }
+	public void  createNotification(String title, String message, Context fromActivity, Class toActivity, int notifyId) {
+
+
+
+		NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(fromActivity)
+				.setSmallIcon(R.mipmap.app_launcher)
+				.setContentTitle(title)
+				.setContentText(message)
+				.setAutoCancel(true).setPriority(2)
+				.setStyle(new NotificationCompat.BigTextStyle().bigText(message));
+
+//        NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
+
+//        String[] events = new String[6];
+//        inboxStyle.setBigContentTitle("Blood Required");
+//
+//        for(int neederMarkerIndex=0; neederMarkerIndex<events.length; neederMarkerIndex++){
+//            inboxStyle.addLine(events[neederMarkerIndex]);
+//        }
+//        mBuilder.setStyle(inboxStyle);
+
+		Intent resultintent = new Intent(fromActivity, toActivity);
+
+		TaskStackBuilder stackBuilder = TaskStackBuilder.create(fromActivity);
+
+		stackBuilder.addParentStack(toActivity);
+
+		stackBuilder.addNextIntent(resultintent);
+
+		PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+
+		mBuilder.setContentIntent(resultPendingIntent);
+
+		NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+
+
+//        int numMessages = 0;
+//
+//        mBuilder.setContentText(userName +" required "+ bloodGroup+ " blood at "+address).setNumber(++numMessages);
+
+
+		notificationManager.notify(notifyId++, mBuilder.build());
+
+	}
+
 }

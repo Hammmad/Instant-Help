@@ -1,0 +1,68 @@
+[
+    {
+        "outputFile": "F:\\Android Projects\\Instant-Help\\shimmerAndroidInstrumentDriver\\build\\intermediates\\incremental\\mergeReleaseResources\\merged.dir\\values\\values.xml",
+        "map": [
+            {
+                "to": {
+                    "startLine": 2,
+                    "startColumn": 4,
+                    "startOffset": 55,
+                    "endColumn": 67,
+                    "endOffset": 118
+                },
+                "from": {
+                    "file": "F:\\Android Projects\\Instant-Help\\shimmerAndroidInstrumentDriver\\src\\main\\res\\values\\strings.xml",
+                    "position": {
+                        "startLine": 2,
+                        "startColumn": 4,
+                        "startOffset": 19,
+                        "endColumn": 67,
+                        "endOffset": 82
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 3,
+                    "startColumn": 4,
+                    "startOffset": 123,
+                    "endLine": 9,
+                    "endColumn": 12,
+                    "endOffset": 409
+                },
+                "from": {
+                    "file": "F:\\Android Projects\\Instant-Help\\shimmerAndroidInstrumentDriver\\src\\main\\res\\values\\styles.xml",
+                    "position": {
+                        "startLine": 6,
+                        "startColumn": 4,
+                        "startOffset": 191,
+                        "endLine": 12,
+                        "endColumn": 12,
+                        "endOffset": 481
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 10,
+                    "startColumn": 4,
+                    "startOffset": 414,
+                    "endLine": 12,
+                    "endColumn": 12,
+                    "endOffset": 569
+                },
+                "from": {
+                    "file": "F:\\Android Projects\\Instant-Help\\shimmerAndroidInstrumentDriver\\src\\main\\res\\values\\styles.xml",
+                    "position": {
+                        "startLine": 15,
+                        "startColumn": 4,
+                        "startOffset": 522,
+                        "endLine": 17,
+                        "endColumn": 12,
+                        "endOffset": 679
+                    }
+                }
+            }
+        ]
+    }
+]

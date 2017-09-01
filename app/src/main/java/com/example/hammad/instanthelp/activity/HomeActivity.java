@@ -1,6 +1,7 @@
 package com.example.hammad.instanthelp.activity;
 
 import android.Manifest;
+import android.bluetooth.BluetoothAdapter;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -12,9 +13,11 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.provider.Settings;
@@ -47,6 +50,8 @@ import com.example.hammad.instanthelp.Fragments.PostFeedFrag;
 import com.example.hammad.instanthelp.R;
 import com.example.hammad.instanthelp.models.Constants;
 import com.example.hammad.instanthelp.models.User;
+import com.example.hammad.instanthelp.sevices.DefaultFallService;
+import com.example.hammad.instanthelp.sevices.WearableFallService;
 import com.example.hammad.instanthelp.utils.CurrentUser;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -67,22 +72,34 @@ public class HomeActivity extends AppCompatActivity
     private static final int GALLERY_REQUEST_CODE = 0;
     private static final int CAMERA_REQUESTT_CODE = 1;
     private static final String TAG = "HOME/DEBUGGING";
-    FirebaseAuth mAuth;
+	private static final int REQUEST_ENABLE_BT = 1;
+	FirebaseAuth mAuth;
     FirebaseAuth.AuthStateListener authStateListener;
     ImageView userImageButton;
     StorageReference storageReference;
     DatabaseReference databaseReference;
     private Uri mCropImageUri;
-    MenuItem shemerItem, defaultItem;
-    CompoundButton shemerSwitch, defaultSwitch;
+    MenuItem wearableSensorItem, defaultSensorItem;
+    CompoundButton wearableSensorSwitch, defaultSensorSwitch;
+	private MediaPlayer mp;
+	DefaultFallService defaultFallService;
+	WearableFallService wearableFallService;
+	public boolean fall;
+	private boolean fine = true;
 
 
-    @Override
+	@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_home);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
+
+		defaultFallService = new DefaultFallService();
+		wearableFallService = new WearableFallService();
+
+		mp = MediaPlayer.create(HomeActivity.this, R.raw.alrm);
+
+		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         ActionBar actionBar = getSupportActionBar();
@@ -103,25 +120,50 @@ public class HomeActivity extends AppCompatActivity
         navigationView.addHeaderView(navHeader);
         navigationView.setNavigationItemSelectedListener(this);
 
-        shemerItem = navigationView.getMenu().findItem(R.id.shemerSwitch);
-        shemerSwitch = (CompoundButton) MenuItemCompat.getActionView(shemerItem);
-        shemerSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Log.d("isChecked ", "" + isChecked);
-            }
-        });
+		final BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+		final Intent defaultSensorIntent = new Intent(HomeActivity.this, DefaultFallService.class);
+		final Intent wearableSensorIntent;
+		wearableSensorIntent = new Intent(HomeActivity.this, WearableFallService.class);
+		wearableSensorItem = navigationView.getMenu().findItem(R.id.wearable_sensor_switch);
+		wearableSensorSwitch = (CompoundButton) MenuItemCompat.getActionView(wearableSensorItem);
 
-        defaultItem = navigationView.getMenu().findItem(R.id.defaultSwitch);
-        defaultSwitch = (CompoundButton) MenuItemCompat.getActionView(defaultItem);
-        defaultSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Log.d("isChecked ", "" + isChecked);
-            }
-        });
+		wearableSensorSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				if(isChecked){
 
-        TextView textView = (TextView) navHeader.findViewById(R.id.userName_textView);
+					if (!mBluetoothAdapter.isEnabled()) {
+						Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+						startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+						wearableSensorSwitch.setChecked(false);
+					}else{
+						defaultSensorSwitch.setChecked(false);
+						startService(wearableSensorIntent);
+					}
+				}else{
+					stopService(wearableSensorIntent);
+				}
+			}
+		});
+
+		defaultSensorItem = navigationView.getMenu().findItem(R.id.defaultSwitch);
+		defaultSensorSwitch = (CompoundButton) MenuItemCompat.getActionView(defaultSensorItem);
+		defaultSensorSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				if(isChecked){
+					wearableSensorSwitch.setChecked(false);
+
+					//start background service for fall detection via mobile
+					startService(defaultSensorIntent);
+				}else{
+					stopService(defaultSensorIntent);
+				}
+			}
+		});
+
+
+		TextView textView = (TextView) navHeader.findViewById(R.id.userName_textView);
         userImageButton = (ImageView) navHeader.findViewById(R.id.user_imageView);
         CurrentUser currentUser = new CurrentUser(this);
         User user = currentUser.getCurrentUser();
@@ -133,17 +175,23 @@ public class HomeActivity extends AppCompatActivity
         databaseReference = FirebaseDatabase.getInstance().getReference();
 
         mAuth = FirebaseAuth.getInstance();
-        authStateListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                if (firebaseAuth.getCurrentUser() != null) {
-                    getSupportFragmentManager().beginTransaction().
-                            replace(R.id.content_home, new HomeFragment()).commit();
-                } else {
-                    showSignInFragment();
-                }
-            }
-        };
+		if (mAuth.getCurrentUser() != null) {
+			getSupportFragmentManager().beginTransaction().
+					replace(R.id.content_home, new HomeFragment()).commit();
+		} else {
+			showSignInFragment();
+		}
+//        authStateListener = new FirebaseAuth.AuthStateListener() {
+//            @Override
+//            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+//                if (firebaseAuth.getCurrentUser() != null) {
+//                    getSupportFragmentManager().beginTransaction().
+//                            replace(R.id.content_home, new HomeFragment()).commit();
+//                } else {
+//                    showSignInFragment();
+//                }
+//            }
+//        };
         if (user != null) {
             if (user.profileImagePath != null) {
                 Log.d(TAG, user.profileImagePath);
@@ -195,6 +243,11 @@ public class HomeActivity extends AppCompatActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, final Intent data) {
 
+		if(resultCode ==RESULT_OK){
+			if(requestCode == REQUEST_ENABLE_BT){
+
+			}
+		}
 
         if (resultCode == RESULT_OK) {
             if (requestCode == CropImage.PICK_IMAGE_CHOOSER_REQUEST_CODE) {
@@ -459,18 +512,108 @@ public class HomeActivity extends AppCompatActivity
     @Override
     protected void onStart() {
         super.onStart();
-        mAuth.addAuthStateListener(authStateListener);
+//        mAuth.addAuthStateListener(authStateListener);
+		defaultFallService.isActivityRunning = true;
+		wearableFallService.isActivityRunning=true;
+
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        if (mAuth != null) {
-            mAuth.removeAuthStateListener(authStateListener);
-        }
+//        if (mAuth != null) {
+//            mAuth.removeAuthStateListener(authStateListener);
+//        }
+        defaultFallService.isActivityRunning = false;
+        wearableFallService.isActivityRunning = false;
+		stopPlaying();
     }
 
-    public static Bitmap getRoundedRectBitmap(Bitmap bitmap, int pixels) {
+	@Override
+	protected void onPause() {
+		super.onPause();
+		defaultFallService.isActivityRunning = false;
+		wearableFallService.isActivityRunning = false;
+		Log.d(TAG, "OnPause");
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+
+		if(getIntent().getExtras() != null) {
+			fall = getIntent().getExtras().getBoolean("FALL");
+			if (fall) {
+				mp = MediaPlayer.create(HomeActivity.this, R.raw.alrm);
+				mp.setVolume(100, 100);
+//				stopPlaying();
+				mp.start();
+
+				Dialogue();
+
+				fall = false;
+			}
+		}
+		defaultFallService.isActivityRunning = true;
+		wearableFallService.isActivityRunning = true;
+	}
+
+	private void Dialogue() {
+		final AlertDialog.Builder builder = new AlertDialog.Builder(HomeActivity.this);
+		CurrentUser currentUser = new CurrentUser(HomeActivity.this);
+
+		builder.setTitle("Fall has been detected.")
+				.setMessage(currentUser.getCurrentUser().fname+"!! Are you Fine?")
+				.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialogInterface, int i) {
+						stopPlaying();
+						fine = false;
+					}
+				})
+				.setNegativeButton("No", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialogInterface, int i) {
+						stopPlaying();
+						fine = false;
+
+						// first Aid required
+						Toast.makeText(HomeActivity.this, "Inform Emergency Services", Toast.LENGTH_SHORT).show();
+					}
+				}).setCancelable(true);
+
+		final AlertDialog dialog = builder.create();
+
+		dialog.show();
+
+		new CountDownTimer(15000, 1000) {
+			@Override
+			public void onTick(long l) {
+
+			}
+
+			@Override
+			public void onFinish() {
+				if(fine){
+					dialog.dismiss();
+					stopPlaying();
+					// First Aid required
+					Toast.makeText(HomeActivity.this, "Inform Emergency Services", Toast.LENGTH_SHORT).show();
+				}
+
+
+			}
+		}.start();
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		defaultFallService.isActivityRunning = false;
+		wearableFallService.isActivityRunning = false;
+	}
+
+	public static Bitmap getRoundedRectBitmap(Bitmap bitmap, int pixels) {
         Bitmap result = null;
         try {
             result = Bitmap.createBitmap(200, 200, Bitmap.Config.ARGB_8888);
@@ -523,4 +666,11 @@ public class HomeActivity extends AppCompatActivity
         // Showing Alert Message
         alertDialog.show();
     }
+	private void stopPlaying() {
+		if (mp != null) {
+			mp.stop();
+			mp.release();
+			mp = null;
+		}
+	}
 }

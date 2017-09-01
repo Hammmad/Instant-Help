@@ -25,12 +25,12 @@
     <item android:title="@string/fall_detection">
         <menu>
             <item
-                android:id="@+id/shemerSwitch"
-                android:title="Shemer"
+                android:id="@+id/wearable_sensor_switch"
+                android:title="Wearable Sensor"
                 app:actionLayout="@layout/shemer_switch" />
             <item
                 android:id="@+id/defaultSwitch"
-                android:title="Default"
+                android:title="Default Sensor"
                 app:actionLayout="@layout/default_switch" />
         </menu>
     </item>
