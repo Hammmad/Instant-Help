@@ -23,7 +23,7 @@ import java.util.Locale;
 public class FetchAddressIntentService extends IntentService {
 
     String userName;
-    String bloodGruoup;
+//    String bloodGruoup;
     private  static  final String TAG = "DEBUGGING/FetchAdressIS";
     ResultReceiver mResultReciever;
 
@@ -45,7 +45,7 @@ public class FetchAddressIntentService extends IntentService {
 
         Location mLocation = intent.getParcelableExtra(Constants.LOCATION_DATA_EXTRA);
         userName = intent.getStringExtra(Constants.FNAME + " " + Constants.LNAME);
-        bloodGruoup = intent.getStringExtra(Constants.BLOODGROUP);
+//        bloodGruoup = intent.getStringExtra(Constants.BLOODGROUP);
 
         if(mLocation == null){
             errorMessage = "No Location Data provided";
@@ -60,13 +60,13 @@ public class FetchAddressIntentService extends IntentService {
             addresses = geocoder.getFromLocation(mLocation.getLatitude(), mLocation.getLongitude(), 1);
         } catch (IOException e) {
             errorMessage = "No Service Available ";
-            Log.e(TAG, errorMessage + e.getLocalizedMessage());
+            Log.d(TAG, errorMessage + e.getLocalizedMessage());
         }
         // Handle case when no address found
 
         if(addresses == null || addresses.size() == 0){
-            errorMessage = "No adresses found";
-            Log.e(TAG, errorMessage);
+            errorMessage = "No addresses found";
+            Log.d(TAG, errorMessage);
             deliverResultToReceiver(Constants.RESULT_FAILURE, errorMessage);
         }else{
             Address address = addresses.get(0);
@@ -77,17 +77,16 @@ public class FetchAddressIntentService extends IntentService {
                 addressFragments.add(address.getAddressLine(i));
             }
 
-            deliverResultToReceiver(Constants.RESULT_SUCCESS,
-                    TextUtils.join(System.getProperty("line.separator"),addressFragments));
+            deliverResultToReceiver(Constants.RESULT_SUCCESS
+                    ,address.getAddressLine(0));
         }
-
     }
 
     public void deliverResultToReceiver(int resultCode, String message){
         Bundle bundle = new Bundle();
         bundle.putString(Constants.RESULT_DATA_KEY, message);
         bundle.putString(Constants.FNAME +" "+ Constants.LNAME, userName );
-        bundle.putString(Constants.BLOODGROUP, bloodGruoup );
+//        bundle.putString(Constants.BLOODGROUP, bloodGruoup );
         mResultReciever.send(resultCode, bundle);
     }
 }

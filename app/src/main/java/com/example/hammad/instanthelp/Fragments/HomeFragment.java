@@ -21,10 +21,10 @@ import android.widget.Toast;
 import com.example.hammad.instanthelp.R;
 import com.example.hammad.instanthelp.activity.FirstAidGuidActivity;
 import com.example.hammad.instanthelp.models.Constants;
-import com.example.hammad.instanthelp.models.Needer;
 import com.example.hammad.instanthelp.models.User;
 import com.example.hammad.instanthelp.sevices.FirebaseBackgroundService;
 import com.example.hammad.instanthelp.sevices.GeofenceTransitionsIntentService;
+import com.example.hammad.instanthelp.utils.CurrentUser;
 import com.example.hammad.instanthelp.utils.LocationTracker;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -176,13 +176,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Goog
                 break;
             }
             case R.id.first_aid_button: {
-
-                requiredBloodGroup = null;
-//                sendMylocationUp();
-
-                addGeofence();
-
-
+				sendNotificationInfoFirebase();
                 break;
             }
             default: {
@@ -237,42 +231,33 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Goog
         return PendingIntent.getService(getActivity(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
-    private void sendMylocationUp() {
+    private void sendNotificationInfoFirebase() {
 
-        if (mAuth.getCurrentUser() != null) {
-            String Uid = mAuth.getCurrentUser().getUid();
-            String userName = mAuth.getCurrentUser().getEmail();
-            userName = userName.replace("@instanthelp.com", "");
-
+		CurrentUser currentUser = new CurrentUser(getActivity());
+		User user = currentUser.getCurrentUser();
+//            String uid = user.getuId();
+//            String userName = user.getFname() + " " + user.getLname();
+//			String contactNumber = user.getContact();
             locationTracker.getLocation();
-            final Needer needer = new Needer
-                    (userName, requiredBloodGroup, locationTracker.getLatitude(), locationTracker.getLongitude(), mAuth.getCurrentUser().getUid());
-            databaseReference.child("userCurrentLocation").child(Uid).removeValue(new DatabaseReference.CompletionListener() {
+
+            final User notificationInfo = new User
+					(user.getuId()
+					,user.getFname()
+					,user.getLname()
+					,user.getContact()
+					,locationTracker.getLatitude()
+					,locationTracker.getLongitude());
+
+            databaseReference.child("NotificationInfo").child(user.getuId()).removeValue(new DatabaseReference.CompletionListener() {
                 @Override
                 public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                    databaseReference.setValue(needer);
+                    databaseReference.setValue(notificationInfo);
                 }
             });
-        }
+
 
     }
 
-    private void showBloodGrouplist() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        final String[] bloodGroups = {"A +ve", "A -ve", "B +ve", "AB +ve", "O +ve", "O -ve"};
-
-        builder.setTitle("Pick Blood Group").setItems(bloodGroups, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-
-                requiredBloodGroup = bloodGroups[i];
-                Log.e(TAG, requiredBloodGroup);
-                sendMylocationUp();
-
-            }
-        });
-        builder.create().show();
-    }
 
     private void userInfoListener(DatabaseReference databaseReference) {
         databaseReference.child("userinfo").child(mAuth.getCurrentUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -311,7 +296,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Goog
         if (status.isSuccess()) {
             Toast.makeText(getActivity(), "onResult Success", Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(getActivity(), "onResult Success", Toast.LENGTH_SHORT).show();
+
         }
     }
 }

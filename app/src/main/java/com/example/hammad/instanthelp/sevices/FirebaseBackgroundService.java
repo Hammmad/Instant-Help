@@ -70,12 +70,15 @@ public class FirebaseBackgroundService extends Service {
 
         CurrentUser currentUser = new CurrentUser(this);
         User user = currentUser.getCurrentUser();
-        isBloodDonor  = user.bloodDonor;
-        isFirstAider  = user.firstAider;
+        if(user.firstAider){
+
+			notificationIinfoListener(databaseReference);
+		}
+
 
 //        userInfoListener(databaseReference);
 
-        userCurrentLocationListener(databaseReference);
+
 
         volunteerListener(databaseReference);
 
@@ -91,7 +94,7 @@ public class FirebaseBackgroundService extends Service {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Log.e(TAG,"userInfo Listener:   "+dataSnapshot.getKey());
                 User currentUser = dataSnapshot.getValue(User.class);
-                isBloodDonor = currentUser.bloodDonor;
+
                 isFirstAider = currentUser.firstAider;
             }
 
@@ -136,8 +139,8 @@ public class FirebaseBackgroundService extends Service {
         });
     }
 
-    private void userCurrentLocationListener(DatabaseReference databaseReference) {
-        databaseReference.child("userCurrentLocation").addChildEventListener(new ChildEventListener() {
+    private void notificationIinfoListener(DatabaseReference databaseReference) {
+        databaseReference.child("NotificationInfo").addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Log.e(TAG, "onChildAdded ");
@@ -177,16 +180,14 @@ public class FirebaseBackgroundService extends Service {
 
 
         Log.e(TAG,"method is working");
-
+			CurrentUser currentUser = new CurrentUser(FirebaseBackgroundService.this);
 //        for (DataSnapshot requiredSnapshot: dataSnapshot.getChildren()){
-            Needer needer = (dataSnapshot.getValue(Needer.class));
+            User user = (dataSnapshot.getValue(User.class));
         location = new Location("");
-        location.setLatitude(needer.latitude);
-            location.setLongitude(needer.longitude);
-                if (! needer.uId.equals(mAuth.getCurrentUser().getUid())) {
-
-                    startIntentService(location,  needer.userName,  needer.bloodGroup);
-
+        location.setLatitude(user.latitude);
+            location.setLongitude(user.longitude);
+                if (! user.uId.equals(currentUser.getCurrentUser().getuId())) {
+                    startIntentService(location,  user.fname + " " + user.lname);
                 }else{
                         Log.e(TAG, "User is same");
                 }
@@ -241,12 +242,12 @@ public class FirebaseBackgroundService extends Service {
     }
 
 
-    private void startIntentService(Location requiredLocation,String userName, String bloodGroup) {
+    private void startIntentService(Location requiredLocation,String userName) {
         Intent intent = new Intent(this, FetchAddressIntentService.class);
         intent.putExtra(Constants.RECEIVER, addressResultReceiver);
         intent.putExtra(Constants.LOCATION_DATA_EXTRA, requiredLocation);
         intent.putExtra(Constants.FNAME +" "+ Constants.LNAME,userName);
-        intent.putExtra(Constants.BLOODGROUP, bloodGroup);
+//        intent.putExtra(Constants.BLOODGROUP, bloodGroup);
 
         startService(intent);
     }
@@ -268,35 +269,21 @@ public class FirebaseBackgroundService extends Service {
 
             String addressOutput = resultData.getString(Constants.RESULT_DATA_KEY);
             String userName = resultData.getString(Constants.FNAME +" "+ Constants.LNAME);
-            String bloodGroup = resultData.getString(Constants.BLOODGROUP);
+//            String bloodGroup = resultData.getString(Constants.BLOODGROUP);
             if(resultCode == Constants.RESULT_SUCCESS){
 
 
                 String message;
-                if(bloodGroup != null ){
-                    message = "Required "+ bloodGroup+ " blood at "+addressOutput;
-                    if(!isActivityStarted && isBloodDonor) {
+                    message = userName +" needs help at "+addressOutput;
+                    if(!isActivityStarted ) {
                         if (location.getLatitude() < (locationTracker.getLatitude() + 0.02) &&
                                 location.getLongitude() < (locationTracker.getLongitude() + 0.02) &&
                                 location.getLatitude() > (locationTracker.getLatitude() - 0.02) &&
                                 location.getLongitude() > (locationTracker.getLongitude() - 0.02)
                                 ) {
-							createNotification(userName, message,FirebaseBackgroundService.this,HomeActivity.class, notifyId);
+							createNotification("Instant Help", message,FirebaseBackgroundService.this,HelpMapActivity.class, notifyId);
                         }
                     }
-                }
-                else {
-                    message = "Required First Aid at " + addressOutput;
-                    if(!isActivityStarted && isFirstAider){
-                        if (location.getLatitude() < (locationTracker.getLatitude() + 0.02) &&
-                                location.getLongitude() < (locationTracker.getLongitude() + 0.02) &&
-                                location.getLatitude() > (locationTracker.getLatitude() - 0.02) &&
-                                location.getLongitude() > (locationTracker.getLongitude() - 0.02)
-                                ){
-                        	createNotification(userName, message,FirebaseBackgroundService.this,HomeActivity.class, notifyId);
-                        }
-                    }
-                }
             }else{
                     Log.e(TAG, "Failed result code");
             }

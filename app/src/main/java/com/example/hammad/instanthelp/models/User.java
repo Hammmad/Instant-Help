@@ -300,4 +300,14 @@ public class User {
         this.firstAider = firstAider;
         this.profileImagePath = profileImagePath;
     }
+
+    public double latitude,longitude;
+	public User(String uId, String fname, String lname, String contact, double latitude, double longitude) {
+		this.uId = uId;
+		this.fname = fname;
+		this.lname = lname;
+		this.contact = contact;
+		this.latitude = latitude;
+		this.longitude = longitude;
+	}
 }
