@@ -43,13 +43,11 @@ public class FirebaseBackgroundService extends Service {
     public static Boolean isActivityStarted = false;
     private FirebaseAuth mAuth;
     private AddressResultReceiver addressResultReceiver;
-    boolean isBloodDonor;
     Location location;
     boolean isFirstAider;
     int notifyId = 1;
     LocationTracker locationTracker;
     int i = 0;
-	HomeActivity homeActivity;
 
 
 
@@ -80,7 +78,7 @@ public class FirebaseBackgroundService extends Service {
 
 
 
-        volunteerListener(databaseReference);
+//        volunteerListener(databaseReference);
 
 
 

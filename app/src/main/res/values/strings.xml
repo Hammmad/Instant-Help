@@ -212,6 +212,7 @@
     <string name="settings">Settings</string>
     <string name="logout">Logout</string>
     <string name="fall_detection">Fall Detection</string>
+    <string name="sms_help">requests for FirstAid. (SMS sent via Instant Help)</string>
 
 
 </resources>

@@ -5,46 +5,112 @@ package com.example.hammad.instanthelp.models;
  */
 
 public class User {
+	//    public User(String uId, String fname, String lname, String emailAddress, String contact, String guardian, String country, String city, String password, String gender, Boolean volunteer, Boolean bloodDonor, String bloodGroup, Boolean firstAider, Boolean ambulance, int donatedUnits, String profileImagePath) {
+//        this.uId = uId;
+//        this.fname = fname;
+//        this.lname = lname;
+//        this.emailAddress = emailAddress;
+//        this.contact = contact;
+//        this.guardian = guardian;
+//        this.country = country;
+//        this.city = city;
+//        this.password = password;
+//        this.gender = gender;
+//        this.volunteer = volunteer;
+//        this.bloodDonor = bloodDonor;
+//        this.bloodGroup = bloodGroup;
+//        this.firstAider = firstAider;
+//        this.ambulance = ambulance;
+//        this.donatedUnits = donatedUnits;
+//        this.profileImagePath = profileImagePath;
+//    public User(String uId, String fname, String lname, String emailAddress, String contact, String country, String city, String password, String gender, Boolean volunteer, Boolean bloodDonor, String bloodGroup, Boolean firstAider, Boolean ambulance, String profileImagePath) {
+//        this.uId = uId;
+//        this.fname = fname;
+//        this.lname = lname;
+//        this.emailAddress = emailAddress;
+//        this.contact = contact;
+//        this.country = country;
+//        this.city = city;
+//        this.password = password;
+//        this.gender = gender;
+//        this.volunteer = volunteer;
+//        this.bloodDonor = bloodDonor;
+//        this.bloodGroup = bloodGroup;
+//        this.firstAider = firstAider;
+//        this.ambulance = ambulance;
+//        this.profileImagePath = profileImagePath;
+//    public User(String uId, String fname, String lname, String emailAddress, String country, String city, String password, Boolean volunteer, Boolean bloodDonor, String bloodGroup, Boolean firstAider, Boolean ambulance) {
+//        this.uId = uId;
+//        this.fname = fname;
+//        this.lname = lname;
+//        this.emailAddress = emailAddress;
+//        this.country = country;
+//        this.city = city;
+//        this.password = password;
+//        this.volunteer = volunteer;
+//        this.bloodDonor = bloodDonor;
+//        this.bloodGroup = bloodGroup;
+//        this.firstAider = firstAider;
+//        this.ambulance = ambulance;
+//    public User(String uId, String fname, String lname, String emailAddress, String contact, String country, String city, String password, Boolean volunteer, Boolean bloodDonor, String bloodGroup, Boolean firstAider, Boolean ambulance, String profileImagePath) {
+//        this.uId = uId;
+//        this.fname = fname;
+//        this.lname = lname;
+//        this.emailAddress = emailAddress;
+//        this.contact = contact;
+//        this.country = country;
+//        this.city = city;
+//        this.password = password;
+//        this.volunteer = volunteer;
+//        this.bloodDonor = bloodDonor;
+//        this.bloodGroup = bloodGroup;
+//        this.firstAider = firstAider;
+//        this.ambulance = ambulance;
+//        this.profileImagePath = profileImagePath;
+//    public User(String uId, String fname, String lname, String emailAddress, String contact, String country, String city, String password, String gender, Boolean volunteer, Boolean bloodDonor, String bloodGroup, Boolean firstAider, Boolean ambulance) {
+//        this.uId = uId;
+//        this.fname = fname;
+//        this.lname = lname;
+//        this.emailAddress = emailAddress;
+//        this.contact = contact;
+//        this.country = country;
+//        this.city = city;
+//        this.password = password;
+//        this.gender = gender;
+//        this.volunteer = volunteer;
+//        this.bloodDonor = bloodDonor;
+//        this.bloodGroup = bloodGroup;
+//        this.firstAider = firstAider;
+//        this.ambulance = ambulance;
+//    public User(String uId, String emailAddress, String password, Boolean volunteer, Boolean bloodDonor, String bloodGroup, Boolean firstAider) {
+//        this.uId = uId;
+//        this.emailAddress = emailAddress;
+//        this.password = password;
+//        this.volunteer = volunteer;
+//        this.bloodDonor = bloodDonor;
+//        this.bloodGroup = bloodGroup;
+//        this.firstAider = firstAider;
+//    public User(String uId, String emailAddress, String password, Boolean volunteer, Boolean bloodDonor, String bloodGroup, Boolean firstAider, String profileImagePath) {
+//        this.uId = uId;
+//        this.emailAddress = emailAddress;
+//        this.password = password;
+//        this.volunteer = volunteer;
+//        this.bloodDonor = bloodDonor;
+//        this.bloodGroup = bloodGroup;
+//        this.firstAider = firstAider;
+//        this.profileImagePath = profileImagePath;
+
     public User() {
     }
-
-    public String uId;
-    public String fname;
-    public String lname;
-    public String emaiAddress;
-    public String contact;
-    public String guardian;
-    public String country;
-    public String city;
-    public String password;
-    public String gender;
-    public Boolean volunteer;
-    public Boolean bloodDonor;
-    public String bloodGroup;
-    public Boolean firstAider;
-    public Boolean ambulance;
+	public String uId, fname, lname, emailAddress, contact, guardian, country, city, password, gender,bloodGroup;
+	public Boolean volunteer;
+	public Boolean bloodDonor;
+	public Boolean firstAider;
+	public Boolean ambulance;
+	public double latitude,longitude;
     public int donatedUnits;
 
     public void setProfileImagePath(String profileImagePath) {
-        this.profileImagePath = profileImagePath;
-    }
-
-    public User(String uId, String fname, String lname, String emaiAddress, String contact, String guardian, String country, String city, String password, String gender, Boolean volunteer, Boolean bloodDonor, String bloodGroup, Boolean firstAider, Boolean ambulance, String profileImagePath) {
-        this.uId = uId;
-        this.fname = fname;
-        this.lname = lname;
-        this.emaiAddress = emaiAddress;
-        this.contact = contact;
-        this.guardian = guardian;
-        this.country = country;
-        this.city = city;
-        this.password = password;
-        this.gender = gender;
-        this.volunteer = volunteer;
-        this.bloodDonor = bloodDonor;
-        this.bloodGroup = bloodGroup;
-        this.firstAider = firstAider;
-        this.ambulance = ambulance;
         this.profileImagePath = profileImagePath;
     }
 
@@ -74,12 +140,12 @@ public class User {
         this.lname = lname;
     }
 
-    public String getEmaiAddress() {
-        return emaiAddress;
+    public String getEmailAddress() {
+        return emailAddress;
     }
 
-    public void setEmaiAddress(String emaiAddress) {
-        this.emaiAddress = emaiAddress;
+    public void setEmailAddress(String emailAddress) {
+        this.emailAddress = emailAddress;
     }
 
     public String getContact() {
@@ -174,134 +240,45 @@ public class User {
         return profileImagePath;
     }
 
-    public User(String uId, String fname, String lname, String emaiAddress, String contact, String guardian, String country, String city, String password, String gender, Boolean volunteer, Boolean bloodDonor, String bloodGroup, Boolean firstAider, Boolean ambulance, int donatedUnits, String profileImagePath) {
+//    }
+
+	public int getDonatedUnits() {
+		return donatedUnits;
+	}
+
+	public void setDonatedUnits(int donatedUnits) {
+		this.donatedUnits = donatedUnits;
+	}
+
+	public User(String uId, String fname, String lname, String emailAddress, String contact, String guardian, String country, String city, String password, String gender, Boolean volunteer, Boolean bloodDonor, String bloodGroup, Boolean firstAider, Boolean ambulance, String profileImagePath) {
+		this.uId = uId;
+		this.fname = fname;
+		this.lname = lname;
+		this.emailAddress = emailAddress;
+		this.contact = contact;
+		this.guardian = guardian;
+		this.country = country;
+		this.city = city;
+		this.password = password;
+		this.gender = gender;
+		this.volunteer = volunteer;
+		this.bloodDonor = bloodDonor;
+		this.bloodGroup = bloodGroup;
+		this.firstAider = firstAider;
+		this.ambulance = ambulance;
+		this.profileImagePath = profileImagePath;
+	}
+
+    public User(String uId, String fname, String lname, String emailAddress, String contact, int donatedUnits, String profileImagePath) {
         this.uId = uId;
         this.fname = fname;
         this.lname = lname;
-        this.emaiAddress = emaiAddress;
+        this.emailAddress = emailAddress;
         this.contact = contact;
-        this.guardian = guardian;
-        this.country = country;
-        this.city = city;
-        this.password = password;
-        this.gender = gender;
-        this.volunteer = volunteer;
-        this.bloodDonor = bloodDonor;
-        this.bloodGroup = bloodGroup;
-        this.firstAider = firstAider;
-        this.ambulance = ambulance;
         this.donatedUnits = donatedUnits;
         this.profileImagePath = profileImagePath;
     }
 
-    public User(String uId, String fname, String lname, String emaiAddress, String contact, int donatedUnits, String profileImagePath) {
-        this.uId = uId;
-        this.fname = fname;
-        this.lname = lname;
-        this.emaiAddress = emaiAddress;
-        this.contact = contact;
-        this.donatedUnits = donatedUnits;
-        this.profileImagePath = profileImagePath;
-    }
-
-    public int getDonatedUnits() {
-        return donatedUnits;
-    }
-
-    public void setDonatedUnits(int donatedUnits) {
-        this.donatedUnits = donatedUnits;
-    }
-
-    public User(String uId, String fname, String lname, String emaiAddress, String contact, String country, String city, String password, String gender, Boolean volunteer, Boolean bloodDonor, String bloodGroup, Boolean firstAider, Boolean ambulance, String profileImagePath) {
-        this.uId = uId;
-        this.fname = fname;
-        this.lname = lname;
-        this.emaiAddress = emaiAddress;
-        this.contact = contact;
-        this.country = country;
-        this.city = city;
-        this.password = password;
-        this.gender = gender;
-        this.volunteer = volunteer;
-        this.bloodDonor = bloodDonor;
-        this.bloodGroup = bloodGroup;
-        this.firstAider = firstAider;
-        this.ambulance = ambulance;
-        this.profileImagePath = profileImagePath;
-    }
-
-    public User(String uId, String fname, String lname, String emaiAddress, String country, String city, String password, Boolean volunteer, Boolean bloodDonor, String bloodGroup, Boolean firstAider, Boolean ambulance) {
-        this.uId = uId;
-        this.fname = fname;
-        this.lname = lname;
-        this.emaiAddress = emaiAddress;
-        this.country = country;
-        this.city = city;
-        this.password = password;
-        this.volunteer = volunteer;
-        this.bloodDonor = bloodDonor;
-        this.bloodGroup = bloodGroup;
-        this.firstAider = firstAider;
-        this.ambulance = ambulance;
-    }
-
-    public User(String uId, String fname, String lname, String emaiAddress, String contact, String country, String city, String password, Boolean volunteer, Boolean bloodDonor, String bloodGroup, Boolean firstAider, Boolean ambulance, String profileImagePath) {
-        this.uId = uId;
-        this.fname = fname;
-        this.lname = lname;
-        this.emaiAddress = emaiAddress;
-        this.contact = contact;
-        this.country = country;
-        this.city = city;
-        this.password = password;
-        this.volunteer = volunteer;
-        this.bloodDonor = bloodDonor;
-        this.bloodGroup = bloodGroup;
-        this.firstAider = firstAider;
-        this.ambulance = ambulance;
-        this.profileImagePath = profileImagePath;
-    }
-
-    public User(String uId, String fname, String lname, String emaiAddress, String contact, String country, String city, String password, String gender, Boolean volunteer, Boolean bloodDonor, String bloodGroup, Boolean firstAider, Boolean ambulance) {
-        this.uId = uId;
-        this.fname = fname;
-        this.lname = lname;
-        this.emaiAddress = emaiAddress;
-        this.contact = contact;
-        this.country = country;
-        this.city = city;
-        this.password = password;
-        this.gender = gender;
-        this.volunteer = volunteer;
-        this.bloodDonor = bloodDonor;
-        this.bloodGroup = bloodGroup;
-        this.firstAider = firstAider;
-        this.ambulance = ambulance;
-    }
-
-    public User(String uId, String emaiAddress, String password, Boolean volunteer, Boolean bloodDonor, String bloodGroup, Boolean firstAider) {
-        this.uId = uId;
-        this.emaiAddress = emaiAddress;
-        this.password = password;
-        this.volunteer = volunteer;
-        this.bloodDonor = bloodDonor;
-        this.bloodGroup = bloodGroup;
-        this.firstAider = firstAider;
-    }
-
-
-    public User(String uId, String emaiAddress, String password, Boolean volunteer, Boolean bloodDonor, String bloodGroup, Boolean firstAider, String profileImagePath) {
-        this.uId = uId;
-        this.emaiAddress = emaiAddress;
-        this.password = password;
-        this.volunteer = volunteer;
-        this.bloodDonor = bloodDonor;
-        this.bloodGroup = bloodGroup;
-        this.firstAider = firstAider;
-        this.profileImagePath = profileImagePath;
-    }
-
-    public double latitude,longitude;
 	public User(String uId, String fname, String lname, String contact, double latitude, double longitude) {
 		this.uId = uId;
 		this.fname = fname;

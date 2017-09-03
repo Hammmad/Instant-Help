@@ -81,7 +81,7 @@ public class PostFeedAdapter extends ArrayAdapter<PostModule> implements View.On
             case R.id.post_donate_button:
                 CurrentUser currentUser = new CurrentUser(mContext);
                 User user = currentUser.getCurrentUser();
-                User donor = new User(user.uId, user.fname, user.lname, user.emaiAddress, user.contact, spinner, user.profileImagePath);
+                User donor = new User(user.uId, user.fname, user.lname, user.emailAddress, user.contact, spinner, user.profileImagePath);
                 PostModule updatePostModule = new PostModule(dataModel.getUuid(), dataModel.getmName(), dataModel.getmGroup(), dataModel.getmNoofUnits(), dataModel.getmCountry(), dataModel.getmCity(), dataModel.getmHospital(), dataModel.getmContact(), dataModel.getDonatedUnits() + spinner, dataModel.getCurrentRequirement() - spinner, dataModel.getWithinDuration(), dataModel.getPushkey());
 //                if (dataModel.getCurrentRequirement() == 0){
 //                    myRef.child("post-feed").child(dataModel.getPushkey()).removeValue();

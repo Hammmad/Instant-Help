@@ -37,4 +37,5 @@ public final class Constants {
     public static final String IMAGE_PATH = "IMAGE_PATH";
     public static final String NO_IMAGE_CURRENT_USER = "NO_IMAGE_CURRENT_USER";
     public static final String CURRENT_USER = "CURRENT_USER";
+	public static final String GUARDIAN = "GUARDIAN";
 }

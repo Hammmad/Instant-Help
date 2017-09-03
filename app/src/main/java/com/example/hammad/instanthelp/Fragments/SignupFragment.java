@@ -168,7 +168,7 @@ public class SignupFragment extends Fragment implements View.OnClickListener {
         instantTextView = (TextView) rootView.findViewById(R.id.instantText);
         instantTextView.setText("@instanthelp.com");
         emailEditText.setFilters(new InputFilter[]{inputFilter});
-        showkeyboard(userFnameEditText);
+        showKeyboard(userFnameEditText);
 
         progressDialog = new SpotsDialog(getActivity(), R.style.Custom);
 
@@ -289,7 +289,7 @@ public class SignupFragment extends Fragment implements View.OnClickListener {
 //    }
 
 
-    public void showkeyboard(EditText editText) {
+    public void showKeyboard(EditText editText) {
 
         editText.requestFocus();
         InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -616,7 +616,7 @@ public class SignupFragment extends Fragment implements View.OnClickListener {
                                 user.uId,
                                 user.fname,
                                 user.lname,
-                                user.emaiAddress,
+                                user.emailAddress,
                                 user.contact,
                                 user.guardian,
                                 user.country,

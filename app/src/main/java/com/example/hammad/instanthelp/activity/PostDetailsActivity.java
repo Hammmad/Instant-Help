@@ -76,7 +76,7 @@ public class PostDetailsActivity extends AppCompatActivity {
                 @Override
                 public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                     User donor = dataSnapshot.getValue(User.class);
-                    dataModels.add(new User(donor.uId, donor.fname, donor.lname, donor.emaiAddress, donor.contact, donor.getDonatedUnits(), donor.profileImagePath));
+                    dataModels.add(new User(donor.uId, donor.fname, donor.lname, donor.emailAddress, donor.contact, donor.getDonatedUnits(), donor.profileImagePath));
                     adapter.notifyDataSetChanged();
                     progressDialog.dismiss();
                 }
