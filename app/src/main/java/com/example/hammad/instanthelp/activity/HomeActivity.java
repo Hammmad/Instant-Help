@@ -214,29 +214,29 @@ public class HomeActivity extends AppCompatActivity
         });
     }
 
-    private void showDialogue() {
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
-        alertDialog.setMessage("Select an action");
-        alertDialog.setPositiveButton("Gallery", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+//    private void showDialogue() {
+//        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+//        alertDialog.setMessage("Select an action");
+//        alertDialog.setPositiveButton("Gallery", new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialogInterface, int i) {
+//                Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+//
+//                startActivityForResult(intent, GALLERY_REQUEST_CODE);
+//            }
+//        }).setNegativeButton("Camera", new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialogInterface, int i) {
+//                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//
+//                if (intent.resolveActivity(getPackageManager()) != null) {
+//                    startActivityForResult(intent, CAMERA_REQUESTT_CODE);
+//                }
+//            }
+//        });
 
-                startActivityForResult(intent, GALLERY_REQUEST_CODE);
-            }
-        }).setNegativeButton("Camera", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
-                if (intent.resolveActivity(getPackageManager()) != null) {
-                    startActivityForResult(intent, CAMERA_REQUESTT_CODE);
-                }
-            }
-        });
-
-        alertDialog.show();
-    }
+//        alertDialog.show();
+//    }
 
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -325,8 +325,8 @@ public class HomeActivity extends AppCompatActivity
     private void startCropimageActivity(Uri imageUri) {
         CropImage.activity(imageUri)
                 .setMinCropResultSize(200, 200)
-                .setMaxCropResultSize(500, 500)
-                .setRequestedSize(100, 100)
+                .setMaxCropResultSize(3500, 3500)
+                .setRequestedSize(3500, 3500)
                 .start(this);
     }
 
