@@ -111,6 +111,7 @@
             android:orientation="horizontal">
 
             <Button
+                android:translationZ="5dp"
                 android:id="@+id/post_donate_button"
                 style="@style/button"
                 android:layout_width="100dp"

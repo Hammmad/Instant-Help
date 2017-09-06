@@ -180,6 +180,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Goog
 //                showBloodGrouplist();
                 PostFragment postFragment = new PostFragment();
                 this.getFragmentManager().beginTransaction().replace(R.id.content_home, postFragment, null).addToBackStack(null).commit();
+
                 break;
             }
             case R.id.first_aid_button: {

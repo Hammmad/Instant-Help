@@ -78,6 +78,7 @@
                 android:textStyle="bold" />
 
             <Button
+                android:translationZ="5dp"
                 android:visibility="gone"
                 android:id="@+id/myPost_fullfill_button"
                 style="@style/button"

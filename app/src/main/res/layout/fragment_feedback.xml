@@ -28,6 +28,7 @@
 
 
     <Button
+        android:translationZ="5dp"
         android:layout_marginTop="20dp"
         android:text="@string/send"
         style="@style/button"

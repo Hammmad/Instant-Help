@@ -50,7 +50,6 @@
                     android:layout_marginTop="10dp"
                     android:paddingEnd="8dp"
                     android:paddingStart="8dp"
-                    app:snp_value_text_color="@color/text_color"
                     app:snp_buttonPaddingBottom="8dp"
                     app:snp_buttonPaddingLeft="8dp"
                     app:snp_buttonPaddingTop="8dp"
@@ -62,7 +61,8 @@
                     app:snp_updateInterval="25"
                     app:snp_value="1"
                     app:snp_valueMarginEnd="30dp"
-                    app:snp_valueMarginStart="30dp" />
+                    app:snp_valueMarginStart="30dp"
+                    app:snp_value_text_color="@color/text_color" />
             </RelativeLayout>
 
             <RelativeLayout
@@ -87,7 +87,6 @@
                     android:paddingEnd="8dp"
                     android:paddingStart="8dp"
                     app:snp_buttonPaddingBottom="8dp"
-                    app:snp_value_text_color="@color/text_color"
                     app:snp_buttonPaddingLeft="8dp"
                     app:snp_buttonPaddingTop="8dp"
                     app:snp_maxValue="5"
@@ -98,7 +97,8 @@
                     app:snp_updateInterval="25"
                     app:snp_value="1"
                     app:snp_valueMarginEnd="30dp"
-                    app:snp_valueMarginStart="30dp" />
+                    app:snp_valueMarginStart="30dp"
+                    app:snp_value_text_color="@color/text_color" />
             </RelativeLayout>
 
             <com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner
@@ -142,7 +142,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/contact"
-                android:text="Post" />
+                android:text="Post"
+                android:translationZ="5dp" />
 
 
         </LinearLayout>
