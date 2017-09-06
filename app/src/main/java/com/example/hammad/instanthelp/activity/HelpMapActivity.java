@@ -1,39 +1,35 @@
 package com.example.hammad.instanthelp.activity;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.location.Location;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.AppCompatImageView;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.TranslateAnimation;
-import android.widget.EditText;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.example.hammad.instanthelp.R;
+import com.example.hammad.instanthelp.models.User;
+import com.example.hammad.instanthelp.utils.CurrentUser;
 import com.example.hammad.instanthelp.utils.LocationTracker;
 import com.example.hammad.instanthelp.models.Needer;
 import com.example.hammad.instanthelp.models.Volunteer;
 import com.example.hammad.instanthelp.sevices.FirebaseBackgroundService;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.PendingResult;
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationListener;
-import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.LocationSettingsRequest;
-import com.google.android.gms.location.LocationSettingsResult;
-import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -68,47 +64,64 @@ import java.util.HashMap;
 import java.util.List;
 
 public class HelpMapActivity extends AppCompatActivity implements LocationListener, OnMapReadyCallback,
-        GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks {
+		GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks {
 
-    private static final String TAG = "MapActivity/DEBUGGING";
-    private static final float VOLUNTEER_ALPHA = 0.5f;
-    private static final float NEEDER_ALPHA = 0.7f;
+	private static final String TAG = "MapActivity/DEBUGGING";
+	//    private static final float VOLUNTEER_ALPHA = 0.5f;
+	private static final float NEEDER_ALPHA = 0.7f;
 
-    FirebaseAuth mAuth;
-    DatabaseReference databaseReference;
-    GoogleMap map;
-    GoogleApiClient mGoogleApiClient;
+	FirebaseAuth mAuth;
+	DatabaseReference databaseReference;
+	GoogleMap map;
+	GoogleApiClient mGoogleApiClient;
 
-    LatLng myLatLng;
-    LocationRequest mLocationRequest;
+	LatLng myLatLng;
+//    LocationRequest mLocationRequest;
 
-    RelativeLayout messagebox;
-    EditText messageEditText;
-    ArrayList<Needer> neederList;
-    ArrayList<Volunteer> volunteerList;
-    LocationTracker locationTracker;
-    int neederMarkerIndex = 0;
-    int volunteerMarkerIndex = 0;
+	//    RelativeLayout messagebox;
+//    EditText messageEditText;
+	ArrayList<User> userArrayList;
+	//    ArrayList<Volunteer> volunteerList;
+	LocationTracker locationTracker;
+	int markerIndex = 0;
+//    int volunteerMarkerIndex = 0;
 
-    Polyline polyline = null;
+	Polyline polyline = null;
 
-    IconGenerator iconFactory;
-    ArrayList<Marker> neederMarkers;
-    Marker[] needermarkers;
-    ArrayList<Marker> volunteerMarkers;
+	IconGenerator iconFactory;
+	ArrayList<Marker> neederMarkers;
+	ArrayList<Marker> volunteerMarkers;
+
+	FloatingActionButton fab;
+	private String markerContactNumber;
 
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_help_map);
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_help_map);
 
+		fab = (FloatingActionButton) findViewById(R.id.fab);
+		fab.setBackgroundTintList(ColorStateList.valueOf(getColor(R.color.green)));
+		fab.setElevation(0.6f);
+		fab.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + markerContactNumber));
+				if (ActivityCompat.checkSelfPermission(HelpMapActivity.this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+					// TODO: Consider calling
+					//   Ask for permission to call
+					return;
+				}
+				startActivity(intent);
+			}
+		});
 //        Intent intent = getIntent();
 //        Log.e(TAG, String.valueOf(intent.hasExtra(Constants.NEEDER)));
 //        if(intent.hasExtra(Constants.NEEDER)) {
 //            Bundle extra = intent.getBundleExtra(Constants.NEEDER);
-//            neederList = extra.getParcelableArrayList(Constants.NEEDER);
-//            Log.e(TAG, String.valueOf(neederList.get(0).latitude));
+//            userArrayList = extra.getParcelableArrayList(Constants.NEEDER);
+//            Log.e(TAG, String.valueOf(userArrayList.get(0).latitude));
 //        }
 //
 //        LocationTracker locationTracker = new LocationTracker(this);
@@ -122,17 +135,17 @@ public class HelpMapActivity extends AppCompatActivity implements LocationListen
         databaseReference = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
 
-        messagebox = (RelativeLayout) findViewById(R.id.messagebox);
-        messageEditText = (EditText) findViewById(R.id.message_editText);
+//        messagebox = (RelativeLayout) findViewById(R.id.messagebox);
+//        messageEditText = (EditText) findViewById(R.id.message_editText);
 
         iconFactory = new IconGenerator(this);
         neederMarkers = new ArrayList<>();
         volunteerMarkers = new ArrayList<>();
 
-        neederList = new ArrayList<>();
-        volunteerList = new ArrayList<>();
+        userArrayList = new ArrayList<>();
+//        volunteerList = new ArrayList<>();
 
-        messagebox.setVisibility(View.GONE);
+//        messagebox.setVisibility(View.GONE);
         buildGoogleApiClient();
         Log.e(TAG, String.valueOf(myLatLng));
 
@@ -142,51 +155,51 @@ public class HelpMapActivity extends AppCompatActivity implements LocationListen
 
     }
 
-    private void onSendButtonClickListener(){
-        AppCompatImageView sendButton = (AppCompatImageView) findViewById(R.id.send_button);
-        sendButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String Uid = mAuth.getCurrentUser().getUid();
-                String userName = mAuth.getCurrentUser().getEmail();
-                userName = userName.replace("@instanthelp.com", "");
-
-                locationTracker.getLocation();
-                final Needer needer = new Needer
-                        (userName, messageEditText.getText().toString(),locationTracker.getLatitude(),locationTracker.getLongitude()
-                                , mAuth.getCurrentUser().getUid());
-                databaseReference.child("userCurrentLocation").child(Uid).removeValue(new DatabaseReference.CompletionListener() {
-                    @Override
-                    public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                        databaseReference.setValue(needer);
-                    }
-                });
-                messageEditText.setText("");
-
-            }
-        });
-    }
-    private void onSendButtonClickListener(final int markerIndex) {
-        AppCompatImageView sendButton = (AppCompatImageView) findViewById(R.id.send_button);
-        sendButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                locationTracker.getLocation();
-                final Volunteer volunteer = new Volunteer(locationTracker.getLatitude(), locationTracker.getLongitude(),
-                        messageEditText.getText().toString(), mAuth.getCurrentUser().getUid()
-                        ,neederList.get(markerIndex).uId, mAuth.getCurrentUser().getEmail().replace("@instanthelp.com",""));
-
-                databaseReference.child("Volunteer").child(mAuth.getCurrentUser().getUid()).removeValue(new DatabaseReference.CompletionListener() {
-                    @Override
-                    public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                        databaseReference.setValue(volunteer);
-                    }
-                });
-
-                messageEditText.setText("");
-            }
-        });
-    }
+//    private void onSendButtonClickListener(){
+//        AppCompatImageView sendButton = (AppCompatImageView) findViewById(R.id.send_button);
+//        sendButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                String Uid = mAuth.getCurrentUser().getUid();
+//                String userName = mAuth.getCurrentUser().getEmail();
+//                userName = userName.replace("@instanthelp.com", "");
+//
+//                locationTracker.getLocation();
+//                final Needer needer = new Needer
+//                        (userName, messageEditText.getText().toString(),locationTracker.getLatitude(),locationTracker.getLongitude()
+//                                , mAuth.getCurrentUser().getUid());
+//                databaseReference.child("userCurrentLocation").child(Uid).removeValue(new DatabaseReference.CompletionListener() {
+//                    @Override
+//                    public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+//                        databaseReference.setValue(needer);
+//                    }
+//                });
+//                messageEditText.setText("");
+//
+//            }
+//        });
+//    }
+//    private void onSendButtonClickListener(final int markerIndex) {
+//        AppCompatImageView sendButton = (AppCompatImageView) findViewById(R.id.send_button);
+//        sendButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                locationTracker.getLocation();
+//                final Volunteer volunteer = new Volunteer(locationTracker.getLatitude(), locationTracker.getLongitude(),
+//                        messageEditText.getText().toString(), mAuth.getCurrentUser().getUid()
+//                        ,userArrayList.get(markerIndex).uId, mAuth.getCurrentUser().getEmail().replace("@instanthelp.com",""));
+//
+//                databaseReference.child("Volunteer").child(mAuth.getCurrentUser().getUid()).removeValue(new DatabaseReference.CompletionListener() {
+//                    @Override
+//                    public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+//                        databaseReference.setValue(volunteer);
+//                    }
+//                });
+//
+//                messageEditText.setText("");
+//            }
+//        });
+//    }
 
     private void buildGoogleApiClient() {
         mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -219,17 +232,17 @@ public class HelpMapActivity extends AppCompatActivity implements LocationListen
     @Override
     public void onMapReady(GoogleMap googleMap) {
 
-        String FirstAid;
+//        String FirstAid;
         map = googleMap;
 //        final CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLng(myLatLng);
 
 
-        neederListener();
+        notificationListener();
 
 
-        volunteerListener();
+//        volunteerListener();
 
-//        createNeederMarkers(iconFactory, neederMarkers);
+//        createMarkers(iconFactory, neederMarkers);
 
 
         onMapClickListener();
@@ -239,8 +252,8 @@ public class HelpMapActivity extends AppCompatActivity implements LocationListen
         locationTracker.getLocation();
         double myLocationLatitude = locationTracker.getLatitude();
         double myLocationLongitude = locationTracker.getLongitude();
-        LatLng startLatLng = new LatLng(myLocationLatitude - 0.05, myLocationLongitude - 0.05);
-        LatLng endLatLng = new LatLng(myLocationLatitude + 0.05, myLocationLongitude + 0.05);
+        LatLng startLatLng = new LatLng(myLocationLatitude - 0.2, myLocationLongitude - 0.2);
+        LatLng endLatLng = new LatLng(myLocationLatitude + 0.2, myLocationLongitude + 0.2);
         LatLngBounds viewPortLatLngBounds = new LatLngBounds(startLatLng, endLatLng);
         map.setLatLngBoundsForCameraTarget(viewPortLatLngBounds);
         map.moveCamera(CameraUpdateFactory.newLatLngBounds(viewPortLatLngBounds, 100, 100, 10));
@@ -259,6 +272,8 @@ public class HelpMapActivity extends AppCompatActivity implements LocationListen
             return;
         }
         map.setMyLocationEnabled(true);
+		map.getUiSettings().setMapToolbarEnabled(false);
+
 
     }
 
@@ -267,40 +282,31 @@ public class HelpMapActivity extends AppCompatActivity implements LocationListen
             @Override
             public boolean onMarkerClick(Marker marker) {
 
-
-
-
-                if(polyline != null) {
-                    polyline.remove();
-                }
-
-                String url = getUrl(myLatLng, marker.getPosition());
-
-                new FetchUrl().execute(url);
-
-
-                if(marker.getAlpha() == 0.7f){
+//                if(polyline != null) {
+//                    polyline.remove();
+//                }
+//                String url = getUrl(myLatLng, marker.getPosition());
+//                new FetchUrl().execute(url);
                     for (int i = 0; i <= neederMarkers.size(); i++) {
-                Log.e(TAG, "needer marker id: " + neederMarkers.get(i).getId());
-                    if (marker.getId().equals(neederMarkers.get(i).getId())) {
-                        messagebox.setVisibility(View.VISIBLE);
-                        onSendButtonClickListener(i);
-                        Toast.makeText(HelpMapActivity.this, "marker clicked", Toast.LENGTH_SHORT).show();
-                        break;
-                    }
-                }
-                }else if(marker.getAlpha() == VOLUNTEER_ALPHA){
-                    for (int i = 0; i <= volunteerMarkers.size(); i++) {
-                        Log.e(TAG, "needer marker id: " + volunteerMarkers.get(i).getId());
-                        if (marker.getId().equals(volunteerMarkers.get(i).getId())) {
-                            messagebox.setVisibility(View.VISIBLE);
-                            onSendButtonClickListener();
-                            Toast.makeText(HelpMapActivity.this, "marker clicked", Toast.LENGTH_SHORT).show();
-                            break;
-                        }
-                    }
+						Log.e(TAG, "needer marker id: " + neederMarkers.get(i).getId());
+						if (marker.getId().equals(neederMarkers.get(i).getId())) {
+							fab.show();
+							markerContactNumber = userArrayList.get(i).contact;
+							Toast.makeText(HelpMapActivity.this, "marker clicked", Toast.LENGTH_SHORT).show();
+							break;
+						}
+					}
 
-                }
+//                }else if(marker.getAlpha() == VOLUNTEER_ALPHA){
+//                    for (int i = 0; i <= volunteerMarkers.size(); i++) {
+//                        Log.e(TAG, "needer marker id: " + volunteerMarkers.get(i).getId());
+//                        if (marker.getId().equals(volunteerMarkers.get(i).getId())) {
+//                            Toast.makeText(HelpMapActivity.this, "marker clicked", Toast.LENGTH_SHORT).show();
+//                            break;
+//                        }
+//                    }
+//
+//                }
 //
 
                 return false;
@@ -313,58 +319,54 @@ public class HelpMapActivity extends AppCompatActivity implements LocationListen
         map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
-                TranslateAnimation animate = new TranslateAnimation(0,0,0,messagebox.getHeight());
-                animate.setDuration(500);
-                animate.setFillAfter(true);
-                messagebox.startAnimation(animate);
-                messagebox.setVisibility(View.GONE);
-            }
+				fab.hide();
+			}
         });
     }
 
-    private void volunteerListener() {
-        databaseReference.child("Volunteer").addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+//    private void volunteerListener() {
+//        databaseReference.child("Volunteer").addChildEventListener(new ChildEventListener() {
+//            @Override
+//            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+//
+//                createVolunteerMarkers(dataSnapshot);
+//                }
+//
+//            @Override
+//            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+//
+//            }
+//
+//            @Override
+//            public void onChildRemoved(DataSnapshot dataSnapshot) {
+////                Log.e(TAG, "onChiledRemoved:    "+ dataSnapshot.getKey());
+////                Log.e(TAG, "index of removing item in volunteer list"+String.valueOf(volunteerList.indexOf(dataSnapshot.getValue(Volunteer.class))));
+////                Log.e(TAG, "volunteerList.size" + volunteerList.size());
+//                removeVolunteerMarker(dataSnapshot);
+//
+//
+////                Log.e(TAG, "volunteerList.size" + volunteerList.size());
+//
+//            }
+//
+//            @Override
+//            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+//
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//
+//            }
+//        });
+//    }
 
-                createVolunteerMarkers(dataSnapshot);
-                }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-//                Log.e(TAG, "onChiledRemoved:    "+ dataSnapshot.getKey());
-//                Log.e(TAG, "index of removing item in volunteer list"+String.valueOf(volunteerList.indexOf(dataSnapshot.getValue(Volunteer.class))));
-//                Log.e(TAG, "volunteerList.size" + volunteerList.size());
-                removeVolunteerMarker(dataSnapshot);
-
-
-//                Log.e(TAG, "volunteerList.size" + volunteerList.size());
-
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }
-
-    private void neederListener() {
-        databaseReference.child("userCurrentLocation").addChildEventListener(new ChildEventListener() {
+    private void notificationListener() {
+        databaseReference.child("NotificationInfo").addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Log.e(TAG, "onChildAdded ");
-                    createNeederMarkers(dataSnapshot);
+                    createMarkers(dataSnapshot);
 
             }
 
@@ -377,7 +379,7 @@ public class HelpMapActivity extends AppCompatActivity implements LocationListen
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
-                removeNeederMarker(dataSnapshot);
+                removeMarker(dataSnapshot);
 
             }
 
@@ -393,41 +395,41 @@ public class HelpMapActivity extends AppCompatActivity implements LocationListen
         });
     }
 
-    private void removeVolunteerMarker(DataSnapshot dataSnapshot) {
-        Volunteer volunteer = dataSnapshot.getValue(Volunteer.class);
+//    private void removeVolunteerMarker(DataSnapshot dataSnapshot) {
+//        Volunteer volunteer = dataSnapshot.getValue(Volunteer.class);
+//
+//        if (volunteer.neederUId.equals(mAuth.getCurrentUser().getUid())) {
+//
+//            for (int i = 0; i < volunteerMarkers.size(); i++) {
+//                if (volunteerMarkers.get(i).getTitle().equals(volunteer.volunteerName)) {
+//
+//                    map.clear();
+//                    volunteerMarkers.clear();
+//                    volunteerList.clear();
+//                    volunteerMarkerIndex = 0;
+//                    volunteerListener();
+//                    break;
+//                }
+//            }
+//
+//            Toast.makeText(this, "Map is cleared Once", Toast.LENGTH_SHORT).show();
+//
+//        }
+//    }
 
-        if (volunteer.neederUId.equals(mAuth.getCurrentUser().getUid())) {
+//    private void createVolunteerMarkers(DataSnapshot dataSnapshot) {
+//        volunteerList.add(dataSnapshot.getValue(Volunteer.class));
+//        if(volunteerList.get(volunteerMarkerIndex).neederUId.equals(mAuth.getCurrentUser().getUid())){
+//            LatLng volunteerLatLng = new LatLng(volunteerList.get(volunteerMarkerIndex).latitude, volunteerList.get(volunteerMarkerIndex).longitude);
+//            iconFactory.setStyle(IconGenerator.STYLE_GREEN);
+//            iconFactory.setRotation(0);
+//            volunteerMarkers.add(addIcon(iconFactory, volunteerList.get(volunteerMarkerIndex).volunteerName,
+//                    volunteerLatLng, volunteerList.get(volunteerMarkerIndex).message,volunteerList.get(volunteerMarkerIndex).volunteerName,VOLUNTEER_ALPHA));
+//        }
+//        volunteerMarkerIndex++;
+//    }
 
-            for (int i = 0; i < volunteerMarkers.size(); i++) {
-                if (volunteerMarkers.get(i).getTitle().equals(volunteer.volunteerName)) {
-
-                    map.clear();
-                    volunteerMarkers.clear();
-                    volunteerList.clear();
-                    volunteerMarkerIndex = 0;
-                    volunteerListener();
-                    break;
-                }
-            }
-
-            Toast.makeText(this, "Map is cleared Once", Toast.LENGTH_SHORT).show();
-
-        }
-    }
-
-    private void createVolunteerMarkers(DataSnapshot dataSnapshot) {
-        volunteerList.add(dataSnapshot.getValue(Volunteer.class));
-        if(volunteerList.get(volunteerMarkerIndex).neederUId.equals(mAuth.getCurrentUser().getUid())){
-            LatLng volunteerLatLng = new LatLng(volunteerList.get(volunteerMarkerIndex).latitude, volunteerList.get(volunteerMarkerIndex).longitude);
-            iconFactory.setStyle(IconGenerator.STYLE_GREEN);
-            iconFactory.setRotation(0);
-            volunteerMarkers.add(addIcon(iconFactory, volunteerList.get(volunteerMarkerIndex).volunteerName,
-                    volunteerLatLng, volunteerList.get(volunteerMarkerIndex).message,volunteerList.get(volunteerMarkerIndex).volunteerName,VOLUNTEER_ALPHA));
-        }
-        volunteerMarkerIndex++;
-    }
-
-    private void removeNeederMarker(DataSnapshot dataSnapshot) {
+    private void removeMarker(DataSnapshot dataSnapshot) {
         Needer needer = dataSnapshot.getValue(Needer.class);
 
         if(!needer.uId.equals(mAuth.getCurrentUser().getUid())) {
@@ -436,9 +438,9 @@ public class HelpMapActivity extends AppCompatActivity implements LocationListen
 
                     map.clear();
                     neederMarkers.clear();
-                    neederList.clear();
-                    neederMarkerIndex = 0;
-                    neederListener();
+                    userArrayList.clear();
+                    markerIndex = 0;
+                    notificationListener();
                     break;
                 }
             }
@@ -447,48 +449,48 @@ public class HelpMapActivity extends AppCompatActivity implements LocationListen
         }
     }
 
-    private void createNeederMarkers(DataSnapshot dataSnapshot) {
+    private void createMarkers(DataSnapshot dataSnapshot) {
 
-            neederList.add(dataSnapshot.getValue(Needer.class));
-            if(!neederList.get(neederMarkerIndex).uId.equals(mAuth.getCurrentUser().getUid())) {
-                LatLng neederLatLng = new LatLng(neederList.get(neederMarkerIndex).latitude, neederList.get(neederMarkerIndex).longitude);
+		CurrentUser currentUser = new CurrentUser(HelpMapActivity.this);
+            userArrayList.add(dataSnapshot.getValue(User.class));
+            if(!userArrayList.get(markerIndex).uId.equals(currentUser.getCurrentUser().getuId())) {
+                LatLng userLatLng = new LatLng(userArrayList.get(markerIndex).latitude, userArrayList.get(markerIndex).longitude);
 
                     iconFactory.setStyle(IconGenerator.STYLE_RED);
                     iconFactory.setRotation(0);
 
 
-                    neederMarkers.add(addIcon(iconFactory, neederList.get(neederMarkerIndex).userName  , neederLatLng,neederList.get(neederMarkerIndex).bloodGroup
-                            ,neederList.get(neederMarkerIndex).userName, NEEDER_ALPHA));
+                    neederMarkers.add(addIcon(iconFactory, userArrayList.get(markerIndex).fname  , userLatLng, NEEDER_ALPHA));
 
 
             }
-            neederMarkerIndex++;
+            markerIndex++;
     }
 
-//    private void createNeederMarkers(IconGenerator iconFactory, ArrayList<Marker> customMarker) {
-//        if (neederList.size() != 0) {
-//            for (int neederMarkerIndex = 0; neederMarkerIndex < neederList.size(); neederMarkerIndex++) {
-//                if (!neederList.get(neederMarkerIndex).uId.equals(mAuth.getCurrentUser().getUid())) {
-//                    LatLng neederLatLng = new LatLng(neederList.get(neederMarkerIndex).latitude, neederList.get(neederMarkerIndex).longitude);
+//    private void createMarkers(IconGenerator iconFactory, ArrayList<Marker> customMarker) {
+//        if (userArrayList.size() != 0) {
+//            for (int markerIndex = 0; markerIndex < userArrayList.size(); markerIndex++) {
+//                if (!userArrayList.get(markerIndex).uId.equals(mAuth.getCurrentUser().getUid())) {
+//                    LatLng neederLatLng = new LatLng(userArrayList.get(markerIndex).latitude, userArrayList.get(markerIndex).longitude);
 //
-//                    if (neederList.get(neederMarkerIndex).bloodGroup == null) {
+//                    if (userArrayList.get(markerIndex).bloodGroup == null) {
 //                        iconFactory.setStyle(IconGenerator.STYLE_RED);
 //                        iconFactory.setRotation(0);
-//                        customMarker.add(addIcon(iconFactory, neederList.get(neederMarkerIndex).userName + "\nneeds First Aid !", neederLatLng, "needer"));
+//                        customMarker.add(addIcon(iconFactory, userArrayList.get(markerIndex).userName + "\nneeds First Aid !", neederLatLng, "needer"));
 //                    } else {
 //                        iconFactory.setStyle(IconGenerator.STYLE_PURPLE);
 //                        iconFactory.setRotation(270);
-//                        customMarker.add(addIcon(iconFactory, neederList.get(neederMarkerIndex).userName + " needs Blood !", neederLatLng, "needer"));
+//                        customMarker.add(addIcon(iconFactory, userArrayList.get(markerIndex).userName + " needs Blood !", neederLatLng, "needer"));
 //                    }
 //                }
 //            }
 //        }
 //    }
 
-    public Marker addIcon(IconGenerator iconFactory, String title, LatLng position, String message,String userName, float alpha){
+    public Marker addIcon(IconGenerator iconFactory, String title, LatLng position, float alpha){
 
         MarkerOptions markerOptions = new MarkerOptions().icon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(title)))
-                .position(position).title(userName).snippet(message).alpha(alpha);
+                .position(position).alpha(alpha);
 
         return map.addMarker(markerOptions);
     }
@@ -511,24 +513,11 @@ public class HelpMapActivity extends AppCompatActivity implements LocationListen
         Log.e(TAG, "onConnected works");
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
-//            Intent intent = getIntent();
-//            Log.e(TAG, "intent has has extra?   "+String.valueOf(intent.hasExtra(Constants.NEEDER)));
-//            if(intent.hasExtra(Constants.NEEDER)) {
-//                Bundle extra = intent.getBundleExtra(Constants.NEEDER);
-//                neederList = extra.getParcelableArrayList(Constants.NEEDER);
-//            }
-
-
-//            myLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-//            if (myLocation != null) {
-//                myLatLng = new LatLng(myLocation.getLatitude(), myLocation.getLongitude());
-//            }
-//            LocationTracker locationTracker = new LocationTracker(this);
         if(locationTracker.canGetLocation()){
             locationTracker.getLocation();
             myLatLng = new LatLng(locationTracker.getLatitude(), locationTracker.getLongitude());
         }else{
-            Log.e(TAG, "No provider");
+            Log.e(TAG, "No Location provider Enabled");
         }
             MapFragment mMapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
 
@@ -540,46 +529,46 @@ public class HelpMapActivity extends AppCompatActivity implements LocationListen
         }
     }
 
-    private void startLocationUpdates() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
-        }
-    }
-
-    private void createLocationRequest() {
-        mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(5000);
-        mLocationRequest.setFastestInterval(2000);
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-
-        LocationSettingsRequest.Builder Builder = new LocationSettingsRequest.Builder().addLocationRequest(mLocationRequest);
-
-        final PendingResult<LocationSettingsResult> result =
-                LocationServices.SettingsApi.checkLocationSettings(mGoogleApiClient, Builder.build());
-
-        result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
-            @Override
-            public void onResult(@NonNull LocationSettingsResult locationSettingsResult) {
-                Status status = locationSettingsResult.getStatus();
-
-                switch (status.getStatusCode()){
-                    case LocationSettingsStatusCodes.SUCCESS:{
-                        Log.e(TAG, "SUCCESS");
-                        break;
-                    }
-                    case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:{
-                        Log.e(TAG, "RESOLUTION_REQUIRED");
-                        break;
-                    }
-                    case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:{
-                        Log.e(TAG, "CHANGE_UNAVAILABLE");
-                        break;
-                    }
-                }
-            }
-        });
-    }
+//    private void startLocationUpdates() {
+//        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+//                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+//            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+//        }
+//    }
+//
+//    private void createLocationRequest() {
+//        mLocationRequest = new LocationRequest();
+//        mLocationRequest.setInterval(5000);
+//        mLocationRequest.setFastestInterval(2000);
+//        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+//
+//        LocationSettingsRequest.Builder Builder = new LocationSettingsRequest.Builder().addLocationRequest(mLocationRequest);
+//
+//        final PendingResult<LocationSettingsResult> result =
+//                LocationServices.SettingsApi.checkLocationSettings(mGoogleApiClient, Builder.build());
+//
+//        result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
+//            @Override
+//            public void onResult(@NonNull LocationSettingsResult locationSettingsResult) {
+//                Status status = locationSettingsResult.getStatus();
+//
+//                switch (status.getStatusCode()){
+//                    case LocationSettingsStatusCodes.SUCCESS:{
+//                        Log.e(TAG, "SUCCESS");
+//                        break;
+//                    }
+//                    case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:{
+//                        Log.e(TAG, "RESOLUTION_REQUIRED");
+//                        break;
+//                    }
+//                    case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:{
+//                        Log.e(TAG, "CHANGE_UNAVAILABLE");
+//                        break;
+//                    }
+//                }
+//            }
+//        });
+//    }
 
     @Override
     public void onConnectionSuspended(int i) {
@@ -668,7 +657,8 @@ public class HelpMapActivity extends AppCompatActivity implements LocationListen
                 e.printStackTrace();
             }finally {
                 try {
-                    stream.close();
+					assert stream != null;
+					stream.close();
                     conn.disconnect();
                 } catch (IOException e) {
                     e.printStackTrace();

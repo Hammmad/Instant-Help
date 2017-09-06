@@ -102,8 +102,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Goog
         locationTracker = new LocationTracker(getActivity());
         if (locationTracker.canGetLocation()) {
             locationTracker.getLocation();
-            Toast.makeText(getActivity(), "currentLatitude,currentLongitude:   " + locationTracker.getLatitude()
-                    + locationTracker.getLongitude(), Toast.LENGTH_SHORT).show();
+//            Toast.makeText(getActivity(), "currentLatitude,currentLongitude:   " + locationTracker.getLatitude()
+//                    + locationTracker.getLongitude(), Toast.LENGTH_SHORT).show();
             Intent serviceIntent = new Intent(getActivity(), FirebaseBackgroundService.class);
             getActivity().startService(serviceIntent);
         } else {
@@ -111,7 +111,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Goog
         }
 
         geofenceList = new ArrayList<>();
-        populateGeofenceList();
+//        populateGeofenceList();
 //        ValueEventListener valueEventListener = new ValueEventListener() {
 //            @Override
 //            public void onDataChange(DataSnapshot dataSnapshot) {
@@ -180,10 +180,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Goog
                 break;
             }
             case R.id.first_aid_button: {
-				CurrentUser currentUser = new CurrentUser(getActivity());
-				sendSMSToGuardian(currentUser.getCurrentUser().getGuardian(),
-						currentUser.getCurrentUser().getFname()+" "+getString(R.string.sms_help));
-
+				sendSMSToGuardian();
 				sendNotificationInfoFirebase();
                 break;
             }
@@ -193,11 +190,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Goog
         }
     }
 
-	private void sendSMSToGuardian(String phoneNo, String msg) {
+	public void sendSMSToGuardian() {
 
+		CurrentUser currentUser = new CurrentUser(getActivity());
 		try {
 			SmsManager smsManager = SmsManager.getDefault();
-			smsManager.sendTextMessage(phoneNo, null, msg, null, null);
+			smsManager.sendTextMessage(currentUser.getCurrentUser().getGuardian(), null,
+					currentUser.getCurrentUser().getFname()+" "+getString(R.string.sms_help), null, null);
 			Toast.makeText(getActivity(), "Message Sent",
 					Toast.LENGTH_LONG).show();
 		} catch (Exception ex) {
@@ -253,7 +252,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Goog
         return PendingIntent.getService(getActivity(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
-    private void sendNotificationInfoFirebase() {
+    public void sendNotificationInfoFirebase() {
 		ConnectivityManager connectivityManager = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
 

@@ -196,7 +196,7 @@ public class LocationTracker implements android.location.LocationListener {
 
         @Override
         public void onLocationChanged(Location location) {
-            Toast.makeText(mContext, "location change listener:" + location.getLatitude()+"," + location.getLongitude(), Toast.LENGTH_SHORT).show();
+//            Toast.makeText(mContext, "location change listener:" + location.getLatitude()+"," + location.getLongitude(), Toast.LENGTH_SHORT).show();
         }
 
         @Override

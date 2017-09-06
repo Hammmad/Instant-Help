@@ -262,7 +262,7 @@ public class HomeActivity extends AppCompatActivity
                     // no permissions required or already grunted, can start crop image activity
                     startCropimageActivity(imageUri);
                 }
-            } else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+             } else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
                 CropImage.ActivityResult result = CropImage.getActivityResult(data);
                 Uri resultUri = result.getUri();
                 Picasso.with(this).load(resultUri).into(userImageButton);
@@ -579,6 +579,9 @@ public class HomeActivity extends AppCompatActivity
 						fine = false;
 
 						// first Aid required
+						HomeFragment homeFragment = new HomeFragment();
+						homeFragment.sendSMSToGuardian();
+						homeFragment.sendNotificationInfoFirebase();
 						Toast.makeText(HomeActivity.this, "Inform Emergency Services", Toast.LENGTH_SHORT).show();
 					}
 				}).setCancelable(true);
@@ -599,6 +602,9 @@ public class HomeActivity extends AppCompatActivity
 					dialog.dismiss();
 					stopPlaying();
 					// First Aid required
+					HomeFragment homeFragment = new HomeFragment();
+					homeFragment.sendSMSToGuardian();
+					homeFragment.sendNotificationInfoFirebase();
 					Toast.makeText(HomeActivity.this, "Inform Emergency Services", Toast.LENGTH_SHORT).show();
 				}
 
