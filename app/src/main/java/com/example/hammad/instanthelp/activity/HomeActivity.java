@@ -2,6 +2,7 @@ package com.example.hammad.instanthelp.activity;
 
 import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -14,6 +15,8 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.media.MediaPlayer;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -32,6 +35,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.telephony.SmsManager;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -51,11 +55,14 @@ import com.example.hammad.instanthelp.R;
 import com.example.hammad.instanthelp.models.Constants;
 import com.example.hammad.instanthelp.models.User;
 import com.example.hammad.instanthelp.sevices.DefaultFallService;
+import com.example.hammad.instanthelp.sevices.FirebaseBackgroundService;
 import com.example.hammad.instanthelp.sevices.WearableFallService;
 import com.example.hammad.instanthelp.utils.CurrentUser;
+import com.example.hammad.instanthelp.utils.LocationTracker;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
@@ -67,7 +74,7 @@ import com.theartofdev.edmodo.cropper.CropImage;
 import java.io.ByteArrayOutputStream;
 
 public class HomeActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener,HomeFragment.CallbackHomeFragment {
 
     private static final int GALLERY_REQUEST_CODE = 0;
     private static final int CAMERA_REQUESTT_CODE = 1;
@@ -86,6 +93,7 @@ public class HomeActivity extends AppCompatActivity
 	WearableFallService wearableFallService;
 	public boolean fall;
 	private boolean fine = true;
+	LocationTracker locationTracker;
 
 
 	@Override
@@ -93,7 +101,16 @@ public class HomeActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-
+		locationTracker = new LocationTracker(this);
+		if (locationTracker.canGetLocation()) {
+			locationTracker.getLocation();
+//            Toast.makeText(getActivity(), "currentLatitude,currentLongitude:   " + locationTracker.getLatitude()
+//                    + locationTracker.getLongitude(), Toast.LENGTH_SHORT).show();
+			Intent serviceIntent = new Intent(this, FirebaseBackgroundService.class);
+			this.startService(serviceIntent);
+		} else {
+			Log.e(TAG, "No provider");
+		}
 		defaultFallService = new DefaultFallService();
 		wearableFallService = new WearableFallService();
 
@@ -579,10 +596,8 @@ public class HomeActivity extends AppCompatActivity
 						fine = false;
 
 						// first Aid required
-						HomeFragment homeFragment = new HomeFragment();
-						homeFragment.sendSMSToGuardian();
-						homeFragment.sendNotificationInfoFirebase();
-						Toast.makeText(HomeActivity.this, "Inform Emergency Services", Toast.LENGTH_SHORT).show();
+						sendSMSToGuardian();
+						sendNotificationInfoFirebase();
 					}
 				}).setCancelable(true);
 
@@ -602,10 +617,8 @@ public class HomeActivity extends AppCompatActivity
 					dialog.dismiss();
 					stopPlaying();
 					// First Aid required
-					HomeFragment homeFragment = new HomeFragment();
-					homeFragment.sendSMSToGuardian();
-					homeFragment.sendNotificationInfoFirebase();
-					Toast.makeText(HomeActivity.this, "Inform Emergency Services", Toast.LENGTH_SHORT).show();
+					sendSMSToGuardian();
+					sendNotificationInfoFirebase();
 				}
 
 
@@ -679,5 +692,53 @@ public class HomeActivity extends AppCompatActivity
 			mp.release();
 			mp = null;
 		}
+	}
+
+	@Override
+	public void sendSMSToGuardian() {
+		CurrentUser currentUser = new CurrentUser(this);
+		try {
+			SmsManager smsManager = SmsManager.getDefault();
+			smsManager.sendTextMessage(currentUser.getCurrentUser().getGuardian(), null,
+					currentUser.getCurrentUser().getFname()+" "+getString(R.string.sms_help), null, null);
+			Toast.makeText(this, "Message Sent to Guardian",
+					Toast.LENGTH_LONG).show();
+		} catch (Exception ex) {
+			Toast.makeText(this, ex.getMessage(),
+					Toast.LENGTH_LONG).show();
+			ex.printStackTrace();
+		}
+	}
+
+	@Override
+	public void sendNotificationInfoFirebase() {
+		ConnectivityManager connectivityManager = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+
+		if (networkInfo != null && networkInfo.isConnected()) {
+			CurrentUser currentUser = new CurrentUser(this);
+			User user = currentUser.getCurrentUser();
+			locationTracker.getLocation();
+
+			final User notificationInfo = new User
+					(user.getuId()
+							,user.getFname()
+							,user.getLname()
+							,user.getContact()
+							,locationTracker.getLatitude()
+							,locationTracker.getLongitude());
+
+			databaseReference.child("NotificationInfo").child(user.getuId()).removeValue(new DatabaseReference.CompletionListener() {
+				@Override
+				public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+					databaseReference.setValue(notificationInfo);
+					Toast.makeText(HomeActivity.this, "Emergency Services Informed", Toast.LENGTH_SHORT).show();
+
+				}
+			});
+		}else{
+			Toast.makeText(HomeActivity.this, "No Network Connection", Toast.LENGTH_SHORT).show();
+		}
+
 	}
 }

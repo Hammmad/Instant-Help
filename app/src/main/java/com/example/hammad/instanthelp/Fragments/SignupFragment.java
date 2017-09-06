@@ -109,8 +109,6 @@ public class SignupFragment extends Fragment implements View.OnClickListener {
 
     public interface CallbackSignupFragment {
         void showSigninFragment();
-
-
     }
 
 

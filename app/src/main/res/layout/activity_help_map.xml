@@ -15,7 +15,7 @@
         android:id="@+id/map"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        map:cameraZoom="21"
+        map:cameraZoom="29"
         />
 
     <android.support.design.widget.FloatingActionButton

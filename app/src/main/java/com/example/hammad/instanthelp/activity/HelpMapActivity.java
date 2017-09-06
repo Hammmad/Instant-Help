@@ -292,7 +292,6 @@ public class HelpMapActivity extends AppCompatActivity implements LocationListen
 						if (marker.getId().equals(neederMarkers.get(i).getId())) {
 							fab.show();
 							markerContactNumber = userArrayList.get(i).contact;
-							Toast.makeText(HelpMapActivity.this, "marker clicked", Toast.LENGTH_SHORT).show();
 							break;
 						}
 					}
@@ -444,8 +443,6 @@ public class HelpMapActivity extends AppCompatActivity implements LocationListen
                     break;
                 }
             }
-
-            Toast.makeText(this, "Map is cleared Once", Toast.LENGTH_SHORT).show();
         }
     }
 

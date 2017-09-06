@@ -24,6 +24,7 @@ import android.widget.Toast;
 
 import com.example.hammad.instanthelp.R;
 import com.example.hammad.instanthelp.activity.FirstAidGuidActivity;
+import com.example.hammad.instanthelp.activity.HomeActivity;
 import com.example.hammad.instanthelp.models.Constants;
 import com.example.hammad.instanthelp.models.User;
 import com.example.hammad.instanthelp.sevices.FirebaseBackgroundService;
@@ -64,14 +65,25 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Goog
     LocationTracker locationTracker;
     GoogleApiClient mGoogleApiClient;
     PendingIntent geofencePendingIntent;
-    private String requiredBloodGroup = null;
+    CallbackHomeFragment callbackHomeFragment;
 
 
     public HomeFragment() {
         // Required empty public constructor
     }
 
-    @Override
+    public interface CallbackHomeFragment{
+		void sendSMSToGuardian();
+		void sendNotificationInfoFirebase();
+	}
+
+	@Override
+	public void onAttach(Context context) {
+		super.onAttach(context);
+		callbackHomeFragment = (CallbackHomeFragment) context;
+	}
+
+	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -99,16 +111,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Goog
         rootView.findViewById(R.id.first_aid_button).setOnClickListener(this);
 
 
-        locationTracker = new LocationTracker(getActivity());
-        if (locationTracker.canGetLocation()) {
-            locationTracker.getLocation();
-//            Toast.makeText(getActivity(), "currentLatitude,currentLongitude:   " + locationTracker.getLatitude()
-//                    + locationTracker.getLongitude(), Toast.LENGTH_SHORT).show();
-            Intent serviceIntent = new Intent(getActivity(), FirebaseBackgroundService.class);
-            getActivity().startService(serviceIntent);
-        } else {
-            Log.e(TAG, "No provider");
-        }
+
 
         geofenceList = new ArrayList<>();
 //        populateGeofenceList();
@@ -180,8 +183,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Goog
                 break;
             }
             case R.id.first_aid_button: {
-				sendSMSToGuardian();
-				sendNotificationInfoFirebase();
+				callbackHomeFragment.sendSMSToGuardian();
+				callbackHomeFragment.sendNotificationInfoFirebase();
                 break;
             }
             default: {
@@ -190,21 +193,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Goog
         }
     }
 
-	public void sendSMSToGuardian() {
-
-		CurrentUser currentUser = new CurrentUser(getActivity());
-		try {
-			SmsManager smsManager = SmsManager.getDefault();
-			smsManager.sendTextMessage(currentUser.getCurrentUser().getGuardian(), null,
-					currentUser.getCurrentUser().getFname()+" "+getString(R.string.sms_help), null, null);
-			Toast.makeText(getActivity(), "Message Sent",
-					Toast.LENGTH_LONG).show();
-		} catch (Exception ex) {
-			Toast.makeText(getActivity(), ex.getMessage(),
-					Toast.LENGTH_LONG).show();
-			ex.printStackTrace();
-		}
-	}
 
 	private void addGeofence() {
         if (!mGoogleApiClient.isConnected()) {
@@ -252,34 +240,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener, Goog
         return PendingIntent.getService(getActivity(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
-    public void sendNotificationInfoFirebase() {
-		ConnectivityManager connectivityManager = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
-		NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
 
-		if (networkInfo != null && networkInfo.isConnected()) {
-		CurrentUser currentUser = new CurrentUser(getActivity());
-		User user = currentUser.getCurrentUser();
-            locationTracker.getLocation();
-
-            final User notificationInfo = new User
-					(user.getuId()
-					,user.getFname()
-					,user.getLname()
-					,user.getContact()
-					,locationTracker.getLatitude()
-					,locationTracker.getLongitude());
-
-            databaseReference.child("NotificationInfo").child(user.getuId()).removeValue(new DatabaseReference.CompletionListener() {
-                @Override
-                public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                    databaseReference.setValue(notificationInfo);
-                }
-            });
-		}else{
-			Toast.makeText(getActivity(), "No Network Connection", Toast.LENGTH_SHORT).show();
-		}
-
-    }
 
 
 //    private void userInfoListener(DatabaseReference databaseReference) {
