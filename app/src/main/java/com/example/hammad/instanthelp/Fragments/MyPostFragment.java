@@ -8,6 +8,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -72,36 +73,62 @@ public class MyPostFragment extends Fragment {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     if (dataSnapshot.hasChild("my-post")) {
-                        myRef.child("my-post").addChildEventListener(new ChildEventListener() {
+                        myRef.child("my-post").addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
-                            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                                if (dataSnapshot == null) {
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                if (dataSnapshot.hasChild(mAuth.getCurrentUser().getUid())) {
+                                    myRef.child("my-post").child(mAuth.getCurrentUser().getUid()).addChildEventListener(new ChildEventListener() {
+                                        @Override
+                                        public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                                            if (dataSnapshot == null) {
+                                                progressDialog.dismiss();
+                                                Toast.makeText(getContext(), "No data found!", Toast.LENGTH_SHORT).show();
+                                            } else {
+                                                PostModule module = dataSnapshot.getValue(PostModule.class);
+                                                dataModels.add(new PostModule(module.getUuid(), module.getmName(), module.getmGroup(), module.getmNoofUnits(),
+                                                        module.getmCountry(), module.getmCity(), module.getmHospital(), module.getmContact(),
+                                                        module.getDonatedUnits(), module.getCurrentRequirement(), module.getWithinDuration(), module.getPushkey()));
+                                                adapter.notifyDataSetChanged();
+                                                progressDialog.dismiss();
+//                                    for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+//                                        Log.d("VV: ", "" + dataSnapshot1.getChildrenCount());
+//
+////                                        for (DataSnapshot dataSnapshot2 : dataSnapshot1.getChildren()){
+////                                            PostModule module = dataSnapshot1.getValue(PostModule.class);
+////                                            dataModels.add(new PostModule(module.getUuid(), module.getmName(), module.getmGroup(), module.getmNoofUnits(),
+////                                                    module.getmCountry(), module.getmCity(), module.getmHospital(), module.getmContact(),
+////                                                    module.getDonatedUnits(), module.getCurrentRequirement(), module.getWithinDuration(), module.getPushkey()));
+////                                            adapter.notifyDataSetChanged();
+////                                            progressDialog.dismiss();
+////                                        }
+//                                    }
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                                            adapter.notifyDataSetChanged();
+                                        }
+
+                                        @Override
+                                        public void onChildRemoved(DataSnapshot dataSnapshot) {
+                                            adapter.notifyDataSetChanged();
+                                        }
+
+                                        @Override
+                                        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+                                        }
+
+                                        @Override
+                                        public void onCancelled(DatabaseError databaseError) {
+                                            progressDialog.dismiss();
+                                        }
+                                    });
+                                } else {
+                                    Toast.makeText(getActivity(), "No data found!", Toast.LENGTH_SHORT).show();
                                     progressDialog.dismiss();
                                 }
-                                for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
-                                    PostModule module = dataSnapshot1.getValue(PostModule.class);
-                                    dataModels.add(new PostModule(module.getUuid(), module.getmName(), module.getmGroup(), module.getmNoofUnits(),
-                                            module.getmCountry(), module.getmCity(), module.getmHospital(), module.getmContact(),
-                                            module.getDonatedUnits(), module.getCurrentRequirement(), module.getWithinDuration(), module.getPushkey()));
-                                    adapter.notifyDataSetChanged();
-                                    progressDialog.dismiss();
-                                }
-
-                            }
-
-                            @Override
-                            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                                adapter.notifyDataSetChanged();
-                            }
-
-                            @Override
-                            public void onChildRemoved(DataSnapshot dataSnapshot) {
-                                adapter.notifyDataSetChanged();
-                            }
-
-                            @Override
-                            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
                             }
 
                             @Override

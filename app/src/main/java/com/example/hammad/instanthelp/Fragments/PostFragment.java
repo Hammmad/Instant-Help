@@ -35,7 +35,7 @@ import dmax.dialog.SpotsDialog;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class PostFragment extends Fragment {
+public class    PostFragment extends Fragment {
 
     FirebaseDatabase database;
     DatabaseReference myRef;
