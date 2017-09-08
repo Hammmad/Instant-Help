@@ -84,7 +84,7 @@ public class DefaultFallService extends Service implements SensorEventListener {
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }
-		Toast.makeText(this, "OnStartCommand", Toast.LENGTH_SHORT).show();
+		Toast.makeText(this, "Sensor Enabled", Toast.LENGTH_SHORT).show();
 		senSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 		senAccelerometer = senSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 		senSensorManager.registerListener(this, senAccelerometer , SensorManager.SENSOR_DELAY_FASTEST);
@@ -170,6 +170,7 @@ public class DefaultFallService extends Service implements SensorEventListener {
 	public void onDestroy() {
 
 		senSensorManager.unregisterListener(this, senAccelerometer);
+		Toast.makeText(this, "Sensor Disabled", Toast.LENGTH_SHORT).show();
 //        try {
 //            writer.flush();
 //            writer.close();
@@ -191,7 +192,7 @@ public class DefaultFallService extends Service implements SensorEventListener {
 			final CountDownTimer countDownTimer = new CountDownTimer(2000,5) {
 				@Override
 				public void onTick(long l) {
-					if (resultant > 2.5 ){
+					if (resultant > 3.0 ){
 						upperThreshold = resultant;
 //						Toast.makeText(DefaultFallService.this, "upper threshold reaches", Toast.LENGTH_SHORT).show();
 					}
@@ -202,7 +203,7 @@ public class DefaultFallService extends Service implements SensorEventListener {
 
 
 					Log.d(TAG, "First onFinish  "+ upperThreshold);
-					if(upperThreshold > 2.5){
+					if(upperThreshold > 3.0){
 						new CountDownTimer(15000, 100) {
 							int  counter;
 							@Override

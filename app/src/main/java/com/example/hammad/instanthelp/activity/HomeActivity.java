@@ -93,7 +93,9 @@ public class HomeActivity extends AppCompatActivity
     WearableFallService wearableFallService;
     public boolean fall;
     private boolean fine = true;
-    LocationTracker locationTracker;
+	ActionBar actionBar;
+
+	LocationTracker locationTracker;
 
 
     @Override
@@ -119,9 +121,12 @@ public class HomeActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayShowTitleEnabled(false);
-        actionBar.setDisplayShowCustomEnabled(true);
+		actionBar = getSupportActionBar();
+		if (actionBar != null) {
+			actionBar.setIcon(R.drawable.app_launcher);
+			actionBar.setDisplayShowHomeEnabled(true);
+			actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME, ActionBar.DISPLAY_SHOW_CUSTOM);
+		}
 
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -192,23 +197,23 @@ public class HomeActivity extends AppCompatActivity
         databaseReference = FirebaseDatabase.getInstance().getReference();
 
         mAuth = FirebaseAuth.getInstance();
-        if (mAuth.getCurrentUser() != null) {
-            getSupportFragmentManager().beginTransaction().
-                    replace(R.id.content_home, new HomeFragment()).commit();
-        } else {
-            showSignInFragment();
-        }
-//        authStateListener = new FirebaseAuth.AuthStateListener() {
-//            @Override
-//            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-//                if (firebaseAuth.getCurrentUser() != null) {
-//                    getSupportFragmentManager().beginTransaction().
-//                            replace(R.id.content_home, new HomeFragment()).commit();
-//                } else {
-//                    showSignInFragment();
-//                }
-//            }
-//        };
+//        if (mAuth.getCurrentUser() != null) {
+//            getSupportFragmentManager().beginTransaction().
+//                    replace(R.id.content_home, new HomeFragment()).commit();
+//        } else {
+//            showSignInFragment();
+//        }
+        authStateListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                if (firebaseAuth.getCurrentUser() != null) {
+                    getSupportFragmentManager().beginTransaction().
+                            replace(R.id.content_home, new HomeFragment()).commit();
+                } else {
+                    showSignInFragment();
+                }
+            }
+        };
         if (user != null) {
             if (user.profileImagePath != null) {
                 Log.d(TAG, user.profileImagePath);
@@ -291,7 +296,7 @@ public class HomeActivity extends AppCompatActivity
                     public void run() {
                         uploadImage();
                     }
-                }, 5000);
+                }, 4000);
             }
 
 //            if (requestCode == CAMERA_REQUESTT_CODE) {
@@ -482,20 +487,27 @@ public class HomeActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_home) {
-            // Handle the camera action
+
+			actionBar.setTitle("Instant Help");
             getSupportFragmentManager().beginTransaction().
                     replace(R.id.content_home, new HomeFragment()).commit();
         } else if (id == R.id.nav_post) {
-            getSupportFragmentManager().beginTransaction().
+			actionBar.setTitle("Post Feed");
+
+			getSupportFragmentManager().beginTransaction().
                     replace(R.id.content_home, new PostFeedFrag()).commit();
 
         } else if (id == R.id.nav_myPost) {
-            getSupportFragmentManager().beginTransaction().
+			actionBar.setTitle("My Post");
+
+			getSupportFragmentManager().beginTransaction().
                     replace(R.id.content_home, new MyPostFragment()).commit();
         } else if (id == R.id.nav_improve_location) {
             showSettingsAlert();
         } else if (id == R.id.nav_feedback) {
-            getSupportFragmentManager().beginTransaction()
+			actionBar.setTitle("Feedback");
+
+			getSupportFragmentManager().beginTransaction()
                     .replace(R.id.content_home, new FeedbackFragment()).commit();
 
         } else if (id == R.id.nav_settings) {
@@ -504,9 +516,9 @@ public class HomeActivity extends AppCompatActivity
         } else if (id == R.id.nav_logout) {
             mAuth.signOut();
             clearPreferences();
-            Intent i = new Intent(this, AuthActivity.class);
-            startActivity(i);
-            finish();
+//            Intent i = new Intent(this, AuthActivity.class);
+//            startActivity(i);
+//            finish();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -526,7 +538,7 @@ public class HomeActivity extends AppCompatActivity
     @Override
     protected void onStart() {
         super.onStart();
-//        mAuth.addAuthStateListener(authStateListener);
+        mAuth.addAuthStateListener(authStateListener);
         defaultFallService.isActivityRunning = true;
         wearableFallService.isActivityRunning = true;
 
@@ -535,9 +547,9 @@ public class HomeActivity extends AppCompatActivity
     @Override
     protected void onStop() {
         super.onStop();
-//        if (mAuth != null) {
-//            mAuth.removeAuthStateListener(authStateListener);
-//        }
+        if (mAuth != null) {
+            mAuth.removeAuthStateListener(authStateListener);
+        }
         defaultFallService.isActivityRunning = false;
         wearableFallService.isActivityRunning = false;
         stopPlaying();
@@ -693,9 +705,9 @@ public class HomeActivity extends AppCompatActivity
 
     @Override
     public void sendSMSToGuardian() {
-        CurrentUser currentUser = new CurrentUser(this);
         try {
-            SmsManager smsManager = SmsManager.getDefault();
+			CurrentUser currentUser = new CurrentUser(this);
+			SmsManager smsManager = SmsManager.getDefault();
             smsManager.sendTextMessage(currentUser.getCurrentUser().getGuardian(), null,
                     currentUser.getCurrentUser().getFname() + " " + getString(R.string.sms_help), null, null);
             Toast.makeText(this, "Message Sent to Guardian",
