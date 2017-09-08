@@ -60,7 +60,7 @@ public class MyPostFragment extends Fragment {
         ConnectivityManager connectivityManager = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
         progressDialog = new SpotsDialog(getActivity(), R.style.Custom);
-        progressDialog.show();
+
         database = FirebaseDatabase.getInstance();
         myRef = database.getReference();
         mAuth = FirebaseAuth.getInstance();
@@ -69,6 +69,7 @@ public class MyPostFragment extends Fragment {
         dataModels = new ArrayList<>();
 
         if (networkInfo != null && networkInfo.isConnected()) {
+            progressDialog.show();
             myRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {

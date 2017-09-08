@@ -5,8 +5,6 @@
       <module fileurl="file://$PROJECT_DIR$/Instant_Help.iml" filepath="$PROJECT_DIR$/Instant_Help.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/shimmerAndroidInstrumentDriver/shimmerAndroidInstrumentDriver.iml" filepath="$PROJECT_DIR$/shimmerAndroidInstrumentDriver/shimmerAndroidInstrumentDriver.iml" />
-      <module fileurl="file://$PROJECT_DIR$/shimmerAndroidInstrumentDriver/shimmerAndroidInstrumentDriver.iml" filepath="$PROJECT_DIR$/shimmerAndroidInstrumentDriver/shimmerAndroidInstrumentDriver.iml" />
-      <module fileurl="file://$PROJECT_DIR$/shimmerDriver/shimmerDriver.iml" filepath="$PROJECT_DIR$/shimmerDriver/shimmerDriver.iml" />
       <module fileurl="file://$PROJECT_DIR$/shimmerDriver/shimmerDriver.iml" filepath="$PROJECT_DIR$/shimmerDriver/shimmerDriver.iml" />
     </modules>
   </component>

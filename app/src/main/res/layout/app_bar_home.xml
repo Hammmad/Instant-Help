@@ -14,6 +14,7 @@
         android:layout_height="?attr/actionBarSize"
         android:background="@color/colorPrimary"
         android:titleTextColor="#fff"
+        android:translationZ="5dp"
         app:layout_collapseMode="pin"
         app:layout_scrollFlags="scroll|enterAlways"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
@@ -34,7 +35,7 @@
         </FrameLayout>
     </android.support.v7.widget.Toolbar>
 
-    <include layout="@layout/content_home"/>
+    <include layout="@layout/content_home" />
 
 
 </LinearLayout>

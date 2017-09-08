@@ -74,13 +74,13 @@ import com.theartofdev.edmodo.cropper.CropImage;
 import java.io.ByteArrayOutputStream;
 
 public class HomeActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener,HomeFragment.CallbackHomeFragment {
+        implements NavigationView.OnNavigationItemSelectedListener, HomeFragment.CallbackHomeFragment {
 
     private static final int GALLERY_REQUEST_CODE = 0;
     private static final int CAMERA_REQUESTT_CODE = 1;
     private static final String TAG = "HOME/DEBUGGING";
-	private static final int REQUEST_ENABLE_BT = 1;
-	FirebaseAuth mAuth;
+    private static final int REQUEST_ENABLE_BT = 1;
+    FirebaseAuth mAuth;
     FirebaseAuth.AuthStateListener authStateListener;
     ImageView userImageButton;
     StorageReference storageReference;
@@ -88,35 +88,35 @@ public class HomeActivity extends AppCompatActivity
     private Uri mCropImageUri;
     MenuItem wearableSensorItem, defaultSensorItem;
     CompoundButton wearableSensorSwitch, defaultSensorSwitch;
-	private MediaPlayer mp;
-	DefaultFallService defaultFallService;
-	WearableFallService wearableFallService;
-	public boolean fall;
-	private boolean fine = true;
-	LocationTracker locationTracker;
+    private MediaPlayer mp;
+    DefaultFallService defaultFallService;
+    WearableFallService wearableFallService;
+    public boolean fall;
+    private boolean fine = true;
+    LocationTracker locationTracker;
 
 
-	@Override
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-		locationTracker = new LocationTracker(this);
-		if (locationTracker.canGetLocation()) {
-			locationTracker.getLocation();
+        locationTracker = new LocationTracker(this);
+        if (locationTracker.canGetLocation()) {
+            locationTracker.getLocation();
 //            Toast.makeText(getActivity(), "currentLatitude,currentLongitude:   " + locationTracker.getLatitude()
 //                    + locationTracker.getLongitude(), Toast.LENGTH_SHORT).show();
-			Intent serviceIntent = new Intent(this, FirebaseBackgroundService.class);
-			this.startService(serviceIntent);
-		} else {
-			Log.e(TAG, "No provider");
-		}
-		defaultFallService = new DefaultFallService();
-		wearableFallService = new WearableFallService();
+            Intent serviceIntent = new Intent(this, FirebaseBackgroundService.class);
+            this.startService(serviceIntent);
+        } else {
+            Log.e(TAG, "No provider");
+        }
+        defaultFallService = new DefaultFallService();
+        wearableFallService = new WearableFallService();
 
-		mp = MediaPlayer.create(HomeActivity.this, R.raw.alrm);
+        mp = MediaPlayer.create(HomeActivity.this, R.raw.alrm);
 
-		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         ActionBar actionBar = getSupportActionBar();
@@ -137,50 +137,50 @@ public class HomeActivity extends AppCompatActivity
         navigationView.addHeaderView(navHeader);
         navigationView.setNavigationItemSelectedListener(this);
 
-		final BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-		final Intent defaultSensorIntent = new Intent(HomeActivity.this, DefaultFallService.class);
-		final Intent wearableSensorIntent;
-		wearableSensorIntent = new Intent(HomeActivity.this, WearableFallService.class);
-		wearableSensorItem = navigationView.getMenu().findItem(R.id.wearable_sensor_switch);
-		wearableSensorSwitch = (CompoundButton) MenuItemCompat.getActionView(wearableSensorItem);
+        final BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        final Intent defaultSensorIntent = new Intent(HomeActivity.this, DefaultFallService.class);
+        final Intent wearableSensorIntent;
+        wearableSensorIntent = new Intent(HomeActivity.this, WearableFallService.class);
+        wearableSensorItem = navigationView.getMenu().findItem(R.id.wearable_sensor_switch);
+        wearableSensorSwitch = (CompoundButton) MenuItemCompat.getActionView(wearableSensorItem);
 
-		wearableSensorSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				if(isChecked){
+        wearableSensorSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
 
-					if (!mBluetoothAdapter.isEnabled()) {
-						Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-						startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-						wearableSensorSwitch.setChecked(false);
-					}else{
-						defaultSensorSwitch.setChecked(false);
-						startService(wearableSensorIntent);
-					}
-				}else{
-					stopService(wearableSensorIntent);
-				}
-			}
-		});
+                    if (!mBluetoothAdapter.isEnabled()) {
+                        Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                        startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+                        wearableSensorSwitch.setChecked(false);
+                    } else {
+                        defaultSensorSwitch.setChecked(false);
+                        startService(wearableSensorIntent);
+                    }
+                } else {
+                    stopService(wearableSensorIntent);
+                }
+            }
+        });
 
-		defaultSensorItem = navigationView.getMenu().findItem(R.id.defaultSwitch);
-		defaultSensorSwitch = (CompoundButton) MenuItemCompat.getActionView(defaultSensorItem);
-		defaultSensorSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				if(isChecked){
-					wearableSensorSwitch.setChecked(false);
+        defaultSensorItem = navigationView.getMenu().findItem(R.id.defaultSwitch);
+        defaultSensorSwitch = (CompoundButton) MenuItemCompat.getActionView(defaultSensorItem);
+        defaultSensorSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    wearableSensorSwitch.setChecked(false);
 
-					//start background service for fall detection via mobile
-					startService(defaultSensorIntent);
-				}else{
-					stopService(defaultSensorIntent);
-				}
-			}
-		});
+                    //start background service for fall detection via mobile
+                    startService(defaultSensorIntent);
+                } else {
+                    stopService(defaultSensorIntent);
+                }
+            }
+        });
 
 
-		TextView textView = (TextView) navHeader.findViewById(R.id.userName_textView);
+        TextView textView = (TextView) navHeader.findViewById(R.id.userName_textView);
         userImageButton = (ImageView) navHeader.findViewById(R.id.user_imageView);
         CurrentUser currentUser = new CurrentUser(this);
         User user = currentUser.getCurrentUser();
@@ -192,12 +192,12 @@ public class HomeActivity extends AppCompatActivity
         databaseReference = FirebaseDatabase.getInstance().getReference();
 
         mAuth = FirebaseAuth.getInstance();
-		if (mAuth.getCurrentUser() != null) {
-			getSupportFragmentManager().beginTransaction().
-					replace(R.id.content_home, new HomeFragment()).commit();
-		} else {
-			showSignInFragment();
-		}
+        if (mAuth.getCurrentUser() != null) {
+            getSupportFragmentManager().beginTransaction().
+                    replace(R.id.content_home, new HomeFragment()).commit();
+        } else {
+            showSignInFragment();
+        }
 //        authStateListener = new FirebaseAuth.AuthStateListener() {
 //            @Override
 //            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -260,11 +260,11 @@ public class HomeActivity extends AppCompatActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, final Intent data) {
 
-		if(resultCode ==RESULT_OK){
-			if(requestCode == REQUEST_ENABLE_BT){
+        if (resultCode == RESULT_OK) {
+            if (requestCode == REQUEST_ENABLE_BT) {
 
-			}
-		}
+            }
+        }
 
         if (resultCode == RESULT_OK) {
             if (requestCode == CropImage.PICK_IMAGE_CHOOSER_REQUEST_CODE) {
@@ -279,7 +279,7 @@ public class HomeActivity extends AppCompatActivity
                     // no permissions required or already grunted, can start crop image activity
                     startCropimageActivity(imageUri);
                 }
-             } else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+            } else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
                 CropImage.ActivityResult result = CropImage.getActivityResult(data);
                 Uri resultUri = result.getUri();
                 Picasso.with(this).load(resultUri).into(userImageButton);
@@ -382,7 +382,7 @@ public class HomeActivity extends AppCompatActivity
                 user.emailAddress,
                 user.contact,
                 user.country,
-				user.guardian,
+                user.guardian,
                 user.city,
                 user.password,
                 user.gender,
@@ -422,7 +422,7 @@ public class HomeActivity extends AppCompatActivity
                 user.fname,
                 user.lname,
                 user.emailAddress,
-                user.contact,user.guardian,
+                user.contact, user.guardian,
                 user.country,
                 user.city,
                 user.password,
@@ -467,6 +467,8 @@ public class HomeActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            Intent i = new Intent(this, SettingsActivity.class);
+            startActivity(i);
             return true;
         }
 
@@ -484,29 +486,21 @@ public class HomeActivity extends AppCompatActivity
             getSupportFragmentManager().beginTransaction().
                     replace(R.id.content_home, new HomeFragment()).commit();
         } else if (id == R.id.nav_post) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.content_home, new PostFeedFrag()).commit();
+            getSupportFragmentManager().beginTransaction().
+                    replace(R.id.content_home, new PostFeedFrag()).commit();
 
         } else if (id == R.id.nav_myPost) {
-//            Toast.makeText(this, "My Posts", Toast.LENGTH_SHORT).show();
-            getSupportFragmentManager().beginTransaction().replace(R.id.content_home, new MyPostFragment()).commit();
-        }
-//        else if (id == R.id.nav_shemer) {
-////            Intent intent = new Intent(HomeActivity.this, FirstAidGuidActivity.class);
-////            startActivity(intent);
-////            ((Switch) item.getActionView()).toggle();
-//            Toast.makeText(this, "Shemer", Toast.LENGTH_SHORT).show();
-//        } else if (id == R.id.nav_default) {
-//            Toast.makeText(this, "Default", Toast.LENGTH_SHORT).show();
-////            ((Switch) item.getActionView()).toggle();
-//        }
-        else if (id == R.id.nav_improve_location) {
+            getSupportFragmentManager().beginTransaction().
+                    replace(R.id.content_home, new MyPostFragment()).commit();
+        } else if (id == R.id.nav_improve_location) {
             showSettingsAlert();
         } else if (id == R.id.nav_feedback) {
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.content_home, new FeedbackFragment()).commit();
 
         } else if (id == R.id.nav_settings) {
-
+            Intent i = new Intent(this, SettingsActivity.class);
+            startActivity(i);
         } else if (id == R.id.nav_logout) {
             mAuth.signOut();
             clearPreferences();
@@ -531,8 +525,8 @@ public class HomeActivity extends AppCompatActivity
     protected void onStart() {
         super.onStart();
 //        mAuth.addAuthStateListener(authStateListener);
-		defaultFallService.isActivityRunning = true;
-		wearableFallService.isActivityRunning=true;
+        defaultFallService.isActivityRunning = true;
+        wearableFallService.isActivityRunning = true;
 
     }
 
@@ -544,96 +538,96 @@ public class HomeActivity extends AppCompatActivity
 //        }
         defaultFallService.isActivityRunning = false;
         wearableFallService.isActivityRunning = false;
-		stopPlaying();
+        stopPlaying();
     }
 
-	@Override
-	protected void onPause() {
-		super.onPause();
-		defaultFallService.isActivityRunning = false;
-		wearableFallService.isActivityRunning = false;
-		Log.d(TAG, "OnPause");
-	}
+    @Override
+    protected void onPause() {
+        super.onPause();
+        defaultFallService.isActivityRunning = false;
+        wearableFallService.isActivityRunning = false;
+        Log.d(TAG, "OnPause");
+    }
 
-	@Override
-	protected void onResume() {
-		super.onResume();
+    @Override
+    protected void onResume() {
+        super.onResume();
 
-		if(getIntent().getExtras() != null) {
-			fall = getIntent().getExtras().getBoolean("FALL");
-			if (fall) {
-				mp = MediaPlayer.create(HomeActivity.this, R.raw.alrm);
-				mp.setVolume(100, 100);
+        if (getIntent().getExtras() != null) {
+            fall = getIntent().getExtras().getBoolean("FALL");
+            if (fall) {
+                mp = MediaPlayer.create(HomeActivity.this, R.raw.alrm);
+                mp.setVolume(100, 100);
 //				stopPlaying();
-				mp.start();
+                mp.start();
 
-				Dialogue();
+                Dialogue();
 
-				fall = false;
-			}
-		}
-		defaultFallService.isActivityRunning = true;
-		wearableFallService.isActivityRunning = true;
-	}
+                fall = false;
+            }
+        }
+        defaultFallService.isActivityRunning = true;
+        wearableFallService.isActivityRunning = true;
+    }
 
-	private void Dialogue() {
-		final AlertDialog.Builder builder = new AlertDialog.Builder(HomeActivity.this);
-		CurrentUser currentUser = new CurrentUser(HomeActivity.this);
+    private void Dialogue() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(HomeActivity.this);
+        CurrentUser currentUser = new CurrentUser(HomeActivity.this);
 
-		builder.setTitle("Fall has been detected.")
-				.setMessage(currentUser.getCurrentUser().fname+"!! Are you Fine?")
-				.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialogInterface, int i) {
-						stopPlaying();
-						fine = false;
-					}
-				})
-				.setNegativeButton("No", new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialogInterface, int i) {
-						stopPlaying();
-						fine = false;
+        builder.setTitle("Fall has been detected.")
+                .setMessage(currentUser.getCurrentUser().fname + "!! Are you Fine?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        stopPlaying();
+                        fine = false;
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        stopPlaying();
+                        fine = false;
 
-						// first Aid required
-						sendSMSToGuardian();
-						sendNotificationInfoFirebase();
-					}
-				}).setCancelable(true);
+                        // first Aid required
+                        sendSMSToGuardian();
+                        sendNotificationInfoFirebase();
+                    }
+                }).setCancelable(true);
 
-		final AlertDialog dialog = builder.create();
+        final AlertDialog dialog = builder.create();
 
-		dialog.show();
+        dialog.show();
 
-		new CountDownTimer(15000, 1000) {
-			@Override
-			public void onTick(long l) {
+        new CountDownTimer(15000, 1000) {
+            @Override
+            public void onTick(long l) {
 
-			}
+            }
 
-			@Override
-			public void onFinish() {
-				if(fine){
-					dialog.dismiss();
-					stopPlaying();
-					// First Aid required
-					sendSMSToGuardian();
-					sendNotificationInfoFirebase();
-				}
+            @Override
+            public void onFinish() {
+                if (fine) {
+                    dialog.dismiss();
+                    stopPlaying();
+                    // First Aid required
+                    sendSMSToGuardian();
+                    sendNotificationInfoFirebase();
+                }
 
 
-			}
-		}.start();
-	}
+            }
+        }.start();
+    }
 
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-		defaultFallService.isActivityRunning = false;
-		wearableFallService.isActivityRunning = false;
-	}
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        defaultFallService.isActivityRunning = false;
+        wearableFallService.isActivityRunning = false;
+    }
 
-	public static Bitmap getRoundedRectBitmap(Bitmap bitmap, int pixels) {
+    public static Bitmap getRoundedRectBitmap(Bitmap bitmap, int pixels) {
         Bitmap result = null;
         try {
             result = Bitmap.createBitmap(200, 200, Bitmap.Config.ARGB_8888);
@@ -686,59 +680,60 @@ public class HomeActivity extends AppCompatActivity
         // Showing Alert Message
         alertDialog.show();
     }
-	private void stopPlaying() {
-		if (mp != null) {
-			mp.stop();
-			mp.release();
-			mp = null;
-		}
-	}
 
-	@Override
-	public void sendSMSToGuardian() {
-		CurrentUser currentUser = new CurrentUser(this);
-		try {
-			SmsManager smsManager = SmsManager.getDefault();
-			smsManager.sendTextMessage(currentUser.getCurrentUser().getGuardian(), null,
-					currentUser.getCurrentUser().getFname()+" "+getString(R.string.sms_help), null, null);
-			Toast.makeText(this, "Message Sent to Guardian",
-					Toast.LENGTH_LONG).show();
-		} catch (Exception ex) {
-			Toast.makeText(this, ex.getMessage(),
-					Toast.LENGTH_LONG).show();
-			ex.printStackTrace();
-		}
-	}
+    private void stopPlaying() {
+        if (mp != null) {
+            mp.stop();
+            mp.release();
+            mp = null;
+        }
+    }
 
-	@Override
-	public void sendNotificationInfoFirebase() {
-		ConnectivityManager connectivityManager = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
-		NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+    @Override
+    public void sendSMSToGuardian() {
+        CurrentUser currentUser = new CurrentUser(this);
+        try {
+            SmsManager smsManager = SmsManager.getDefault();
+            smsManager.sendTextMessage(currentUser.getCurrentUser().getGuardian(), null,
+                    currentUser.getCurrentUser().getFname() + " " + getString(R.string.sms_help), null, null);
+            Toast.makeText(this, "Message Sent to Guardian",
+                    Toast.LENGTH_LONG).show();
+        } catch (Exception ex) {
+            Toast.makeText(this, ex.getMessage(),
+                    Toast.LENGTH_LONG).show();
+            ex.printStackTrace();
+        }
+    }
 
-		if (networkInfo != null && networkInfo.isConnected()) {
-			CurrentUser currentUser = new CurrentUser(this);
-			User user = currentUser.getCurrentUser();
-			locationTracker.getLocation();
+    @Override
+    public void sendNotificationInfoFirebase() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
 
-			final User notificationInfo = new User
-					(user.getuId()
-							,user.getFname()
-							,user.getLname()
-							,user.getContact()
-							,locationTracker.getLatitude()
-							,locationTracker.getLongitude());
+        if (networkInfo != null && networkInfo.isConnected()) {
+            CurrentUser currentUser = new CurrentUser(this);
+            User user = currentUser.getCurrentUser();
+            locationTracker.getLocation();
 
-			databaseReference.child("NotificationInfo").child(user.getuId()).removeValue(new DatabaseReference.CompletionListener() {
-				@Override
-				public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-					databaseReference.setValue(notificationInfo);
-					Toast.makeText(HomeActivity.this, "Emergency Services Informed", Toast.LENGTH_SHORT).show();
+            final User notificationInfo = new User
+                    (user.getuId()
+                            , user.getFname()
+                            , user.getLname()
+                            , user.getContact()
+                            , locationTracker.getLatitude()
+                            , locationTracker.getLongitude());
 
-				}
-			});
-		}else{
-			Toast.makeText(HomeActivity.this, "No Network Connection", Toast.LENGTH_SHORT).show();
-		}
+            databaseReference.child("NotificationInfo").child(user.getuId()).removeValue(new DatabaseReference.CompletionListener() {
+                @Override
+                public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                    databaseReference.setValue(notificationInfo);
+                    Toast.makeText(HomeActivity.this, "Emergency Services Informed", Toast.LENGTH_SHORT).show();
 
-	}
+                }
+            });
+        } else {
+            Toast.makeText(HomeActivity.this, "No Network Connection", Toast.LENGTH_SHORT).show();
+        }
+
+    }
 }
